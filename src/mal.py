@@ -126,7 +126,7 @@ class MALMessage(object):
         """
         b"".join(self.msg_parts)
 
-class ConsumerHandler(object):
+class Handler(object):
     AREA = None
     AREA_VERSION = 1
     SERVICE = None
@@ -365,7 +365,7 @@ class ResponseConsumerHandler(ConsumerHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_responsek(self):
+    def receive_response(self):
         message, ip_stage = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.REQUEST_RESPONSE:
@@ -552,7 +552,7 @@ class ProgressConsumerHandler(ConsumerHandler):
                                       (self.__class__.__name__, ip_stage))
 
 
-class PubSubProviderHandler(ProviderHandler)
+class PubSubProviderHandler(ProviderHandler):
 
     def receive_registration_message(self):
         message, ip_stage = self.receive_message()
@@ -639,7 +639,7 @@ class PubSubProviderHandler(ProviderHandler)
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_ERROR. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
-class PubSubBrokerHandler(ProviderHandler)
+class PubSubBrokerHandler(ProviderHandler):
 
     def receive_registration_message(self):
         message, ip_stage = self.receive_message()
@@ -732,7 +732,7 @@ class PubSubBrokerHandler(ProviderHandler)
         self.send_message(message)
 
 
-class PubSubConsumerHandler(ProviderHandler)
+class PubSubConsumerHandler(ProviderHandler):
 
     def register(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PUBSUB_REGISTER)
@@ -778,7 +778,84 @@ class PubSubConsumerHandler(ProviderHandler)
             raise InvalidIPStageError("In %s. Expected PUBSUB_NOTIFY. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
+class Transport(object):
+    
+    def bind(self, uri):
+        raise NotImplementedError("This is to be implemented.")
 
+    def connect(self, uri):
+        raise NotImplementedError("This is to be implemented.")
+    
+    def unbind(self):
+        raise NotImplementedError("This is to be implemented.")
+
+    def disconnect(self):
+        raise NotImplementedError("This is to be implemented.")
+
+    def send(self, message):
+        raise NotImplementedError("This is to be implemented.")
+
+    def recv(self):
+        raise NotImplementedError("This is to be implemented.")
+        message = b""
+        return message
+
+
+class Encoder(object):
+    
+    def encode(self, message):
+        raise NotImplementedError("This is to be implemented.")
+        return message
+
+    def decode(self, message):
+        raise NotImplementedError("This is to be implemented.")
+        return message
+
+class TCPTransport(Transport):
+    import socket
+
+    
+    def __init__():
+        self.tcpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.tcpconnection = None
+
+    def bind(self, uri):
+    """ @param uri: (host, port) """
+        self.tcpsocket.bind(uri)
+        self.tcpsocket.listen(1)
+        self.tcpconnection, _ = self.tcpsocket.accept()
+
+    with conn:
+        print('Connected by', addr)
+        while True:
+            data = conn.recv(1024)
+            if not data: break
+            conn.sendall(data)
+
+
+    def connect(self, uri):
+    """ @param uri: (host, port) """
+        self.tcpsocket.connect(uri)
+    
+    
+    def unbind(self):
+        raise NotImplementedError("This is to be implemented.")
+
+    def disconnect(self):
+        raise NotImplementedError("This is to be implemented.")
+
+    def send(self, message):
+        if tcpconnection:
+            tcpconnection.send(message)
+        else:
+            tcpsocket.send(message)
+
+    def recv(self):
+        raise NotImplementedError("This is to be implemented.")
+        message = b""
+        return message
+#transport )=qFqfdsq()
+# request = Request(trans, enc)
 #request.connect(endpoint)
 #request.request()
 #msg = request.recv()
