@@ -49,6 +49,40 @@ class MAL_IP_ERRORS(IntEnum):
     PUBSUB_NOTIFY_ERROR = 17
 
 
+class MAL_ATTRIBUTE_FLAGS(IntEnum):
+    BLOB = 1
+    BOOLEAN = 2
+    DURATION = 3
+    FLOAT = 4
+    DOUBLE = 5
+    IDENTIFIER = 6
+    OCTET = 7
+    UOCTET = 8
+    SHORT = 9
+    USHORT = 10
+    INTEGER = 11
+    UINTEGER = 12
+    LONG = 13
+    ULONG = 14
+    STRING = 15
+    TIME = 16
+    FINETIME = 17
+    URI = 18
+
+
+class SESSION_TYPES(IntEnum):
+    LIVE = 1
+    SIMULATION = 2
+    REPLAY = 3
+
+
+class QOSLEVELS(IntEnum):
+    BESTEFFORT = 1
+    ASSURED = 2
+    QUEUED = 3
+    TIMELY = 4
+
+
 class MalformedMessageError(Exception):
     pass
 
