@@ -1,3 +1,6 @@
+from enum import IntEnum
+import time
+
 class MAL_IP_TYPES(IntEnum):
     SEND = 1
     SUBMIT = 2
@@ -44,6 +47,19 @@ class MAL_IP_ERRORS(IntEnum):
     PUBSUB_PUBLISH_REGISTER_ERROR = 14
     PUBSUB_PUBLISH_ERROR = 16
     PUBSUB_NOTIFY_ERROR = 17
+
+
+class MalformedMessageError(Exception):
+    pass
+
+
+class InvalidIPStageError(Exception):
+    pass
+
+
+class BackendShutdown(Exception):
+    pass
+
 
 class MALHeader(object):
     """
@@ -126,6 +142,7 @@ class MALMessage(object):
         """
         b"".join(self.msg_parts)
 
+
 class Handler(object):
     AREA = None
     AREA_VERSION = 1
@@ -160,7 +177,7 @@ class ConsumerHandler(Handler):
         cls._transaction_id_counter += 1
         return cls._transaction_id_counter
 
-    def __init__(self, encoding, transport, provider_uri,
+    def __init__(self, transport, encoding, provider_uri,
                  session, session_name="", domain=None, network_zone=None,
                  priority=None, auth_id=None, qos_level=None):
         super().__init__()
@@ -190,7 +207,7 @@ class ConsumerHandler(Handler):
         header.session = self.session
         header.transaction_id = self.transaction_id
         header.priority = self.priority
-        header.uri_from = self.router.uri
+        header.uri_from = self.transport.uri
         header.uri_to = self.provider_uri
         header.timestamp = time.time()
         header.network_zone = self.network_zone
@@ -199,8 +216,8 @@ class ConsumerHandler(Handler):
         header.auth_id = self.auth_id
         return header
 
-    def connect(self, endpoint):
-        transport.connect(endpoint)
+    def connect(self, uri):
+        self.transport.connect(uri)
 
 
 class ProviderHandler(Handler):
@@ -220,18 +237,16 @@ class ProviderHandler(Handler):
     OPERATION = None
 
 
-    def __init__(self, encoding, transport, first_message_header, app=None):
+    def __init__(self, transport, encoding):
         super().__init__()
-        self.backend = backend
+        self.transport = transport
         self.encoding = encoding
-        self.response_header = first_message_header.copy()
+
+    def define_header(self, received_message_header):
+        self.response_header = received_message_header.copy()
         uri_from = self.response_header.uri_to
         self.response_header.uri_to = self.response_header.uri_from
         self.response_header.uri_from = uri_from
-        self.interaction_terminated = False
-
-    def bind(self, endpoint):
-        transport.bind(endpoint)
 
     def create_message_header(self, ip_stage):
         header = self.response_header.copy()
@@ -246,11 +261,11 @@ class SendProviderHandler(ProviderHandler):
     interaction pattern
     """
 
-    def receive_message(self):
-        message = super().receive_message()
+    def receive_send(self):
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.SEND:
-            elf.interaction_terminated = True
+            self.interaction_terminated = True
             return message
         else:
             raise InvalidIPStageError("In %s. Expected SEND. Got %s" %
@@ -279,6 +294,7 @@ class SubmitProviderHandler(ProviderHandler):
 
     def receive_submit(self):
         message = self.receive_message()
+        self.define_header(message.header)
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.SUBMIT:
             return message
@@ -334,6 +350,7 @@ class RequestProviderHandler(ProviderHandler):
 
     def receive_request(self):
         message = self.receive_message()
+        self.define_header(message.header)
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.REQUEST:
             return message
@@ -354,19 +371,19 @@ class RequestProviderHandler(ProviderHandler):
         return self.send_message(message)
 
 
-class ResponseConsumerHandler(ConsumerHandler):
+class RequestConsumerHandler(ConsumerHandler):
     """
     A consumer handler for operations belonging to the SEND
     interaction pattern
     """
 
     def request(self, body):
-        header = self.create_message_header(MAL_IP_STAGES.SEND)
+        header = self.create_message_header(MAL_IP_STAGES.REQUEST)
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
     def receive_response(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.REQUEST_RESPONSE:
             self.interaction_terminated = True
@@ -387,6 +404,7 @@ class InvokeProviderHandler(ProviderHandler):
 
     def receive_invoke(self):
         message = self.receive_message()
+        self.define_header(message.header)
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.INVOKE:
             return message
@@ -429,7 +447,7 @@ class InvokeConsumerHandler(ConsumerHandler):
         self.send_message(message)
         self.interaction_terminated = True
 
-   def receive_ack(self):
+    def receive_ack(self):
         message, ip_stage = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.INVOKE_ACK:
@@ -440,7 +458,7 @@ class InvokeConsumerHandler(ConsumerHandler):
             raise InvalidIPStageError("In %s. Expected INVOKE_ACK. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
-   def receive_response(self):
+    def receive_response(self):
         message, ip_stage = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.INVOKE_RESPONSE:
@@ -462,6 +480,7 @@ class ProgressProviderHandler(ProviderHandler):
 
     def receive_progress(self):
         message = self.receive_message()
+        self.define_header(message.header)
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.INVOKE:
             return message
@@ -514,7 +533,7 @@ class ProgressConsumerHandler(ConsumerHandler):
         self.send_message(message)
         self.interaction_terminated = True
 
-   def receive_ack(self):
+    def receive_ack(self):
         message, ip_stage = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.PROGRESS_ACK:
@@ -538,7 +557,7 @@ class ProgressConsumerHandler(ConsumerHandler):
             raise InvalidIPStageError("In %s. Expected PROGRESS_UPDATE. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
-   def receive_response(self):
+    def receive_response(self):
         message, ip_stage = self.receive_message()
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.PROGRESS_RESPONSE:
@@ -556,6 +575,7 @@ class PubSubProviderHandler(ProviderHandler):
 
     def receive_registration_message(self):
         message, ip_stage = self.receive_message()
+        self.define_header(message.header)
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER:
             return message
@@ -643,6 +663,7 @@ class PubSubBrokerHandler(ProviderHandler):
 
     def receive_registration_message(self):
         message, ip_stage = self.receive_message()
+        self.define_header(message.header)
         ip_stage = message.header.ip_stage
         if ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER:
             return message
@@ -777,111 +798,3 @@ class PubSubConsumerHandler(ProviderHandler):
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_NOTIFY. Got %s" %
                                       (self.__class__.__name__, ip_stage))
-
-class Transport(object):
-    
-    def bind(self, uri):
-        raise NotImplementedError("This is to be implemented.")
-
-    def connect(self, uri):
-        raise NotImplementedError("This is to be implemented.")
-    
-    def unbind(self):
-        raise NotImplementedError("This is to be implemented.")
-
-    def disconnect(self):
-        raise NotImplementedError("This is to be implemented.")
-
-    def send(self, message):
-        raise NotImplementedError("This is to be implemented.")
-
-    def recv(self):
-        raise NotImplementedError("This is to be implemented.")
-        message = b""
-        return message
-
-
-class Encoder(object):
-    
-    def encode(self, message):
-        raise NotImplementedError("This is to be implemented.")
-        return message
-
-    def decode(self, message):
-        raise NotImplementedError("This is to be implemented.")
-        return message
-
-class TCPTransport(Transport):
-    import socket
-
-    
-    def __init__():
-        self.tcpsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.tcpconnection = None
-
-    def bind(self, uri):
-    """ @param uri: (host, port) """
-        self.tcpsocket.bind(uri)
-        self.tcpsocket.listen(1)
-        self.tcpconnection, _ = self.tcpsocket.accept()
-
-    with conn:
-        print('Connected by', addr)
-        while True:
-            data = conn.recv(1024)
-            if not data: break
-            conn.sendall(data)
-
-
-    def connect(self, uri):
-    """ @param uri: (host, port) """
-        self.tcpsocket.connect(uri)
-    
-    
-    def unbind(self):
-        raise NotImplementedError("This is to be implemented.")
-
-    def disconnect(self):
-        raise NotImplementedError("This is to be implemented.")
-
-    def send(self, message):
-        if tcpconnection:
-            tcpconnection.send(message)
-        else:
-            tcpsocket.send(message)
-
-    def recv(self):
-        raise NotImplementedError("This is to be implemented.")
-        message = b""
-        return message
-#transport )=qFqfdsq()
-# request = Request(trans, enc)
-#request.connect(endpoint)
-#request.request()
-#msg = request.recv()
-#do(msg)
-#
-#PROV
-#request.bind(endpoint)
-#msg = request.recv()
-#resp = do(msg)
-#request.respond(resp)
-
-# PROGRESS
-#CONSUM
-#prog.connect(endpoint)
-#prog.progress()
-#do
-# msg = request.recv()
-#while msg.transactionstep == progress
-#
-#PROV
-#request.bind(endpoint)
-#msg = prov.recv()
-#resp = do(msg)
-#while someting
-#  request.update(upd)
-#request.respond()
-#
-
-
