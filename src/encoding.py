@@ -1,3 +1,6 @@
+import pickle
+
+
 class Encoder(object):
 
     def encode(self, message):
@@ -8,7 +11,6 @@ class Encoder(object):
         raise NotImplementedError("This is to be implemented.")
         return message
 
-import pickle
 
 class PickleEncoder(Encoder):
 
