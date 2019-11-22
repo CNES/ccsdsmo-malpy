@@ -69,7 +69,7 @@ class TCPSocket(MALSocket):
         return self.socket.getsockname()
 
 
-class HTTPSocket(MALSocket):
+class HTTPSocket(TCPSocket):
 
     _messagesize = 1024
 
@@ -101,6 +101,7 @@ class HTTPSocket(MALSocket):
         self.socket.close()
 
     def send(self, message):
+
         headers = {
             "Content-Length": len(message.multi_part),
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
@@ -242,3 +243,22 @@ class HTTPSocket(MALSocket):
 
     def _decode_ascii(s):
         return make_header(decode_header(s))
+
+    def _build_post_request(target, headers, body):
+        version = 'HTTP/1.1'
+        method = 'POST'
+        request = "{method} {target} {version}\r\n".format(method=method, target=target, version=version)
+        for h in headers:
+            request += "{tocken}: {value}\r\n".format(tocken=h, value=headers[h])
+        request+= "\r\n"
+        return request
+
+    def _build_post_response(target, status, header, body):
+        version = 'HTTP/1.1'
+        request = "{version} {statuscode} {statusmessage}\r\n".format(version=version, statuscode=status.code statusmessage=status.message)
+        for h in headers:
+            request += "{tocken}: {value}\r\n".format(tocken=h, value=headers[h])
+
+        request+= "\r\n"
+        return request
+

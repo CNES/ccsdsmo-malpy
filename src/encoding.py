@@ -1,4 +1,5 @@
 import pickle
+import xml.dom
 
 from malpydefinitions import MALPY_ENCODING
 
@@ -27,7 +28,11 @@ class XMLEncoder(Encoder):
     encoding = MALPY_ENCODING.XML
 
     def encode(self, message):
-        return pickle.dumps(message)
+        dom = xml.dom.getDOMImplementation()
+        d = dom.createDocument('http://www.ccsds.org/schema/malxml/MAL', 'malxml:Body', None)
+        d.firstchild.appendChild(d.createElement('malxml.Element')
+        messagebody = d.toxml(encoding="UTF-8")
+        return message
 
     def decode(self, message):
         return pickle.loads(message)
