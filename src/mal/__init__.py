@@ -1,5 +1,4 @@
-__all__ = ["maltypes", "malenums", "malinteractions"]
+__all__ = ["maltypes", "malinteractions"]
 
 from .maltypes import *
-from .malenums import *
 from .malinteractions import *
