@@ -1,3 +1,5 @@
+from enum import IntEnum
+
 class MALPY_ENCODING(IntEnum):
     BINARY = 1
     SPLITBINARY = 2
