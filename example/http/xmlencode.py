@@ -11,5 +11,7 @@ m = mal.Subscription(["MySubscription", [[['Id1','Id2', None],True, True, True, 
 a = m.copy()
 b = mal.Subscription(a)
 e = encoding.XMLEncoder()
+
 em = e.encode(m)
-print(em.decode('utf8'))
+print(em.decode('utf-8'))
+print(e.decode(em))
