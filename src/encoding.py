@@ -28,6 +28,7 @@ class PickleEncoder(Encoder):
 
 MAL_XML_NAMESPACE_URL = "http://www.ccsds.org/schema/malxml/MAL"
 MAL_XML = "xmlns:malxml"
+MAL_XML_BODY = 'malxml:Body'
 XML_XSI_NAMESPACE_URL = "http://www.w3.org/2001/XMLSchema-instance"
 XML_NAMESPACE = "http://www.w3.org/2000/xmlns/"
 XMLNS_XSI = "xmlns:xsi"
@@ -68,7 +69,7 @@ class XMLEncoder(Encoder):
         dom = xml.dom.getDOMImplementation()
 
         # Create the document header and its namespaces
-        d = dom.createDocument('http://www.ccsds.org/schema/malxml/MAL', 'malxml:Body', None)
+        d = dom.createDocument(MAL_XML_NAMESPACE_URL, MAL_XML_BODY, None)
         rootElement = d.firstChild
 
         rootElement.setAttributeNS(XML_NAMESPACE, XMLNS_XSI, XML_XSI_NAMESPACE_URL);
@@ -86,26 +87,81 @@ class XMLEncoder(Encoder):
         # and newline characters. Those are not relevant for decoding.
         emptyNodePattern = re.compile(r"^[\n\t]*$")
 
+        MALClassList = dir(sys.modules['mal.maltypes'])
+        def str_to_class(classname):
+            return getattr(sys.modules['mal.maltypes'], classname)
 
-        def _decode_internal(node):
+        def _decode_internal(node, elementName=None):
+
             internal = []
-            for element in node.childNodes:
-                if element.nodeType is element.TEXT_NODE:
-                    if not re.match(emptyNodePattern, element.nodeValue):
-                        print("leaf TEXTE: {}".format(element.nodeValue))
-                        internal.append(element.nodeValue)
-                elif element.nodeType is element.ELEMENT_NODE:
-                    if element.hasAttribute('xsi:nil') and element.getAttribute('xsi:nil'):
-                        print("leaf ELSE: NULL")
-                        internal.append(None)
-                    else:
-                        internal.append(_decode_internal(element))
+
+            # Either the node name is a MAL class or the name of the attribute
+            # If it's a MAL class we recurse in its children and build the MALElement
+            if node.nodeName in MALClassList:
+                objectClass = str_to_class(node.nodeName)
+
+                # First case: it's Null and we reached a leaf
+                if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
+                    print(node.nodeName, elementName, "None")
+                    return objectClass(None, attribName=elementName)
+                # Other wise it's a MALElement to parse
                 else:
-                    raise RuntimeError(element)
-            return internal
+
+                    for element in node.childNodes:
+                        # If it's text node, we reached a leaf
+                        if element.nodeType is element.TEXT_NODE:
+                            # We only deal with non empty text
+                            if not re.match(emptyNodePattern, element.nodeValue):
+                                print(node.nodeName, "noName", element.nodeValue)
+                                castedValue = objectClass.value_type(element.nodeValue)
+                                internal.append(objectClass(castedValue))
+                        elif element.nodeType is element.ELEMENT_NODE:
+                            # If it's a NULL element, we reached a leave
+                            if element.hasAttribute('xsi:nil') and element.getAttribute('xsi:nil') == "true":
+                                print(element.nodeName, "noName", "None")
+                                internal.append(objectClass(None))
+                            # In all other cases, we recurse
+                            else:
+                                internal.append(_decode_internal(element))
+                        else:
+                            raise RuntimeError(element)
+                if len(internal) == 1:
+                    return internal[0]
+                elif len(internal) == 0:
+                    raise RuntimeError("len(internal) == 0", node)
+                else:
+                    print("more tan one")
+                    return internal
+            # If it's the name of the attribute, it either has MAL Element children
+            # or is Null
+            else:
+                if node.nodeType is node.ELEMENT_NODE:
+                    # Except for the first node, there should never be two consecutive name nodes
+                    if elementName and elementName != MAL_XML_BODY:
+                        raise RuntimeError("Below a name-tag should be a MAL Element")
+
+                    elementName = node.nodeName
+
+                    # First case: it's Null and we reached a leaf
+                    if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
+                        print(elementName, "None")
+                        return None
+                    # Other wise it's a MALElement to parse
+                    else:
+                        for element in node.childNodes:
+                            # do not deal with emtpy texts
+                            if not (element.nodeType is element.TEXT_NODE and re.match(emptyNodePattern, element.nodeValue)):
+                                print(element)
+                                internal.append(_decode_internal(element, elementName))
+                        if len(internal) == 1:
+                            return internal[0]
+                        elif len(internal) == 0:
+                            raise RuntimeError("internal list is empty")
+                        else:
+                            return internal
+
 
         d = xml.dom.minidom.parseString(message)
         rootElement = d.firstChild
-        value = _decode_internal(rootElement)
-        print(value)
-        return value
+
+        return _decode_internal(rootElement)
