@@ -40,26 +40,41 @@ class XMLEncoder(Encoder):
 
         def _encode_internal(element, parent):
             domdoc = parent.ownerDocument
+
+            # The node name is attribName if it exists, otherwise its type
+            # ex: <longElement> ?? </longElement> or <Identifier> ?? </Identifier>
             nodename = element.attribName or type(element).__name__
             subnode = parent.appendChild(domdoc.createElement(nodename))
+
+            # Deal with the Null type:
             if element.value is None:
+                # ex: <longElement xsi:nul="True" /> or <Identifier xsi:nul="True" />
+                # It's a leaf, we don't recurse deeper.
                 subnode.setAttribute('xsi:nil', 'true')
             # if it's a list, it means this is a composite or a list of thing
             elif type(element.value) is list:
+                # so we recurse over each item and append them below the objects
+                # ex: the ?? is defined with se same algorithm
                 for subelement in element.value:
                     _encode_internal(subelement, subnode)
-            # else it's an attribute
+            # else it's an attribute we add a subnode
             else:
+                # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
+                # It's a leaf, we don't recurse deeper.
                 attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
                 attributenode.appendChild(domdoc.createTextNode(str(element.value)))
 
+
         dom = xml.dom.getDOMImplementation()
+
+        # Create the document header and its namespaces
         d = dom.createDocument('http://www.ccsds.org/schema/malxml/MAL', 'malxml:Body', None)
         rootElement = d.firstChild
 
         rootElement.setAttributeNS(XML_NAMESPACE, XMLNS_XSI, XML_XSI_NAMESPACE_URL);
         rootElement.setAttributeNS(XML_NAMESPACE, MAL_XML, MAL_XML_NAMESPACE_URL);
 
+        # Recursively go through the object to encode it (a composite is a list of list)
         for element in message.value:
             _encode_internal(element, rootElement)
         encodedmessage = d.toprettyxml(encoding="UTF-8")
@@ -67,37 +82,9 @@ class XMLEncoder(Encoder):
 
 
     def decode(self, message):
-        emptyNodePattern = re.compile(r"^[\n\t].*$")
-        """"
-                    /**
-            * Logic to remove extra spaces, tabs, and line-breaks.
-            * 1. Find all extra text elements.
-            * 2. if it has no parent or parent is ROOT, remove
-            * 2.1. if the parent has more than 1 elements, remove
-            *
-            * @param document XML Document
-            * @throws XPathExpressionException rquired for XPaths
-            */
-            private static void emptyNodeRemoval(Document document) throws XPathExpressionException {
-                XPathFactory xpathFactory = XPathFactory.newInstance();
-                // XPath to find empty text nodes.
-                XPathExpression xpathExp = xpathFactory.newXPath().compile(
-                        "//text()[normalize-space(.) = '']");
-                NodeList emptyTextNodes = (NodeList)
-                        xpathExp.evaluate(document, XPathConstants.NODESET);
-
-                // Remove each empty text node from document.
-                for (int i = 0; i < emptyTextNodes.getLength(); i++) {
-                    Node emptyTextNode = emptyTextNodes.item(i);
-                    Node parentNode = emptyTextNode.getParentNode();
-
-                    if (!(!Objects.isNull(parentNode) && !parentNode.getNodeName().equals(Constants.ROOT_ELEMENT) &&
-                            parentNode.getChildNodes().getLength() == 1))  {
-                        emptyTextNode.getParentNode().removeChild(emptyTextNode);
-                    }
-                }
-            }
-        """
+        # If the XML document was indented, there will be text node made of tabs
+        # and newline characters. Those are not relevant for decoding.
+        emptyNodePattern = re.compile(r"^[\n\t]*$")
 
 
         def _decode_internal(node):
@@ -117,7 +104,6 @@ class XMLEncoder(Encoder):
                     raise RuntimeError(element)
             return internal
 
-        #clean_message = message.replace('\t', '').replace('\n', '')
         d = xml.dom.minidom.parseString(message)
         rootElement = d.firstChild
         value = _decode_internal(rootElement)
