@@ -209,7 +209,8 @@ class BlobList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Blob(v))
 
 
@@ -235,7 +236,8 @@ class BooleanList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Boolean(v))
 
 
@@ -261,7 +263,8 @@ class DurationList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Duration(v))
 
 
@@ -288,7 +291,8 @@ class FloatList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Float(v))
 
 
@@ -315,7 +319,8 @@ class DoubleList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Double(v))
 
 
@@ -341,7 +346,8 @@ class IdentifierList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Identifier(v))
 
 
@@ -372,7 +378,8 @@ class OctetList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Octet(v))
 
 
@@ -403,7 +410,8 @@ class UOctetList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(UOctet(v))
 
 
@@ -434,7 +442,8 @@ class ShortList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Short(v))
 
 
@@ -465,7 +474,8 @@ class UShortList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(UShort(v))
 
 
@@ -496,7 +506,8 @@ class IntegerList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Integer(v))
 
 
@@ -527,7 +538,8 @@ class UIntegerList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(UInteger(v))
 
 
@@ -558,7 +570,8 @@ class LongList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Long(v))
 
 
@@ -589,7 +602,8 @@ class ULongList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(ULong(v))
 
 
@@ -615,7 +629,8 @@ class StringList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(String(v))
 
 
@@ -641,7 +656,8 @@ class TimeList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Time(v))
 
 
@@ -667,7 +683,8 @@ class FineTimeList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(FineTime(v))
 
 
@@ -693,7 +710,8 @@ class URIList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(URI(v))
 
 
@@ -751,7 +769,8 @@ class SubscriptionList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Subscription(v))
 
 
@@ -845,7 +864,8 @@ class EntityRequestList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(EntityRequest(v))
 
 
@@ -921,7 +941,8 @@ class EntityKeyList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(EntityKey(v))
 
 
@@ -997,7 +1018,8 @@ class UpdateHeaderList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(UpdateHeader(v))
 
 
@@ -1055,7 +1077,8 @@ class IdBooleanPairList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(IdBooleanPair(v))
 
 
@@ -1113,7 +1136,8 @@ class PairList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(Pair(v))
 
 
@@ -1171,7 +1195,8 @@ class NamedValueList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(NamedValue(v))
 
 
@@ -1274,7 +1299,8 @@ class FileList(ElementList):
             else:
                 self._value = value.copy().value
         else:
-            for v in value:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
                  self._value.append(File(v))
 
 

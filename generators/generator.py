@@ -361,8 +361,9 @@ for area_node in list(root):
     "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
     "            else:\n" +
     "                self._value = value.copy().value\n" +
-    "        else:\n"
-    "            for v in value:\n" +
+    "        else:\n" +
+    "            listvalue = value if type(value) == list else [value]\n" +
+    "            for v in listvalue:\n" +
     "                 self._value.append({}(v))\n".format(d.name)
             )
 

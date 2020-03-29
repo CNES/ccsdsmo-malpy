@@ -13,9 +13,13 @@ a = m.copy()
 b = mal.Subscription(a)
 e = encoding.XMLEncoder()
 
-em = e.encode(m)
+em = e.encode([m])
 print(em.decode('utf-8'))
 
 decodedValue = e.decode(em)
 print(decodedValue)
-#print(mal.Subscription(decodedValue))
+m2 = mal.Subscription(decodedValue[0])
+
+print(e.encode([m2]).decode('utf-8'))
+
+
