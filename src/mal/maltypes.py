@@ -143,9 +143,12 @@ class ElementList(Element):
        return self._value
 
     def copy(self):
-        value = []
-        for v in self.value:
-            value.append(v.copy())
+        if self._isNull:
+            value = None
+        else:
+            value = []
+            for v in self.value:
+                value.append(v.copy())
         return self.__class__(value)
 
 
@@ -175,9 +178,12 @@ class Composite(Element):
     shortForm = None
 
     def copy(self):
-        value = []
-        for v in self.value:
-            value.append(v.copy())
+        if self._isNull:
+            value = None
+        else:
+            value = []
+            for v in self.value:
+                value.append(v.copy())
         return self.__class__(value, self._canBeNull)
 
 
@@ -195,10 +201,16 @@ class BlobList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Blob(v, canBeNull))
+                 self._value.append(Blob(v))
 
 
 class Boolean(Attribute):
@@ -215,10 +227,16 @@ class BooleanList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Boolean(v, canBeNull))
+                 self._value.append(Boolean(v))
 
 
 class Duration(Attribute):
@@ -235,10 +253,16 @@ class DurationList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Duration(v, canBeNull))
+                 self._value.append(Duration(v))
 
 
 class Float(Attribute):
@@ -256,10 +280,16 @@ class FloatList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Float(v, canBeNull))
+                 self._value.append(Float(v))
 
 
 class Double(Attribute):
@@ -277,10 +307,16 @@ class DoubleList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Double(v, canBeNull))
+                 self._value.append(Double(v))
 
 
 class Identifier(Attribute):
@@ -297,10 +333,16 @@ class IdentifierList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Identifier(v, canBeNull))
+                 self._value.append(Identifier(v))
 
 
 class Octet(Attribute):
@@ -322,10 +364,16 @@ class OctetList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Octet(v, canBeNull))
+                 self._value.append(Octet(v))
 
 
 class UOctet(Attribute):
@@ -347,10 +395,16 @@ class UOctetList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(UOctet(v, canBeNull))
+                 self._value.append(UOctet(v))
 
 
 class Short(Attribute):
@@ -372,10 +426,16 @@ class ShortList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Short(v, canBeNull))
+                 self._value.append(Short(v))
 
 
 class UShort(Attribute):
@@ -397,10 +457,16 @@ class UShortList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(UShort(v, canBeNull))
+                 self._value.append(UShort(v))
 
 
 class Integer(Attribute):
@@ -422,10 +488,16 @@ class IntegerList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Integer(v, canBeNull))
+                 self._value.append(Integer(v))
 
 
 class UInteger(Attribute):
@@ -447,10 +519,16 @@ class UIntegerList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(UInteger(v, canBeNull))
+                 self._value.append(UInteger(v))
 
 
 class Long(Attribute):
@@ -472,10 +550,16 @@ class LongList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Long(v, canBeNull))
+                 self._value.append(Long(v))
 
 
 class ULong(Attribute):
@@ -497,10 +581,16 @@ class ULongList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(ULong(v, canBeNull))
+                 self._value.append(ULong(v))
 
 
 class String(Attribute):
@@ -517,10 +607,16 @@ class StringList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(String(v, canBeNull))
+                 self._value.append(String(v))
 
 
 class Time(Attribute):
@@ -537,10 +633,16 @@ class TimeList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Time(v, canBeNull))
+                 self._value.append(Time(v))
 
 
 class FineTime(Attribute):
@@ -557,10 +659,16 @@ class FineTimeList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(FineTime(v, canBeNull))
+                 self._value.append(FineTime(v))
 
 
 class URI(Attribute):
@@ -577,10 +685,16 @@ class URIList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(URI(v, canBeNull))
+                 self._value.append(URI(v))
 
 
 class Subscription(Composite):
@@ -591,9 +705,15 @@ class Subscription(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*2
             self.subscriptionId = value[0]
@@ -623,10 +743,16 @@ class SubscriptionList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Subscription(v, canBeNull))
+                 self._value.append(Subscription(v))
 
 
 class EntityRequest(Composite):
@@ -637,9 +763,15 @@ class EntityRequest(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*6
             self.subDomain = value[0]
@@ -705,10 +837,16 @@ class EntityRequestList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(EntityRequest(v, canBeNull))
+                 self._value.append(EntityRequest(v))
 
 
 class EntityKey(Composite):
@@ -719,9 +857,15 @@ class EntityKey(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*4
             self.firstSubKey = value[0]
@@ -769,10 +913,16 @@ class EntityKeyList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(EntityKey(v, canBeNull))
+                 self._value.append(EntityKey(v))
 
 
 class UpdateHeader(Composite):
@@ -783,9 +933,15 @@ class UpdateHeader(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*4
             self.timestamp = value[0]
@@ -833,10 +989,16 @@ class UpdateHeaderList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(UpdateHeader(v, canBeNull))
+                 self._value.append(UpdateHeader(v))
 
 
 class IdBooleanPair(Composite):
@@ -847,9 +1009,15 @@ class IdBooleanPair(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*2
             self.id = value[0]
@@ -879,10 +1047,16 @@ class IdBooleanPairList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(IdBooleanPair(v, canBeNull))
+                 self._value.append(IdBooleanPair(v))
 
 
 class Pair(Composite):
@@ -893,9 +1067,15 @@ class Pair(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*2
             self.first = value[0]
@@ -925,10 +1105,16 @@ class PairList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(Pair(v, canBeNull))
+                 self._value.append(Pair(v))
 
 
 class NamedValue(Composite):
@@ -939,9 +1125,15 @@ class NamedValue(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*2
             self.name = value[0]
@@ -971,10 +1163,16 @@ class NamedValueList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(NamedValue(v, canBeNull))
+                 self._value.append(NamedValue(v))
 
 
 class File(Composite):
@@ -985,9 +1183,15 @@ class File(Composite):
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
-            self._isNone = True
+            self._isNull = True
         elif type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             self._value = [None]*7
             self.name = value[0]
@@ -1062,9 +1266,15 @@ class FileList(ElementList):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
-            self._value = value.copy().value
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
         else:
             for v in value:
-                 self._value.append(File(v, canBeNull))
+                 self._value.append(File(v))
 
 

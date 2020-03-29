@@ -353,11 +353,17 @@ for area_node in list(root):
     "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
     "        self._value = []\n" +
-    "        if type(value) == type(self):\n"
-    "            self._value = value.copy().value\n"
+    "        if type(value) == type(self):\n" +
+    "            if value.value is None:\n" +
+    "                if self._canBeNull:\n" +
+    "                    self._isNull = True\n" +
+    "                else: \n"
+    "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
+    "            else:\n" +
+    "                self._value = value.copy().value\n" +
     "        else:\n"
     "            for v in value:\n" +
-    "                 self._value.append({}(v, canBeNull))\n".format(d.name)
+    "                 self._value.append({}(v))\n".format(d.name)
             )
 
             f.write("\n")
@@ -410,10 +416,13 @@ for area_node in list(root):
     "    def value(self):\n" +
     "       return self._value\n" +
     "\n" +
-    "    def copy(self):\n"
-    "        value = []\n"
-    "        for v in self.value:\n"
-    "            value.append(v.copy())\n"
+    "    def copy(self):\n" +
+    "        if self._isNull:\n" +
+    "            value = None\n" +
+    "        else:\n" +
+    "            value = []\n"
+    "            for v in self.value:\n"
+    "                value.append(v.copy())\n"
     "        return self.__class__(value)\n"
         )
         f.write("\n")
@@ -438,9 +447,12 @@ for area_node in list(root):
 
         blockcomposite = [
     "    def copy(self):\n"
-    "        value = []\n"
-    "        for v in self.value:\n"
-    "            value.append(v.copy())\n"
+    "        if self._isNull:\n" +
+    "            value = None\n" +
+    "        else:\n" +
+    "            value = []\n"
+    "            for v in self.value:\n"
+    "                value.append(v.copy())\n"
     "        return self.__class__(value, self._canBeNull)\n"
         ]
 
@@ -481,9 +493,15 @@ for area_node in list(root):
     "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
     "        if value is None and self._canBeNull:\n" +
-    "            self._isNone = True\n" +
+    "            self._isNull = True\n" +
     "        elif type(value) == type(self):\n" +
-    "            self._value = value.copy().value\n" +
+    "            if value.value is None:\n" +
+    "                if self._canBeNull:\n" +
+    "                    self._isNull = True\n" +
+    "                else: \n"
+    "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
+    "            else:\n" +
+    "                self._value = value.copy().value\n" +
     "        else:\n" +
     "            self._value = [None]*{}\n".format(len(d.fields))
             )
