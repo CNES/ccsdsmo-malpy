@@ -6,7 +6,7 @@
 #####################################################
 
 from enum import IntEnum
-from abc import ABC
+from .. import maltypes as MAL
 
 name = "COM"
 number = 2
@@ -83,7 +83,7 @@ class ObjectType(MAL.Composite):
         self._value[3] = MAL.UShort(number, canBeNull=False, attribName='number')
 
 
-class ObjectTypeList(ElementList):
+class ObjectTypeList(MAL.ElementList):
     shortForm = -MALShortForm.OBJECTTYPE
 
     def __init__(self, value, canBeNull=True, attribName=None):
@@ -142,7 +142,7 @@ class ObjectKey(MAL.Composite):
         self._value[1] = MAL.Long(instId, canBeNull=False, attribName='instId')
 
 
-class ObjectKeyList(ElementList):
+class ObjectKeyList(MAL.ElementList):
     shortForm = -MALShortForm.OBJECTKEY
 
     def __init__(self, value, canBeNull=True, attribName=None):
@@ -201,7 +201,7 @@ class ObjectId(MAL.Composite):
         self._value[1] = ObjectKey(key, canBeNull=False, attribName='key')
 
 
-class ObjectIdList(ElementList):
+class ObjectIdList(MAL.ElementList):
     shortForm = -MALShortForm.OBJECTID
 
     def __init__(self, value, canBeNull=True, attribName=None):
@@ -260,7 +260,7 @@ class ObjectDetails(MAL.Composite):
         self._value[1] = ObjectId(source, canBeNull=True, attribName='source')
 
 
-class ObjectDetailsList(ElementList):
+class ObjectDetailsList(MAL.ElementList):
     shortForm = -MALShortForm.OBJECTDETAILS
 
     def __init__(self, value, canBeNull=True, attribName=None):
@@ -319,7 +319,7 @@ class InstanceBooleanPair(MAL.Composite):
         self._value[1] = MAL.Boolean(value, canBeNull=False, attribName='value')
 
 
-class InstanceBooleanPairList(ElementList):
+class InstanceBooleanPairList(MAL.ElementList):
     shortForm = -MALShortForm.INSTANCEBOOLEANPAIR
 
     def __init__(self, value, canBeNull=True, attribName=None):

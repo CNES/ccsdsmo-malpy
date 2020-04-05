@@ -4,14 +4,24 @@ import xml.etree.ElementTree as ET
 import yaml
 
 MO_XML = {
-    'mal': "../xml/CCSDS-MO-MAL.xml",
-    'com': "../xml/CCSDS-MO-COM.xml"
+    'MAL': "../xml/CCSDS-MO-MAL.xml",
+    'COM': "../xml/CCSDS-MO-COM.xml"
     }
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
 OUTFILE = {
-    'mal': "../src/mal/maltypes.py",
-    'com': "../src/mal/com.py"
+    'MAL': "../src/mal/maltypes.py",
+    'COM': "../src/mal/com.py"
     }
+IMPORTS = {
+    'MAL': [
+        'from enum import IntEnum',
+        'from abc import ABC'
+        ],
+    'COM': [
+        'from enum import IntEnum',
+        'from .. import maltypes as MAL'
+        ]
+        }
 PARAMFILE = 'parameters.yaml'
 
 class MALAreaXML(object):
@@ -237,11 +247,16 @@ class MALTypeModuleGenerator(object):
             error_dict[d.name] = d
         return error_dict
 
-    def write(self, content, write=False):
-        if write:
-            self.f.write(content)
+    def _element_parentclass(self, d):
+        if d.extends is None:
+            return 'ABC'
+        elif d.extends.area == self.area.name:
+            return d.extends.name
         else:
-            self.content += content
+            return d.extends.area + '.' + d.extends.name
+
+    def write(self, content):
+        self.content += content
 
     def write_module_header(self):
         self.write(
@@ -252,8 +267,7 @@ class MALTypeModuleGenerator(object):
     "# This file is generated. Do NOT edit it by hand.   #\n" +
     "#####################################################\n" +
     "\n" +
-    "from enum import IntEnum\n" +
-    "from abc import ABC\n" +
+    "{}\n".format("\n".join(IMPORTS[self.area.name])) +
     "\n" +
     "name = \"{}\"\n".format(self.area.name) +
     "number = {}\n".format(self.area.number) +
@@ -316,12 +330,7 @@ class MALTypeModuleGenerator(object):
         self.write("\n")
 
     def write_element_class(self, d, blocks=[]):
-        if d.extends is None:
-            parentclass = 'ABC'
-        elif d.extends.area == self.area.name:
-            parentclass = d.extends.name
-        else:
-            parentclass = d.extends.area + '.' + d.extends.name
+        parentclass = self._element_parentclass(d)
 
         self.write(
     "class {}({}):\n".format(d.name, parentclass) +
@@ -435,12 +444,7 @@ class MALTypeModuleGenerator(object):
         self.write_element_class(d, blockcomposite)
 
     def write_composite_class(self, d, blocks=[]):
-        if d.extends is None:
-            parentclass = 'ABC'
-        elif d.extends.area == self.area.name:
-            parentclass = d.extends.name
-        else:
-            parentclass = d.extends.area + '.' + d.extends.name
+        parentclass = self._element_parentclass(d)
 
         self.write(
     "class {}({}):\n".format(d.name, parentclass) +
@@ -506,8 +510,12 @@ class MALTypeModuleGenerator(object):
         self.write("\n")
 
     def write_elementlist_class(self, d):
+        if self.area.name == "MAL":
+            parentclass = "ElementList"
+        else:
+            parentclass = "MAL.ElementList"
         self.write(
-    "class {}({}):\n".format(d.name+"List", "ElementList") +
+    "class {}({}):\n".format(d.name+"List", parentclass) +
     "    shortForm = -{}.{}\n".format("MALShortForm", d.name.upper()) +
     "\n" +
     "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
@@ -588,7 +596,7 @@ class MALTypeModuleGenerator(object):
 
 
 if __name__ == "__main__":
-    for areaname in ['mal', 'com']:
+    for areaname in ['MAL', 'COM']:
         definitionfilepath = MO_XML[areaname]
         outfilepath = OUTFILE[areaname]
         generator = MALTypeModuleGenerator(definitionfilepath, outfilepath)
