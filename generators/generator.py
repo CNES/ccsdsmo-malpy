@@ -3,19 +3,40 @@
 import xml.etree.ElementTree as ET
 import yaml
 
-MAL_FILE = "../xml/CCSDS-MO-MAL.xml"
+MO_XML = {
+    'mal': "../xml/CCSDS-MO-MAL.xml",
+    'com': "../xml/CCSDS-MO-COM.xml"
+    }
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
-OUTFILE = "../src/mal/maltypes.py"
+OUTFILE = {
+    'mal': "../src/mal/maltypes.py",
+    'com': "../src/mal/com.py"
+    }
 PARAMFILE = 'parameters.yaml'
 
-class Area(object):
-    name = ""
-    number = 0
-    version = 0
-    comment = None
+class MALAreaXML(object):
+    __slots__ = ['name', 'number', 'version', 'comment']
+
+    def __init__(self, node=None):
+        self.name = None
+        self.number = None
+        self.version = None
+        self.comment = None
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        if node.tag != tag('area'):
+            raise RuntimeError("Expected an area")
+        self.name = node.attrib['name']
+        self.number = node.attrib['number']
+        self.version = node.attrib['version']
+        if 'comment' in node.attrib:
+            self.comment = node.attrib['comment']
 
 class Service(object):
     pass
+
 
 class MALElementXML(object):
     __slots__ = ['name', 'fundamental', 'shortFormPart', 'comment', 'extends']
@@ -66,6 +87,7 @@ class MALTypeXML(object):
         self.area = node.attrib['area']
         self.isList = ( node.attrib.get('list', 'false') == 'true' )
 
+
 class MALCompositeFieldXML(object):
     __slots__ = ['name', 'comment', 'canBeNull', 'maltype']
     datatype = "CompositeField"
@@ -85,6 +107,7 @@ class MALCompositeFieldXML(object):
         if len(list(node)) != 1:
             raise RuntimeError("In {}, mal:field has more than one subnode".format(self.name))
         self.maltype = MALTypeXML(list(node)[0])
+
 
 class MALCompositeXML(object):
     __slots__ = ['name', 'comment', 'shortFormPart', 'extends', 'fields']
@@ -113,6 +136,7 @@ class MALCompositeXML(object):
             else:
                 raise RuntimeError("Did not expect {} tag in Composite.".format(subnode.tag))
 
+
 class MALEnumerationItemXML(object):
     __slots__ = ['value', 'nvalue', 'comment']
     datatype = "EnumerationItem"
@@ -130,6 +154,7 @@ class MALEnumerationItemXML(object):
         self.value = node.attrib['value']
         self.nvalue = node.attrib['nvalue']
         self.comment = node.attrib.get('comment', None)
+
 
 class MALEnumerationXML(object):
     __slots__ = ['name', 'comment', 'shortFormPart', 'items']
@@ -171,79 +196,55 @@ def tag(name):
     return "{}{}".format('{'+MAL_NS+'}', name)
 
 
-def parse_datatype(node):
-    if node.tag == tag('fundamental') or node.tag == tag('attribute'):
-        return MALElementXML(node)
-    elif node.tag == tag('composite'):
-        return MALCompositeXML(node)
-    elif node.tag == tag('enumeration'):
-        return MALEnumerationXML(node)
-    else:
-        raise RuntimeError("Unexpected node tag : {}".format (node.tag))
 
-def parse_datatypes(node):
-    datatypes_dict = {}
-    for subnode in node:
-        d = parse_datatype(subnode)
-        dtype = d.datatype
-        if dtype not in datatypes_dict:
-            datatypes_dict[dtype] = dict()
-        datatypes_dict[dtype][d.name] = d
-    return datatypes_dict
+class MALTypeModuleGenerator(object):
+    def __init__(self, xml_def_filepath, destination_filepath):
+        self.xml_def_filepath = xml_def_filepath
+        self.destination_filepath = destination_filepath
+        self.content = ""
+        with open(PARAMFILE, 'r') as pf:
+            parameters = yaml.load(pf, Loader=yaml.SafeLoader)
+        self.typedict = parameters['typedict']
+        self.ctrldict = parameters['controldict']
 
-def parse_services(node):
-    pass
+    def _parse_datatype(self, node):
+        if node.tag == tag('fundamental') or node.tag == tag('attribute'):
+            return MALElementXML(node)
+        elif node.tag == tag('composite'):
+            return MALCompositeXML(node)
+        elif node.tag == tag('enumeration'):
+            return MALEnumerationXML(node)
+        else:
+            raise RuntimeError("Unexpected node tag : {}".format (node.tag))
 
-def parse_errors(node):
-    error_dict = {}
-    for subnode in node:
-        d = MALErrorXML(subnode)
-        error_dict[d.name] = d
-    return error_dict
+    def _parse_datatypes(self, node):
+        datatypes_dict = {}
+        for subnode in node:
+            d = self._parse_datatype(subnode)
+            dtype = d.datatype
+            if dtype not in datatypes_dict:
+                datatypes_dict[dtype] = dict()
+            datatypes_dict[dtype][d.name] = d
+        return datatypes_dict
 
-"""
-Root {
-    Area {
-        services x N {
-            DataTypes,}
-        dataTypes {
+    def _parse_service(self, node):
+        pass
 
-        },
-        errors {
-            error xN
-        }
-    }
-}
-"""
-root = ET.parse(MAL_FILE).getroot()
+    def _parse_errors(self, node):
+        error_dict = {}
+        for subnode in node:
+            d = MALErrorXML(subnode)
+            error_dict[d.name] = d
+        return error_dict
 
+    def write(self, content, write=False):
+        if write:
+            self.f.write(content)
+        else:
+            self.content += content
 
-for area_node in list(root):
-    if area_node.tag != tag('area'):
-        raise RuntimeError("Expected an area")
-    area = Area()
-    area.name = area_node.attrib['name']
-    area.number = area_node.attrib['number']
-    area.version = area_node.attrib['version']
-
-    if 'comment' in area_node.attrib:
-        area.comment = area_node.attrib['comment']
-
-    for area_subnode in list(area_node):
-        if area_subnode.tag == tag('dataTypes'):
-            data_types = parse_datatypes(area_subnode)
-        elif area_subnode.tag == tag('errors'):
-            error_dict = parse_errors(area_subnode)
-        elif area_subnode.tag == tag('service'):
-            parse_service(area_subnode)
-
-    with open(PARAMFILE, 'r') as pf:
-        parameters = yaml.load(pf, Loader=yaml.SafeLoader)
-    typedict = parameters['typedict']
-    ctrldict = parameters['controldict']
-
-    with open(OUTFILE, 'w') as f:
-        f.write(
+    def write_module_header(self):
+        self.write(
     "#! /bin/python\n" +
     "\n" +
     "#####################################################\n" +
@@ -254,141 +255,111 @@ for area_node in list(root):
     "from enum import IntEnum\n" +
     "from abc import ABC\n" +
     "\n" +
-    "name = \"{}\"\n".format(area.name) +
-    "number = {}\n".format(area.number) +
-    "version = {}\n".format(area.version) +
+    "name = \"{}\"\n".format(self.area.name) +
+    "number = {}\n".format(self.area.number) +
+    "version = {}\n".format(self.area.version) +
     "\n"
         )
 
-        f.write(
+    def write_area_shortforms(self, data_types):
+        self.write(
     "class MALShortForm(IntEnum):\n"
         )
         for dtype in data_types:
             for _, d in data_types[dtype].items():
                 if d.shortFormPart:
-                    f.write(
+                    self.write(
     "    {shortform} = {number}\n".format(shortform=d.name.upper(), number=d.shortFormPart)
                     )
 
-        f.write("\n")
+        self.write("\n")
 
-        def write_element_class(d, blocks=[]):
-            if d.extends is None:
-                parentclass = 'ABC'
-            elif d.extends.area == area.name:
-                parentclass = d.extends.name
-            else:
-                parentclass = d.extends.area + '.' + d.extends.name
+    def write_error_class(self, d):
+        self.write(
+    "class {}({}):\n".format("Errors", "IntEnum") +
+    "    \"\"\"All MAL errors.\"\"\"\n"
+        )
+        self.write("\n")
 
-            f.write(
+        for e in d:
+            self.write(4*' ' + "{} = {}".format(e.name, e.number))
+            if e.comment is not None:
+                self.write(' # '+e.comment)
+            self.write('\n')
+
+        self.write("\n")
+        self.write("\n")
+
+    def write_enumeration_class(self, d):
+        self.write(
+    "class {}({}):\n".format(d.name, "IntEnum") +
+    "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment)
+        )
+        self.write("\n")
+        if d.shortFormPart:
+            self.write(
+    "    shortForm = {}.{}\n".format("MALShortForm", d.name.upper())
+            )
+        else:
+            self.write(
+    "    shortform = None\n"
+                )
+        self.write('\n')
+        for item in d.items:
+            self.write(
+    "    {name} = {nvalue}".format(name=item.value, nvalue=item.nvalue)
+            )
+            if item.comment is not None:
+                self.write(' # '+item.comment)
+                self.write('\n')
+        self.write("\n")
+        self.write("\n")
+
+    def write_element_class(self, d, blocks=[]):
+        if d.extends is None:
+            parentclass = 'ABC'
+        elif d.extends.area == self.area.name:
+            parentclass = d.extends.name
+        else:
+            parentclass = d.extends.area + '.' + d.extends.name
+
+        self.write(
     "class {}({}):\n".format(d.name, parentclass) +
     "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment) +
     "\n"
-            )
-            if d.shortFormPart:
-                f.write(
+    )
+        if d.shortFormPart:
+            self.write(
     "    shortForm = {namespace}.{name}\n".format(namespace="MALShortForm",name=d.name.upper())
-                )
-            else:
-                f.write(
+            )
+        else:
+            self.write(
     "    shortForm = None\n".format(shortform=d.name.upper())
-                )
+            )
 
-            if d.name in typedict:
-                f.write(
-    "    value_type = {typename}\n".format(typename=typedict[d.name])
-                )
+        if d.name in self.typedict:
+            self.write(
+    "    value_type = {typename}\n".format(typename=self.typedict[d.name])
+            )
 
-            if d.name in ctrldict:
-                f.write("\n")
-                minvalue = ctrldict[d.name][0]
-                maxvalue = ctrldict[d.name][1]
-                f.write(
+        if d.name in self.ctrldict:
+            self.write("\n")
+            minvalue = self.ctrldict[d.name][0]
+            maxvalue = self.ctrldict[d.name][1]
+            self.write(
     "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
     "        if type(value) == int and ( value < {} or value > {} ):\n".format(minvalue, maxvalue) +
     "            raise ValueError(\"Authorized value is between {} and {}.\")\n".format(minvalue, maxvalue)
-                )
-
-            for b in blocks:
-                f.write("\n")
-                f.write(b)
-            f.write("\n")
-            f.write("\n")
-
-        def write_enumeration_class(d):
-            f.write(
-    "class {}({}):\n".format(d.name, "IntEnum") +
-    "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment)
-            )
-            f.write("\n")
-            if d.shortFormPart:
-                f.write(
-    "    shortForm = {}.{}\n".format("MALShortForm", d.name.upper())
-                )
-            else:
-                f.write(
-    "    shortform = None\n"
-                )
-            f.write('\n')
-            for item in d.items:
-                f.write(
-    "    {name} = {nvalue}".format(name=item.value, nvalue=item.nvalue)
-                )
-                if item.comment is not None:
-                    f.write(' # '+item.comment)
-                f.write('\n')
-
-            f.write("\n")
-            f.write("\n")
-
-        for dname, d in data_types['Enumeration'].items():
-            write_enumeration_class(d)
-
-        def write_elementlist_class(d):
-            f.write(
-    "class {}({}):\n".format(d.name+"List", "ElementList") +
-    "    shortForm = -{}.{}\n".format("MALShortForm", d.name.upper()) +
-    "\n" +
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
-    "        super().__init__(value, canBeNull, attribName)\n" +
-    "        self._value = []\n" +
-    "        if type(value) == type(self):\n" +
-    "            if value.value is None:\n" +
-    "                if self._canBeNull:\n" +
-    "                    self._isNull = True\n" +
-    "                else: \n"
-    "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
-    "            else:\n" +
-    "                self._value = value.copy().value\n" +
-    "        else:\n" +
-    "            listvalue = value if type(value) == list else [value]\n" +
-    "            for v in listvalue:\n" +
-    "                 self._value.append({}(v))\n".format(d.name)
             )
 
-            f.write("\n")
-            f.write("\n")
+        for b in blocks:
+            self.write("\n")
+            self.write(b)
+        self.write("\n")
+        self.write("\n")
 
-
-        def write_error_class(d):
-            f.write(
-    "class {}({}):\n".format("Errors", "IntEnum")+
-    "    \"\"\"All MAL errors.\"\"\"\n"
-            )
-            f.write("\n")
-
-            for e in d:
-                f.write(4*' ' + "{} = {}".format(e.name, e.number))
-                if e.comment is not None:
-                    f.write(' # '+e.comment)
-                f.write('\n')
-
-            f.write("\n")
-            f.write("\n")
-
-        write_error_class(error_dict.values())
-
+    def write_abstractelement_class(self, d):
         blockelement = [
     "    def __init__(self, value, canBeNull=True, attribName=None):\n"
     "        self._isNull = False\n"
@@ -404,9 +375,11 @@ for area_node in list(root):
     "        else:\n"
     "            return self._value\n"
         ]
-        write_element_class(data_types['Element']['Element'], blockelement)
+        self.write_element_class(d, blockelement)
 
-        f.write(
+
+    def write_abstractelementlist_class(self):
+        self.write(
     "class {}({}):\n".format("ElementList", "Element") +
     "    shortForm = None\n" +
     "\n" +
@@ -426,9 +399,10 @@ for area_node in list(root):
     "                value.append(v.copy())\n"
     "        return self.__class__(value)\n"
         )
-        f.write("\n")
-        f.write("\n")
+        self.write("\n")
+        self.write("\n")
 
+    def write_attribute_class(self, d):
         blockattribute = [
     "    def __init__(self, value, canBeNull=True, attribName=None):\n"
     "        super().__init__(value, canBeNull, attribName)\n"
@@ -444,8 +418,9 @@ for area_node in list(root):
     "    def copy(self):\n"
     "        return self.__class__(self.value, self._canBeNull)\n"
         ]
-        write_element_class(data_types['Element']['Attribute'], blockattribute)
+        self.write_element_class(d, blockattribute)
 
+    def write_abstractcomposite_class(self, d):
         blockcomposite = [
     "    def copy(self):\n"
     "        if self._isNull:\n" +
@@ -457,40 +432,32 @@ for area_node in list(root):
     "        return self.__class__(value, self._canBeNull)\n"
         ]
 
-        write_element_class(data_types['Element']['Composite'], blockcomposite)
+        self.write_element_class(d, blockcomposite)
 
-        for dname, d in data_types['Element'].items():
-            if dname == 'Element' or dname == 'Attribute' or dname == 'Composite':
-                continue
-            write_element_class(d)
-            write_elementlist_class(d)
+    def write_composite_class(self, d, blocks=[]):
+        if d.extends is None:
+            parentclass = 'ABC'
+        elif d.extends.area == self.area.name:
+            parentclass = d.extends.name
+        else:
+            parentclass = d.extends.area + '.' + d.extends.name
 
-
-        def write_composite_class(d, blocks=[]):
-            if d.extends is None:
-                parentclass = 'ABC'
-            elif d.extends.area == area.name:
-                parentclass = d.extends.name
-            else:
-                parentclass = d.extends.area + '.' + d.extends.name
-
-            f.write(
+        self.write(
     "class {}({}):\n".format(d.name, parentclass) +
     "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment)
-            )
-            f.write("\n")
-            if d.shortFormPart:
-                f.write(
+        )
+        self.write("\n")
+        if d.shortFormPart:
+            self.write(
     "    shortForm = {}.{}\n".format("MALShortForm", d.name.upper())
-                )
-            else:
-                f.write(
+            )
+        else:
+            self.write(
     "    shortForm = None\n"
-                )
+            )
 
-            f.write("\n")
-
-            f.write(
+        self.write("\n")
+        self.write(
     "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
     "        if value is None and self._canBeNull:\n" +
@@ -505,27 +472,27 @@ for area_node in list(root):
     "                self._value = value.copy().value\n" +
     "        else:\n" +
     "            self._value = [None]*{}\n".format(len(d.fields))
-            )
-            for i, field in enumerate(d.fields):
-                if field.maltype.area == area.name:
-                    fieldtype = field.maltype.name
-                else:
-                    fieldtype = field.maltype.area + "." + f.maltype.name
-                f.write(
+        )
+        for i, field in enumerate(d.fields):
+            if field.maltype.area == self.area.name:
+                fieldtype = field.maltype.name
+            else:
+                fieldtype = field.maltype.area + "." + field.maltype.name
+            self.write(
     "            self.{0} = value[{1}]\n".format(field.name, i)
-                )
+            )
 
-            for i, field in enumerate(d.fields):
-                if field.maltype.isList:
-                    typename = field.maltype.name + 'List'
-                else:
-                    typename = field.maltype.name
-                if field.maltype.area == area.name:
-                    fieldtype = typename
-                else:
-                    fieldtype = field.maltype.area + "." + typename
-                f.write("\n")
-                f.write(
+        for i, field in enumerate(d.fields):
+            if field.maltype.isList:
+                typename = field.maltype.name + 'List'
+            else:
+                typename = field.maltype.name
+            if field.maltype.area == self.area.name:
+                fieldtype = typename
+            else:
+                fieldtype = field.maltype.area + "." + typename
+            self.write("\n")
+            self.write(
     "    @property\n" +
     "    def {}(self):\n".format(field.name) +
     "        return self._value[{}]\n".format(i) +
@@ -533,12 +500,98 @@ for area_node in list(root):
     "    @{}.setter\n".format(field.name) +
     "    def {0}(self, {0}):\n".format(field.name) +
     "        self._value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(i, fieldtype, field.name, field.canBeNull)
+        )
+
+        self.write("\n")
+        self.write("\n")
+
+    def write_elementlist_class(self, d):
+        self.write(
+    "class {}({}):\n".format(d.name+"List", "ElementList") +
+    "    shortForm = -{}.{}\n".format("MALShortForm", d.name.upper()) +
+    "\n" +
+    "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
+    "        super().__init__(value, canBeNull, attribName)\n" +
+    "        self._value = []\n" +
+    "        if type(value) == type(self):\n" +
+    "            if value.value is None:\n" +
+    "                if self._canBeNull:\n" +
+    "                    self._isNull = True\n" +
+    "                else: \n"
+    "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
+    "            else:\n" +
+    "                self._value = value.copy().value\n" +
+    "        else:\n" +
+    "            listvalue = value if type(value) == list else [value]\n" +
+    "            for v in listvalue:\n" +
+    "                 self._value.append({}(v))\n".format(d.name)
                 )
 
-            f.write("\n")
-            f.write("\n")
+        self.write("\n")
+        self.write("\n")
 
-        for dname, d in data_types['Composite'].items():
-            write_composite_class(d)
-            write_elementlist_class(d)
+    def generate(self):
+        """
+        Root {
+            Area {
+                services x N {
+                    DataTypes,}
+                dataTypes {
 
+                },
+                errors {
+                    error xN
+                }
+            }
+        }
+        """
+        root = ET.parse(self.xml_def_filepath).getroot()
+        for area_node in list(root):
+            self.area = MALAreaXML(area_node)
+
+            for area_subnode in list(area_node):
+                if area_subnode.tag == tag('dataTypes'):
+                    data_types = self._parse_datatypes(area_subnode)
+                elif area_subnode.tag == tag('errors'):
+                    error_dict = self._parse_errors(area_subnode)
+                elif area_subnode.tag == tag('service'):
+                    services = self._parse_service(area_subnode)
+                    services
+            self.write_module_header()
+            self.write_area_shortforms(data_types)
+
+            if 'Enumeration' in data_types:
+                for dname, d in data_types['Enumeration'].items():
+                    self.write_enumeration_class(d)
+
+            self.write_error_class(error_dict.values())
+
+            if 'Element' in data_types:
+                if 'Element' in data_types['Element']:
+                    self.write_abstractelement_class(data_types['Element']['Element'])
+                    self.write_abstractelementlist_class()
+                if 'Attribute' in data_types['Element']:
+                    self.write_attribute_class(data_types['Element']['Attribute'])
+                if 'Composite' in data_types['Element']:
+                    self.write_abstractcomposite_class(data_types['Element']['Composite'])
+
+                for dname, d in data_types['Element'].items():
+                    if dname == 'Element' or dname == 'Attribute' or dname == 'Composite':
+                        continue
+                    self.write_element_class(d)
+                    self.write_elementlist_class(d)
+
+            if 'Composite' in data_types:
+                for dname, d in data_types['Composite'].items():
+                    self.write_composite_class(d)
+                    self.write_elementlist_class(d)
+
+
+if __name__ == "__main__":
+    for areaname in ['mal', 'com']:
+        definitionfilepath = MO_XML[areaname]
+        outfilepath = OUTFILE[areaname]
+        generator = MALTypeModuleGenerator(definitionfilepath, outfilepath)
+        generator.generate()
+        with open(outfilepath, 'w') as f:
+            f.write(generator.content)
