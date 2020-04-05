@@ -5,6 +5,8 @@
 # This file is generated. Do NOT edit it by hand.   #
 #####################################################
 
+"""None"""
+
 from enum import IntEnum
 from abc import ABC
 

@@ -273,6 +273,7 @@ class MALTypeModuleGenerator(object):
     "# This file is generated. Do NOT edit it by hand.   #\n" +
     "#####################################################\n" +
     "\n" +
+    "\"\"\"{}\"\"\"\n\n".format(self.area.comment) +
     "{}\n".format("\n".join(IMPORTS[self.area.name])) +
     "\n" +
     "name = \"{}\"\n".format(self.area.name) +
