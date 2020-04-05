@@ -5,12 +5,14 @@ import yaml
 
 MO_XML = {
     'MAL': "../xml/CCSDS-MO-MAL.xml",
-    'COM': "../xml/CCSDS-MO-COM.xml"
+    'COM': "../xml/CCSDS-MO-COM.xml",
+    'MC': "../xml/CCSDS-MO-MC.xml"
     }
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
 OUTFILE = {
     'MAL': "../src/mal/maltypes.py",
-    'COM': "../src/mal/com.py"
+    'COM': "../src/mal/com.py",
+    'MC': "../src/mal/mc.py"
     }
 IMPORTS = {
     'MAL': [
@@ -20,6 +22,11 @@ IMPORTS = {
     'COM': [
         'from enum import IntEnum',
         'from .. import maltypes as MAL'
+        ],
+    'MC': [
+        'from enum import IntEnum',
+        'from .. import maltypes as MAL',
+        'from .. import com as COM'
         ]
         }
 PARAMFILE = 'parameters.yaml'
@@ -204,7 +211,6 @@ class MALErrorXML(object):
 
 def tag(name):
     return "{}{}".format('{'+MAL_NS+'}', name)
-
 
 
 class MALTypeModuleGenerator(object):
@@ -597,7 +603,7 @@ class MALTypeModuleGenerator(object):
 
 
 if __name__ == "__main__":
-    for areaname in ['MAL', 'COM']:
+    for areaname in ['MAL', 'COM', 'MC']:
         definitionfilepath = MO_XML[areaname]
         outfilepath = OUTFILE[areaname]
         generator = MALTypeModuleGenerator(definitionfilepath, outfilepath)
