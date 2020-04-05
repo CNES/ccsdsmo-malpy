@@ -9,6 +9,7 @@ MO_XML = {
     'MC': "../xml/CCSDS-MO-MC.xml"
     }
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
+COM_NS = "http://www.ccsds.org/schema/COMSchema"
 OUTFILE = {
     'MAL': "../src/mal/maltypes.py",
     'COM': "../src/mal/com.py",
@@ -28,8 +29,67 @@ IMPORTS = {
         'from . import maltypes as MAL',
         'from . import com as COM'
         ]
-        }
+    }
 PARAMFILE = 'parameters.yaml'
+
+
+def maltag(name):
+    return "{}{}".format('{' + MAL_NS + '}', name)
+
+def comtag(name):
+    return "{}{}".format('{' + COM_NS + '}', name)
+
+OPERATIONTYPE = {
+    maltag('sendIP'): "SEND",
+    maltag('requestIP'): "REQUEST",
+    maltag('submitIP'): "SUBMIT",
+    maltag('invokeIP'): "INVOKE",
+    maltag('progressIP'): "PROGRESS",
+    maltag('pubsubIP'): "PUBSUB"
+    }
+
+MESSAGETYPE = {
+    maltag('send'): "SEND",
+    maltag('request'): "REQUEST",
+    maltag('response'): "RESPONSE",
+    maltag('submit'): "SUBMIT",
+    maltag('invoke'): "INVOKE",
+    maltag('acknowledgement'): "ACK",
+    maltag('progress'): "PROGRESS",
+    maltag('update'): "UPDATE",
+    maltag('publishNotify'): "PUBLISH"
+    }
+
+def _parse_datatype(node):
+    if node.tag == maltag('fundamental') or node.tag == maltag('attribute'):
+        return MALElementXML(node)
+    elif node.tag == maltag('composite'):
+        return MALCompositeXML(node)
+    elif node.tag == maltag('enumeration'):
+        return MALEnumerationXML(node)
+    else:
+        raise RuntimeError("Unexpected node tag : {}".format (node.tag))
+
+def _parse_datatypes(node):
+    datatypes_dict = {}
+    for subnode in node:
+        d = _parse_datatype(subnode)
+        dtype = d.datatype
+        if dtype not in datatypes_dict:
+            datatypes_dict[dtype] = dict()
+        datatypes_dict[dtype][d.name] = d
+    return datatypes_dict
+
+def _parse_service(node):
+    return MALServiceXML(node)
+
+def _parse_errors(node):
+    error_dict = {}
+    for subnode in node:
+        d = MALErrorXML(subnode)
+        error_dict[d.name] = d
+    return error_dict
+
 
 class MALAreaXML(object):
     __slots__ = ['name', 'number', 'version', 'comment']
@@ -43,7 +103,7 @@ class MALAreaXML(object):
             self.parse(node)
 
     def parse(self, node):
-        if node.tag != tag('area'):
+        if node.tag != maltag('area'):
             raise RuntimeError("Expected an area")
         self.name = node.attrib['name']
         self.number = node.attrib['number']
@@ -51,8 +111,133 @@ class MALAreaXML(object):
         if 'comment' in node.attrib:
             self.comment = node.attrib['comment']
 
-class Service(object):
-    pass
+
+class MALMessageFieldXML(object):
+    def __init__(self, node=None):
+        self.name = None
+        self.comment = None
+        self.fieldtype = None
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        self.name = node.attrib['name']
+        if 'comment' in node.attrib:
+            self.comment = node.attrib['comment']
+        if len(node) != 1:
+            raise RuntimeError("In {}, mal:field has more than one subnode".format(self.name))
+        typenode = list(node)[0]
+        self.fieldType = MALTypeXML(typenode)
+
+
+class MALMessageXML(object):
+    def __init__(self, node=None):
+        self.messageType = None
+        self.fields = []
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        self.messageType = MESSAGETYPE[node.tag]
+        for subnode in node:
+            self.fields.append(MALMessageFieldXML(subnode))
+
+class MALOperationXML(object):
+    def __init__(self, node=None):
+        self.name = None
+        self.number = None
+        self.comment = None
+        self.supportReplay = None
+        self.interactionType = None
+        self.messages = []
+        self.errors = []
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        self.name = node.attrib['name']
+        self.number = int(node.attrib['number'])
+        if 'comment' in node.attrib:
+            self.comment = node.attrib['comment']
+        self.supportReplay = node.attrib['supportInReplay'] == "true"
+        self.interactionType = OPERATIONTYPE[node.tag]
+        for subnode in node:
+            if subnode.tag == maltag('messages'):
+                for ssubnode in subnode:
+                    self.messages.append(MALMessageXML(ssubnode))
+            elif subnode.tag == maltag('errors'):
+                print("TODO: errors")
+                # errors
+                # - errorRef:
+                #     type
+                #     comment
+                #     extrainfo:
+                #       comment
+                #       type
+                # - errorRef
+                #self.errors.append( ???(subnode))
+            else:
+                raise RuntimeError("Did not expect a {} tag in a MALOperation".format(subnode.tag))
+
+
+class MALServiceDocumentationXML(object):
+    def __init__(self, node=None):
+        self.name = None
+        self.order = None
+        self.text = None
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        self.name = node.attrib['name']
+        self.order = int(node.attrib['order'])
+        self.text = node.text
+
+
+class MALCapabilitySetXML(object):
+    def __init__(self, node=None):
+        self.number = None
+        self.operations = []
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        self.number = node.attrib['number']
+        for subnode in node:
+            self.operations.append(MALOperationXML(subnode))
+
+
+class MALServiceXML(object):
+    __slots__ = ['name', 'number', 'comment', 'documentation', 'capabilitySets', 'features', 'datatypes']
+    def __init__(self, node=None):
+        self.name = None
+        self.number = None
+        self.comment = None
+        self.documentation = []
+        self.capabilitySets = []
+        self.features = None
+        self.datatypes = []
+        if node is not None:
+            self.parse(node)
+
+    def parse(self, node):
+        self.name = node.attrib['name']
+        self.number = node.attrib['number']
+        if 'comment' in node.attrib:
+            self.comment = node.attrib['comment']
+        for subnode in node:
+            if subnode.tag == maltag('documentation'):
+                self.documentation.append(MALServiceDocumentationXML(subnode))
+            elif subnode.tag == maltag('capabilitySet'):
+                self.capabilitySets.append(MALCapabilitySetXML(subnode))
+            elif subnode.tag == comtag('features'):
+                # We don't need features for implementation
+                continue
+            elif subnode.tag == maltag('dataTypes'):
+                self.datatypes = _parse_datatypes(subnode)
+            else:
+                raise NotImplementedError("Node type {} was not implemented".format(subnode.tag))
+
 
 
 class MALElementXML(object):
@@ -70,38 +255,44 @@ class MALElementXML(object):
 
     def parse(self, node):
         self.name = node.attrib['name']
-        self.fundamental = ( node.tag == tag('fundamental') )
+        self.fundamental = ( node.tag == maltag('fundamental') )
         self.shortFormPart = node.attrib.get('shortFormPart', None)
         self.comment = node.attrib.get('comment', None)
-        if node.tag == tag('attribute'):
+        if node.tag == maltag('attribute'):
             self.extends = MALTypeXML()
             self.extends.area = 'MAL'
             self.extends.name = 'Attribute'
             self.extends.isList = False
         elif len(node) > 0:
             extends_node = list(node)[0]
-            if extends_node.tag == tag('extends'):
+            if extends_node.tag == maltag('extends'):
                 if len(extends_node) != 1:
                     raise RuntimeError("In {}, mal:extends has more than one subnode".format(self.name))
                 self.extends = MALTypeXML(list(extends_node)[0])
+            else:
+                raise NotImplementedError("Node type {} was not implemented".format(extends_node.tag))
+
         else:
             self.extends = None
 
 
 class MALTypeXML(object):
-    __slots__ = ['name', 'area', 'isList']
+    __slots__ = ['name', 'area', 'isList', 'service']
     datatype = "Type"
 
     def __init__(self, node=None):
         self.name = None
         self.area = None
         self.isList = None
+        self.service = None
         if node is not None:
             self.parse(node)
 
     def parse(self, node):
         self.name = node.attrib['name']
         self.area = node.attrib['area']
+        if 'service' in node.attrib:
+            self.service = node.attrib['service']
         self.isList = ( node.attrib.get('list', 'false') == 'true' )
 
 
@@ -144,11 +335,11 @@ class MALCompositeXML(object):
         self.shortFormPart = node.attrib.get('shortFormPart', None)
         self.comment = node.attrib.get('comment', None)
         for subnode in node:
-            if subnode.tag == tag('extends'):
+            if subnode.tag == maltag('extends'):
                 if len(list(subnode)) != 1:
                     raise RuntimeError("In {}, mal:extends has more than one subnode".format(self.name))
                 self.extends = MALTypeXML(list(subnode)[0])
-            elif subnode.tag == tag("field"):
+            elif subnode.tag == maltag("field"):
                 self.fields.append(MALCompositeFieldXML(subnode))
             else:
                 raise RuntimeError("Did not expect {} tag in Composite.".format(subnode.tag))
@@ -166,7 +357,7 @@ class MALEnumerationItemXML(object):
             self.parse(node)
 
     def parse(self, node):
-        if node.tag != tag('item'):
+        if node.tag != maltag('item'):
             raise RuntimeError("Expected 'item', got {}".format(node.tag))
         self.value = node.attrib['value']
         self.nvalue = node.attrib['nvalue']
@@ -209,9 +400,6 @@ class MALErrorXML(object):
         self.number = node.attrib['number']
         self.comment = node.attrib.get('comment', None)
 
-def tag(name):
-    return "{}{}".format('{'+MAL_NS+'}', name)
-
 
 class MALTypeModuleGenerator(object):
     def __init__(self, xml_def_filepath, destination_filepath):
@@ -222,36 +410,6 @@ class MALTypeModuleGenerator(object):
             parameters = yaml.load(pf, Loader=yaml.SafeLoader)
         self.typedict = parameters['typedict']
         self.ctrldict = parameters['controldict']
-
-    def _parse_datatype(self, node):
-        if node.tag == tag('fundamental') or node.tag == tag('attribute'):
-            return MALElementXML(node)
-        elif node.tag == tag('composite'):
-            return MALCompositeXML(node)
-        elif node.tag == tag('enumeration'):
-            return MALEnumerationXML(node)
-        else:
-            raise RuntimeError("Unexpected node tag : {}".format (node.tag))
-
-    def _parse_datatypes(self, node):
-        datatypes_dict = {}
-        for subnode in node:
-            d = self._parse_datatype(subnode)
-            dtype = d.datatype
-            if dtype not in datatypes_dict:
-                datatypes_dict[dtype] = dict()
-            datatypes_dict[dtype][d.name] = d
-        return datatypes_dict
-
-    def _parse_service(self, node):
-        pass
-
-    def _parse_errors(self, node):
-        error_dict = {}
-        for subnode in node:
-            d = MALErrorXML(subnode)
-            error_dict[d.name] = d
-        return error_dict
 
     def _element_parentclass(self, d):
         if d.extends is None:
@@ -451,6 +609,7 @@ class MALTypeModuleGenerator(object):
 
         self.write_element_class(d, blockcomposite)
 
+
     def write_composite_class(self, d, blocks=[]):
         parentclass = self._element_parentclass(d)
 
@@ -565,14 +724,19 @@ class MALTypeModuleGenerator(object):
         for area_node in list(root):
             self.area = MALAreaXML(area_node)
 
+            services = []
             for area_subnode in list(area_node):
-                if area_subnode.tag == tag('dataTypes'):
-                    data_types = self._parse_datatypes(area_subnode)
-                elif area_subnode.tag == tag('errors'):
-                    error_dict = self._parse_errors(area_subnode)
-                elif area_subnode.tag == tag('service'):
-                    services = self._parse_service(area_subnode)
-                    services
+                if area_subnode.tag == maltag('dataTypes'):
+                    data_types = _parse_datatypes(area_subnode)
+                elif area_subnode.tag == maltag('errors'):
+                    error_dict = _parse_errors(area_subnode)
+                elif area_subnode.tag == maltag('service'):
+                    services.append(_parse_service(area_subnode))
+                elif area_subnode.tag == maltag('documentation'):
+                    pass
+                else:
+                    print(area_subnode.tag)
+
             self.write_module_header()
             self.write_area_shortforms(data_types)
 
@@ -601,6 +765,18 @@ class MALTypeModuleGenerator(object):
                 for dname, d in data_types['Composite'].items():
                     self.write_composite_class(d)
                     self.write_elementlist_class(d)
+
+            for service in services:
+                print(service.name)
+                for capabilitySet in service.capabilitySets:
+                    print('.', capabilitySet.number)
+                    for operation in capabilitySet.operations:
+                        print('..', operation.name)
+                        for message in operation.messages:
+                            print('..', message.fields)
+
+                for datatypes in service.datatypes:
+                    print(datatypes)
 
 
 if __name__ == "__main__":
