@@ -19,6 +19,7 @@ class MALShortForm(IntEnum):
     OBJECTDETAILS = 4
     INSTANCEBOOLEANPAIR = 5
 
+
 class Errors(IntEnum):
     """All MAL errors."""
 

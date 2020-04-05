@@ -287,6 +287,7 @@ class MALTypeModuleGenerator(object):
                     )
 
         self.write("\n")
+        self.write("\n")
 
     def write_error_class(self, d):
         self.write(

@@ -44,6 +44,7 @@ class MALShortForm(IntEnum):
     NAMEDVALUE = 29
     FILE = 30
 
+
 class InteractionType(IntEnum):
     """InteractionType is an enumeration holding the possible interaction pattern types."""
 
