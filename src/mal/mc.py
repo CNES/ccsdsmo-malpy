@@ -11,8 +11,8 @@ To aid comprehension, several tables are included for each service and operation
 All service specifications in this document are part of the MC area, which has a short form number of '4'."""
 
 from enum import IntEnum
-from .. import maltypes as MAL
-from .. import com as COM
+from . import maltypes as MAL
+from . import com as COM
 
 name = "MC"
 number = 4

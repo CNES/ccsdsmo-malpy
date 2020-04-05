@@ -21,12 +21,12 @@ IMPORTS = {
         ],
     'COM': [
         'from enum import IntEnum',
-        'from .. import maltypes as MAL'
+        'from . import maltypes as MAL'
         ],
     'MC': [
         'from enum import IntEnum',
-        'from .. import maltypes as MAL',
-        'from .. import com as COM'
+        'from . import maltypes as MAL',
+        'from . import com as COM'
         ]
         }
 PARAMFILE = 'parameters.yaml'
