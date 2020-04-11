@@ -90,29 +90,6 @@ class UpdateType(IntEnum):
     DELETION = 4 # Update is notification of the removal of the item.
 
 
-class Errors(IntEnum):
-    """All MAL errors."""
-
-    DELIVERY_FAILED = 65536 # Confirmed communication error.
-    DELIVERY_TIMEDOUT = 65537 # Unconfirmed communication error.
-    DELIVERY_DELAYED = 65538 # Message queued somewhere awaiting contact.
-    DESTINATION_UNKNOWN = 65539 # Destination cannot be contacted.
-    DESTINATION_TRANSIENT = 65540 # Destination middleware reports destination application does not exist.
-    DESTINATION_LOST = 65541 # Destination lost halfway through conversation.
-    AUTHENTICATION_FAIL = 65542 # A failure to authenticate the message correctly.
-    AUTHORISATION_FAIL = 65543 # A failure in the MAL to authorise the message.
-    ENCRYPTION_FAIL = 65544 # A failure in the MAL to encrypt/decrypt the message.
-    UNSUPPORTED_AREA = 65545 # The destination does not support the service area.
-    UNSUPPORTED_OPERATION = 65546 # The destination does not support the operation.
-    UNSUPPORTED_VERSION = 65547 # The destination does not support the service version.
-    BAD_ENCODING = 65548 # The destination was unable to decode the message.
-    INTERNAL = 65549 # An internal error has occurred.
-    UNKNOWN = 65550 # Operation specific.
-    INCORRECT_STATE = 65551 # The destination was not in the correct state for the received message.
-    TOO_MANY = 65552 # Maximum number of subscriptions or providers of a broker has been exceeded.
-    SHUTDOWN = 65553 # The component is being shutdown.
-
-
 class Element(ABC):
     """Element is the base type of all data constructs. All types that make up the MAL data model are derived from it."""
 
@@ -1303,3 +1280,26 @@ class FileList(ElementList):
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
                  self._value.append(File(v))
+
+
+class Errors(IntEnum):
+    """All MAL errors."""
+
+    DELIVERY_FAILED = 65536 # Confirmed communication error.
+    DELIVERY_TIMEDOUT = 65537 # Unconfirmed communication error.
+    DELIVERY_DELAYED = 65538 # Message queued somewhere awaiting contact.
+    DESTINATION_UNKNOWN = 65539 # Destination cannot be contacted.
+    DESTINATION_TRANSIENT = 65540 # Destination middleware reports destination application does not exist.
+    DESTINATION_LOST = 65541 # Destination lost halfway through conversation.
+    AUTHENTICATION_FAIL = 65542 # A failure to authenticate the message correctly.
+    AUTHORISATION_FAIL = 65543 # A failure in the MAL to authorise the message.
+    ENCRYPTION_FAIL = 65544 # A failure in the MAL to encrypt/decrypt the message.
+    UNSUPPORTED_AREA = 65545 # The destination does not support the service area.
+    UNSUPPORTED_OPERATION = 65546 # The destination does not support the operation.
+    UNSUPPORTED_VERSION = 65547 # The destination does not support the service version.
+    BAD_ENCODING = 65548 # The destination was unable to decode the message.
+    INTERNAL = 65549 # An internal error has occurred.
+    UNKNOWN = 65550 # Operation specific.
+    INCORRECT_STATE = 65551 # The destination was not in the correct state for the received message.
+    TOO_MANY = 65552 # Maximum number of subscriptions or providers of a broker has been exceeded.
+    SHUTDOWN = 65553 # The component is being shutdown.

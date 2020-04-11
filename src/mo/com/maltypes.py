@@ -20,13 +20,6 @@ class MALShortForm(IntEnum):
     INSTANCEBOOLEANPAIR = 5
 
 
-class Errors(IntEnum):
-    """All MAL errors."""
-
-    INVALID = 70000 # Operation specific
-    DUPLICATE = 70001 # Operation specific
-
-
 class ObjectType(mal.Composite):
     """The ObjectType structure uniquely identifies the type of an object. It is the combination of the area number, service number, area version, and service object type number. The combined parts are able to fit inside a MAL::Long (for implementations that prefer to index on a single numeric field rather than a structure)."""
 
@@ -338,3 +331,10 @@ class InstanceBooleanPairList(mal.ElementList):
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
                  self._value.append(InstanceBooleanPair(v))
+
+
+class Errors(IntEnum):
+    """All MAL errors."""
+
+    INVALID = 70000 # Operation specific
+    DUPLICATE = 70001 # Operation specific

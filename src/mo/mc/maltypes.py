@@ -37,13 +37,6 @@ class Severity(IntEnum):
     CRITICAL = 5 # Indicates behaviour with mission threatening consequences. Requires operator attention.
 
 
-class Errors(IntEnum):
-    """All MAL errors."""
-
-    READONLY = 70020 # Operation specific
-    REFERENCED = 70021 # Operation specific
-
-
 class ArgumentDefinitionDetails(mal.Composite):
     """The ArgumentDefinitionDetails structure holds the details of an argument definition with a set of associated attributes, such as conversion used. The conditionalConversions define the conditions where a referenced conversion is applied. Only the first TRUE conversion should be applied."""
 
@@ -391,3 +384,10 @@ class ObjectInstancePairList(mal.ElementList):
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
                  self._value.append(ObjectInstancePair(v))
+
+
+class Errors(IntEnum):
+    """All MAL errors."""
+
+    READONLY = 70020 # Operation specific
+    REFERENCED = 70021 # Operation specific
