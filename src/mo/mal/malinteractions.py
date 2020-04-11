@@ -1,7 +1,4 @@
 import time
-
-from mal.maltypes import *
-
 from enum import IntEnum
 
 class MAL_IP_STAGES(IntEnum):
