@@ -706,7 +706,7 @@ class Subscription(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -765,7 +765,7 @@ class EntityRequest(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -860,7 +860,7 @@ class EntityKey(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -937,7 +937,7 @@ class UpdateHeader(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1014,7 +1014,7 @@ class IdBooleanPair(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1073,7 +1073,7 @@ class Pair(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1132,7 +1132,7 @@ class NamedValue(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1191,7 +1191,7 @@ class File(Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

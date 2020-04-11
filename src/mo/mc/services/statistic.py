@@ -66,12 +66,474 @@ class UpdateParameterEvaluation(mal.RequestProviderHandler):
 class RemoveParameterEvaluation(mal.SubmitProviderHandler):
     pass
 
-# Composite
-## StatisticFunctionDetails
-## StatisticLinkDetails
-## StatisticValue
-## StatisticCreationRequest
-## StatisticLinkSummary
-## StatisticEvaluationReport
+class MALShortForm(IntEnum):
+    STATISTICFUNCTIONDETAILS = 1
+    STATISTICLINKDETAILS = 2
+    STATISTICVALUE = 3
+    STATISTICCREATIONREQUEST = 4
+    STATISTICLINKSUMMARY = 5
+    STATISTICEVALUATIONREPORT = 6
+
+
+class StatisticFunctionDetails(mal.Composite):
+    """The StatisticFunctionDetails structure holds the details of the function."""
+
+    shortForm = MALShortForm.STATISTICFUNCTIONDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*2
+            self.name = value[0]
+            self.description = value[1]
+
+    @property
+    def name(self):
+        return self._value[0]
+
+    @name.setter
+    def name(self, name):
+        self._value[0] = mal.Identifier(name, canBeNull=False, attribName='name')
+
+    @property
+    def description(self):
+        return self._value[1]
+
+    @description.setter
+    def description(self, description):
+        self._value[1] = mal.String(description, canBeNull=False, attribName='description')
+
+
+class StatisticFunctionDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.STATISTICFUNCTIONDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(StatisticFunctionDetails(v))
+
+
+class StatisticLinkDetails(mal.Composite):
+    """The StatisticLinkDetails structure holds the sampling, reporting, and collection intervals for one parameter statistic function link."""
+
+    shortForm = MALShortForm.STATISTICLINKDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*6
+            self.samplingInterval = value[0]
+            self.reportingInterval = value[1]
+            self.collectionInterval = value[2]
+            self.resetEveryCollection = value[3]
+            self.reportingEnabled = value[4]
+            self.useConverted = value[5]
+
+    @property
+    def samplingInterval(self):
+        return self._value[0]
+
+    @samplingInterval.setter
+    def samplingInterval(self, samplingInterval):
+        self._value[0] = mal.Duration(samplingInterval, canBeNull=False, attribName='samplingInterval')
+
+    @property
+    def reportingInterval(self):
+        return self._value[1]
+
+    @reportingInterval.setter
+    def reportingInterval(self, reportingInterval):
+        self._value[1] = mal.Duration(reportingInterval, canBeNull=False, attribName='reportingInterval')
+
+    @property
+    def collectionInterval(self):
+        return self._value[2]
+
+    @collectionInterval.setter
+    def collectionInterval(self, collectionInterval):
+        self._value[2] = mal.Duration(collectionInterval, canBeNull=False, attribName='collectionInterval')
+
+    @property
+    def resetEveryCollection(self):
+        return self._value[3]
+
+    @resetEveryCollection.setter
+    def resetEveryCollection(self, resetEveryCollection):
+        self._value[3] = mal.Boolean(resetEveryCollection, canBeNull=False, attribName='resetEveryCollection')
+
+    @property
+    def reportingEnabled(self):
+        return self._value[4]
+
+    @reportingEnabled.setter
+    def reportingEnabled(self, reportingEnabled):
+        self._value[4] = mal.Boolean(reportingEnabled, canBeNull=False, attribName='reportingEnabled')
+
+    @property
+    def useConverted(self):
+        return self._value[5]
+
+    @useConverted.setter
+    def useConverted(self, useConverted):
+        self._value[5] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+
+
+class StatisticLinkDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.STATISTICLINKDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(StatisticLinkDetails(v))
+
+
+class StatisticValue(mal.Composite):
+    """The StatisticValue structure holds the statistical result for a parameter."""
+
+    shortForm = MALShortForm.STATISTICVALUE
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*6
+            self.paramDefInstId = value[0]
+            self.startTime = value[1]
+            self.endTime = value[2]
+            self.valueTime = value[3]
+            self.value = value[4]
+            self.sampleCount = value[5]
+
+    @property
+    def paramDefInstId(self):
+        return self._value[0]
+
+    @paramDefInstId.setter
+    def paramDefInstId(self, paramDefInstId):
+        self._value[0] = mal.Long(paramDefInstId, canBeNull=False, attribName='paramDefInstId')
+
+    @property
+    def startTime(self):
+        return self._value[1]
+
+    @startTime.setter
+    def startTime(self, startTime):
+        self._value[1] = mal.Time(startTime, canBeNull=True, attribName='startTime')
+
+    @property
+    def endTime(self):
+        return self._value[2]
+
+    @endTime.setter
+    def endTime(self, endTime):
+        self._value[2] = mal.Time(endTime, canBeNull=True, attribName='endTime')
+
+    @property
+    def valueTime(self):
+        return self._value[3]
+
+    @valueTime.setter
+    def valueTime(self, valueTime):
+        self._value[3] = mal.Time(valueTime, canBeNull=True, attribName='valueTime')
+
+    @property
+    def value(self):
+        return self._value[4]
+
+    @value.setter
+    def value(self, value):
+        self._value[4] = mal.Attribute(value, canBeNull=True, attribName='value')
+
+    @property
+    def sampleCount(self):
+        return self._value[5]
+
+    @sampleCount.setter
+    def sampleCount(self, sampleCount):
+        self._value[5] = mal.UInteger(sampleCount, canBeNull=False, attribName='sampleCount')
+
+
+class StatisticValueList(mal.ElementList):
+    shortForm = -MALShortForm.STATISTICVALUE
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(StatisticValue(v))
+
+
+class StatisticCreationRequest(mal.Composite):
+    """The StatisticCreationRequest structure holds the link details for a specific parameter and function association."""
+
+    shortForm = MALShortForm.STATISTICCREATIONREQUEST
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*3
+            self.statFuncInstId = value[0]
+            self.parameterId = value[1]
+            self.linkDetails = value[2]
+
+    @property
+    def statFuncInstId(self):
+        return self._value[0]
+
+    @statFuncInstId.setter
+    def statFuncInstId(self, statFuncInstId):
+        self._value[0] = mal.Long(statFuncInstId, canBeNull=False, attribName='statFuncInstId')
+
+    @property
+    def parameterId(self):
+        return self._value[1]
+
+    @parameterId.setter
+    def parameterId(self, parameterId):
+        self._value[1] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+
+    @property
+    def linkDetails(self):
+        return self._value[2]
+
+    @linkDetails.setter
+    def linkDetails(self, linkDetails):
+        self._value[2] = StatisticLinkDetails(linkDetails, canBeNull=False, attribName='linkDetails')
+
+
+class StatisticCreationRequestList(mal.ElementList):
+    shortForm = -MALShortForm.STATISTICCREATIONREQUEST
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(StatisticCreationRequest(v))
+
+
+class StatisticLinkSummary(mal.Composite):
+    """The StatisticLinkSummary structure holds the ids of a specific statistic link and the function and parameter it links to."""
+
+    shortForm = MALShortForm.STATISTICLINKSUMMARY
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*5
+            self.funcId = value[0]
+            self.linkId = value[1]
+            self.linkDefId = value[2]
+            self.reportingEnabled = value[3]
+            self.parameterId = value[4]
+
+    @property
+    def funcId(self):
+        return self._value[0]
+
+    @funcId.setter
+    def funcId(self, funcId):
+        self._value[0] = mal.Long(funcId, canBeNull=False, attribName='funcId')
+
+    @property
+    def linkId(self):
+        return self._value[1]
+
+    @linkId.setter
+    def linkId(self, linkId):
+        self._value[1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+
+    @property
+    def linkDefId(self):
+        return self._value[2]
+
+    @linkDefId.setter
+    def linkDefId(self, linkDefId):
+        self._value[2] = mal.Long(linkDefId, canBeNull=False, attribName='linkDefId')
+
+    @property
+    def reportingEnabled(self):
+        return self._value[3]
+
+    @reportingEnabled.setter
+    def reportingEnabled(self, reportingEnabled):
+        self._value[3] = mal.Boolean(reportingEnabled, canBeNull=False, attribName='reportingEnabled')
+
+    @property
+    def parameterId(self):
+        return self._value[4]
+
+    @parameterId.setter
+    def parameterId(self, parameterId):
+        self._value[4] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+
+
+class StatisticLinkSummaryList(mal.ElementList):
+    shortForm = -MALShortForm.STATISTICLINKSUMMARY
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(StatisticLinkSummary(v))
+
+
+class StatisticEvaluationReport(mal.Composite):
+    """The StatisticEvaluationReport structure holds the set of statistical results."""
+
+    shortForm = MALShortForm.STATISTICEVALUATIONREPORT
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*2
+            self.linkId = value[0]
+            self.value = value[1]
+
+    @property
+    def linkId(self):
+        return self._value[0]
+
+    @linkId.setter
+    def linkId(self, linkId):
+        self._value[0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+
+    @property
+    def value(self):
+        return self._value[1]
+
+    @value.setter
+    def value(self, value):
+        self._value[1] = StatisticValue(value, canBeNull=False, attribName='value')
+
+
+class StatisticEvaluationReportList(mal.ElementList):
+    shortForm = -MALShortForm.STATISTICEVALUATIONREPORT
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(StatisticEvaluationReport(v))
 
 

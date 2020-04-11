@@ -24,5 +24,3 @@ number = 1
 class MonitorEvent(mal.PubSubProviderHandler):
     pass
 
-
-

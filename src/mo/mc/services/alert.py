@@ -34,9 +34,204 @@ class UpdateDefinition(mal.RequestProviderHandler):
 class RemoveAlert(mal.SubmitProviderHandler):
     pass
 
-# Composite
-## AlertDefinitionDetails
-## AlertEventDetails
-## AlertCreationRequest
+class MALShortForm(IntEnum):
+    ALERTDEFINITIONDETAILS = 1
+    ALERTEVENTDETAILS = 2
+    ALERTCREATIONREQUEST = 3
+
+
+class AlertDefinitionDetails(mal.Composite):
+    """The AlertDefinitionDetails provides the definition of an alert including any argument definitions."""
+
+    shortForm = MALShortForm.ALERTDEFINITIONDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*4
+            self.description = value[0]
+            self.severity = value[1]
+            self.generationEnabled = value[2]
+            self.arguments = value[3]
+
+    @property
+    def description(self):
+        return self._value[0]
+
+    @description.setter
+    def description(self, description):
+        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+
+    @property
+    def severity(self):
+        return self._value[1]
+
+    @severity.setter
+    def severity(self, severity):
+        self._value[1] = Severity(severity, canBeNull=False, attribName='severity')
+
+    @property
+    def generationEnabled(self):
+        return self._value[2]
+
+    @generationEnabled.setter
+    def generationEnabled(self, generationEnabled):
+        self._value[2] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+
+    @property
+    def arguments(self):
+        return self._value[3]
+
+    @arguments.setter
+    def arguments(self, arguments):
+        self._value[3] = ArgumentDefinitionDetailsList(arguments, canBeNull=False, attribName='arguments')
+
+
+class AlertDefinitionDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.ALERTDEFINITIONDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(AlertDefinitionDetails(v))
+
+
+class AlertEventDetails(mal.Composite):
+    """The AlertEventDetails structure holds the details of an instance of an alert."""
+
+    shortForm = MALShortForm.ALERTEVENTDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*2
+            self.argumentValues = value[0]
+            self.argumentIds = value[1]
+
+    @property
+    def argumentValues(self):
+        return self._value[0]
+
+    @argumentValues.setter
+    def argumentValues(self, argumentValues):
+        self._value[0] = AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+
+    @property
+    def argumentIds(self):
+        return self._value[1]
+
+    @argumentIds.setter
+    def argumentIds(self, argumentIds):
+        self._value[1] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+
+
+class AlertEventDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.ALERTEVENTDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(AlertEventDetails(v))
+
+
+class AlertCreationRequest(mal.Composite):
+    """The AlertCreationRequest contains all the fields required when creating a new alert in a provider."""
+
+    shortForm = MALShortForm.ALERTCREATIONREQUEST
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*2
+            self.name = value[0]
+            self.alertDefDetails = value[1]
+
+    @property
+    def name(self):
+        return self._value[0]
+
+    @name.setter
+    def name(self, name):
+        self._value[0] = mal.Identifier(name, canBeNull=False, attribName='name')
+
+    @property
+    def alertDefDetails(self):
+        return self._value[1]
+
+    @alertDefDetails.setter
+    def alertDefDetails(self, alertDefDetails):
+        self._value[1] = AlertDefinitionDetails(alertDefDetails, canBeNull=False, attribName='alertDefDetails')
+
+
+class AlertCreationRequestList(mal.ElementList):
+    shortForm = -MALShortForm.ALERTCREATIONREQUEST
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(AlertCreationRequest(v))
 
 

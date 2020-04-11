@@ -50,7 +50,7 @@ class ArgumentDefinitionDetails(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -154,7 +154,7 @@ class AttributeValue(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -204,7 +204,7 @@ class ConditionalConversion(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -263,7 +263,7 @@ class ParameterExpression(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -340,7 +340,7 @@ class ObjectInstancePair(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

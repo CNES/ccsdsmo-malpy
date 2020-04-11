@@ -15,7 +15,84 @@ from mo import com
 from mo.mc import *
 
 number = 8
-# Composite
-## GroupDetails
+class MALShortForm(IntEnum):
+    GROUPDETAILS = 1
+
+
+class GroupDetails(mal.Composite):
+    """The GroupDetails structure holds the object type, domain, and set of object instance identifiers for a set of objects from another service."""
+
+    shortForm = MALShortForm.GROUPDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*4
+            self.description = value[0]
+            self.objectType = value[1]
+            self.domain = value[2]
+            self.instanceIds = value[3]
+
+    @property
+    def description(self):
+        return self._value[0]
+
+    @description.setter
+    def description(self, description):
+        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+
+    @property
+    def objectType(self):
+        return self._value[1]
+
+    @objectType.setter
+    def objectType(self, objectType):
+        self._value[1] = com.ObjectType(objectType, canBeNull=False, attribName='objectType')
+
+    @property
+    def domain(self):
+        return self._value[2]
+
+    @domain.setter
+    def domain(self, domain):
+        self._value[2] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+
+    @property
+    def instanceIds(self):
+        return self._value[3]
+
+    @instanceIds.setter
+    def instanceIds(self, instanceIds):
+        self._value[3] = mal.LongList(instanceIds, canBeNull=False, attribName='instanceIds')
+
+
+class GroupDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.GROUPDETAILS
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(GroupDetails(v))
 
 

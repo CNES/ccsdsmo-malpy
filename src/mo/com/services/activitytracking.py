@@ -10,10 +10,246 @@ from mo import mal
 from mo.com import *
 
 number = 3
-# Composite
-## ActivityTransfer
-## ActivityAcceptance
-## ActivityExecution
-## OperationActivity
+class MALShortForm(IntEnum):
+    ACTIVITYTRANSFER = 1
+    ACTIVITYACCEPTANCE = 2
+    ACTIVITYEXECUTION = 3
+    OPERATIONACTIVITY = 4
+
+
+class ActivityTransfer(mal.Composite):
+    """The structure holds details for a Release, Reception, or Forward event of an activity."""
+
+    shortForm = MALShortForm.ACTIVITYTRANSFER
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*3
+            self.success = value[0]
+            self.estimateDuration = value[1]
+            self.nextDestination = value[2]
+
+    @property
+    def success(self):
+        return self._value[0]
+
+    @success.setter
+    def success(self, success):
+        self._value[0] = mal.Boolean(success, canBeNull=False, attribName='success')
+
+    @property
+    def estimateDuration(self):
+        return self._value[1]
+
+    @estimateDuration.setter
+    def estimateDuration(self, estimateDuration):
+        self._value[1] = mal.Duration(estimateDuration, canBeNull=True, attribName='estimateDuration')
+
+    @property
+    def nextDestination(self):
+        return self._value[2]
+
+    @nextDestination.setter
+    def nextDestination(self, nextDestination):
+        self._value[2] = mal.URI(nextDestination, canBeNull=True, attribName='nextDestination')
+
+
+class ActivityTransferList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIVITYTRANSFER
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ActivityTransfer(v))
+
+
+class ActivityAcceptance(mal.Composite):
+    """The structure is used to hold details of an Acceptance event."""
+
+    shortForm = MALShortForm.ACTIVITYACCEPTANCE
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*1
+            self.success = value[0]
+
+    @property
+    def success(self):
+        return self._value[0]
+
+    @success.setter
+    def success(self, success):
+        self._value[0] = mal.Boolean(success, canBeNull=False, attribName='success')
+
+
+class ActivityAcceptanceList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIVITYACCEPTANCE
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ActivityAcceptance(v))
+
+
+class ActivityExecution(mal.Composite):
+    """The structure is used to report the execution status of an activity in the final destination."""
+
+    shortForm = MALShortForm.ACTIVITYEXECUTION
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*3
+            self.success = value[0]
+            self.executionStage = value[1]
+            self.stageCount = value[2]
+
+    @property
+    def success(self):
+        return self._value[0]
+
+    @success.setter
+    def success(self, success):
+        self._value[0] = mal.Boolean(success, canBeNull=False, attribName='success')
+
+    @property
+    def executionStage(self):
+        return self._value[1]
+
+    @executionStage.setter
+    def executionStage(self, executionStage):
+        self._value[1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
+
+    @property
+    def stageCount(self):
+        return self._value[2]
+
+    @stageCount.setter
+    def stageCount(self, stageCount):
+        self._value[2] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
+
+
+class ActivityExecutionList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIVITYEXECUTION
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ActivityExecution(v))
+
+
+class OperationActivity(mal.Composite):
+    """The OperationActivity structure contains the details of a MAL operation activity."""
+
+    shortForm = MALShortForm.OPERATIONACTIVITY
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            self._value = [None]*1
+            self.interactionType = value[0]
+
+    @property
+    def interactionType(self):
+        return self._value[0]
+
+    @interactionType.setter
+    def interactionType(self, interactionType):
+        self._value[0] = mal.InteractionType(interactionType, canBeNull=False, attribName='interactionType')
+
+
+class OperationActivityList(mal.ElementList):
+    shortForm = -MALShortForm.OPERATIONACTIVITY
+
+    def __init__(self, value, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(OperationActivity(v))
 
 

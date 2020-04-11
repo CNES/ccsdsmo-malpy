@@ -33,7 +33,7 @@ class ObjectType(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -110,7 +110,7 @@ class ObjectKey(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -169,7 +169,7 @@ class ObjectId(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -228,7 +228,7 @@ class ObjectDetails(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -287,7 +287,7 @@ class InstanceBooleanPair(mal.Composite):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

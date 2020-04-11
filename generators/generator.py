@@ -432,7 +432,9 @@ class MALBuffer(object):
     "\n"
         )
 
-    def write_area_shortforms(self, data_types):
+    def write_shortforms(self, data_types):
+        if not data_types:
+            return
         self.write(
     "class MALShortForm(IntEnum):\n"
         )
@@ -606,6 +608,9 @@ class MALBuffer(object):
     def write_composite_class(self, d, blocks=[]):
         parentclass = self._element_parentclass(d)
 
+        # Seems to be a bug in the XML from COM and MC
+        if parentclass == 'ABC':
+            parentclass = "mal.Composite"
         self.write(
     "class {}({}):\n".format(d.name, parentclass) +
     "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment)
@@ -630,7 +635,7 @@ class MALBuffer(object):
     "            if value.value is None:\n" +
     "                if self._canBeNull:\n" +
     "                    self._isNull = True\n" +
-    "                else: \n"
+    "                else:\n"
     "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
     "            else:\n" +
     "                self._value = value.copy().value\n" +
@@ -699,7 +704,7 @@ class MALBuffer(object):
         self.write("\n")
 
     def write_datatypes(self, data_types):
-        self.write_area_shortforms(data_types)
+        self.write_shortforms(data_types)
 
         if 'Enumeration' in data_types:
             for dname, d in data_types['Enumeration'].items():
@@ -752,15 +757,7 @@ class MALBuffer(object):
                 for message in operation.messages:
                     print('..', message.fields)
 
-        for datatype in service.datatypes:
-            self.write(
-    "# {}\n".format(datatype)
-            )
-            for dname, d in service.datatypes[datatype].items():
-                self.write(
-    "## {}\n".format(d.name))
-        self.write("\n")
-        self.write("\n")
+        self.write_datatypes(service.datatypes)
 
 class MALTypeModuleGenerator(object):
     def __init__(self, module, xml_def_filepath, outpath):
