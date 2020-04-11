@@ -15,7 +15,7 @@ The action service defines three types of objects, the first type is the ActionI
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 1
 

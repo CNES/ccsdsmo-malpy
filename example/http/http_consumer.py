@@ -3,7 +3,7 @@
 import sys
 sys.path.append('../../src')
 
-import mal
+from mo import mal
 import transport
 import encoding
 

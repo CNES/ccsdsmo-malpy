@@ -12,7 +12,7 @@ The group service does not provide any operations directly, but allows consumers
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 8
 class MALShortForm(IntEnum):

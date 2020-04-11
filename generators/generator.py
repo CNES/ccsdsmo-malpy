@@ -680,8 +680,18 @@ class MALBuffer(object):
         else:
             parentclass = "mal.ElementList"
         self.write(
-    "class {}({}):\n".format(d.name+"List", parentclass) +
-    "    shortForm = -{}.{}\n".format("MALShortForm", d.name.upper()) +
+    "class {}({}):\n".format(d.name+"List", parentclass)
+        )
+
+        if d.shortFormPart:
+            self.write(
+    "    shortForm = -{}.{}\n".format("MALShortForm", d.name.upper())
+            )
+        else:
+            self.write(
+    "    shortForm = None\n"
+            )
+        self.write(
     "\n" +
     "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
@@ -736,7 +746,7 @@ class MALBuffer(object):
     "\"\"\"{}\"\"\"\n".format(service.comment) +
     "\n" +
     "{}\n".format("\n".join(IMPORTS[self.generator.area.name])) +
-    "from mo.{} import *\n".format(self.generator.area.name.lower()) +
+    "from mo import {}\n".format(self.generator.area.name.lower()) +
     "\n" +
     "number = {}\n".format(service.number)
         )
@@ -773,6 +783,8 @@ class MALTypeModuleGenerator(object):
         self.ctrldict = parameters['controldict']
 
     def save_services(self):
+        if not self.service_buffers:
+            return
         dirpath = os.path.join(self.outpath,'services')
         if not os.path.isdir(dirpath):
             os.mkdir(dirpath)

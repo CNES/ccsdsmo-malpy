@@ -3,7 +3,7 @@
 import sys
 sys.path.append('../../src')
 
-import mal
+from mo import mal
 import encoding
 
 m = mal.Subscription(["MySubscription", [[['Id1','Id2', None],True, True, True, True, [["IDK1",9,None,None],None]]]])

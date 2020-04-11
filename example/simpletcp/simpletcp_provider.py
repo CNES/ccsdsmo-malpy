@@ -5,7 +5,7 @@ sys.path.append('../../src')
 
 import threading
 
-import mal
+from mo import mal
 import transport
 import encoding
 

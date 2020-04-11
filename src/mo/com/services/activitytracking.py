@@ -7,7 +7,7 @@
 
 from enum import IntEnum
 from mo import mal
-from mo.com import *
+from mo import com
 
 number = 3
 class MALShortForm(IntEnum):

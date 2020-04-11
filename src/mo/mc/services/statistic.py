@@ -21,7 +21,7 @@ NOTE: To ensure deterministic behaviour, implementations should endeavour to res
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 5
 

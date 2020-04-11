@@ -22,7 +22,7 @@ The service only publishes check results (as check transition events) when eithe
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 4
 
@@ -191,7 +191,7 @@ class CheckDefinitionDetails(mal.Composite):
 
 
 class CheckDefinitionDetailsList(mal.ElementList):
-    shortForm = -MALShortForm.CHECKDEFINITIONDETAILS
+    shortForm = None
 
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)

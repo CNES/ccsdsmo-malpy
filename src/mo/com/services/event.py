@@ -16,7 +16,7 @@ Events are published with a MAL update type of DELETION. Events are something th
 
 from enum import IntEnum
 from mo import mal
-from mo.com import *
+from mo import com
 
 number = 1
 

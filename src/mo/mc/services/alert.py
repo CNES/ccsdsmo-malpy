@@ -10,7 +10,7 @@ Alert definitions are maintained using the operations defined in this service bu
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 3
 

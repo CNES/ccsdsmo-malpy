@@ -10,7 +10,7 @@ The conversion service does not provide any operations directly, but allows cons
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 7
 class MALShortForm(IntEnum):

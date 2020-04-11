@@ -22,7 +22,7 @@ The COM archive is used to hold the definitions of the aggregations."""
 from enum import IntEnum
 from mo import mal
 from mo import com
-from mo.mc import *
+from mo import mc
 
 number = 6
 

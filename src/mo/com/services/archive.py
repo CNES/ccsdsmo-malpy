@@ -10,7 +10,7 @@ Finally, a consumer of the archive can monitor it for changes by subscribing for
 
 from enum import IntEnum
 from mo import mal
-from mo.com import *
+from mo import com
 
 number = 2
 
@@ -84,7 +84,7 @@ class QueryFilter(mal.Composite):
 
 
 class QueryFilterList(mal.ElementList):
-    shortForm = -MALShortForm.QUERYFILTER
+    shortForm = None
 
     def __init__(self, value, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)

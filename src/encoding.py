@@ -4,6 +4,25 @@ import re
 import sys
 
 from malpydefinitions import MALPY_ENCODING
+import mo
+from mo import mal, com, mc
+from mo.com.services import *
+from mo.mc.services import *
+
+MAL_MODULES = [
+    'mo.mal', 'mo.com', 'mo.mc',
+    'mo.com.services.archive',
+    'mo.com.services.activitytracking',
+    'mo.com.services.event',
+    'mo.mc.services.action',
+    'mo.mc.services.aggregation',
+    'mo.mc.services.alert',
+    'mo.mc.services.check',
+    'mo.mc.services.conversion',
+    'mo.mc.services.group',
+    'mo.mc.services.parameter',
+    'mo.mc.services.statistic'
+    ]
 
 class Encoder(object):
     encoding = None
@@ -98,9 +117,16 @@ class XMLEncoder(Encoder):
                     _cleanupEmptyChildNodes(element)
             node.childNodes = clean_childNodes
 
-        maltypes = dir(sys.modules['mal.maltypes'])
+        maltypes = []
+        for module in MAL_MODULES:
+            maltypes.extend(dir(sys.modules[module]))
         def str_to_class(classname):
-            return getattr(sys.modules['mal.maltypes'], classname)
+            for module in MAL_MODULES:
+                try:
+                    return getattr(sys.modules[module], classname)
+                except AttributeError:
+                    pass
+            raise RuntimeError("I don't know this object")
 
         def _decode_internal(node, elementName=None):
             print("IN", node, elementName)
