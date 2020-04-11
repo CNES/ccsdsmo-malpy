@@ -1,9 +1,10 @@
 import socket as pythonsocket
-
+import time
 import http.client, urllib.parse
 from email.header import Header, decode_header, make_header
 
 from malpydefinitions import MALPY_ENCODING
+from mo import mal
 
 class MALSocket(object):
 
@@ -107,7 +108,7 @@ class HTTPSocket(TCPSocket):
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
             "X-MAL-URI-From": message.header.uri_from,
             "X-MAL-URI-To": message.header.uri_to,
-            "X-MAL-Timestamp": _encode_time(message.header.timestamp)
+            "X-MAL-Timestamp": _encode_time(message.header.timestamp),
             "X-MAL-QoSlevel": _encode_qos_level(message.header.qos_level),
             "X-MAL-Priority": str(message.header.priority),
             "X-MAL-Domain": ".".join([ _encode_ascii(x) for x in message.header.domain ]),
@@ -144,11 +145,11 @@ class HTTPSocket(TCPSocket):
         malheader.uri_from = headers['X-MAL-URI-From']
         malheader.uri_to = headers['X-MAL-URI-To']
         malheader.timestamp = _decode_time(headers['X-MAL-Timestamp'])
-        message.header.qos_level = _encode_qos_level(headers['X-MAL-QoSlevel'])
+        malheader.qos_level = _encode_qos_level(headers['X-MAL-QoSlevel'])
         malheader.priority = int(headers['X-MAL-Priority'])
-        message.header.domain = _decode_ascii(headers['X-MAL-Domain']).split('.')
+        malheader.domain = _decode_ascii(headers['X-MAL-Domain']).split('.')
         malheader.network_zone = _decode_ascii(headers['X-MAL-Network-Zone'])
-        malheader.session = _decode_session headers['X-MAL-Session'])
+        malheader.session = _decode_session(headers['X-MAL-Session'])
         malheader.session_name = _decode_ascii(headers['X-MAL-Session-Name'])
         malheader.ip_type = _decode_ip_type(headers['X-MAL-Interaction-Type'])
         malheader.ip_stage = int(headers['X-MAL-InteractionStage'])
@@ -196,7 +197,7 @@ class HTTPSocket(TCPSocket):
             "BESTEFFORT": mal.QOS_LEVELS.BESTEFFORT,
             "ASSURED": mal.QOS_LEVELS.ASSURED,
             "QUEUED": mal.QOS_LEVELS.QUEUED,
-            "TIMELY" mal.QOS_LEVELS.TIMELY
+            "TIMELY": mal.QOS_LEVELS.TIMELY
         }
         return d[qos_level]
 
@@ -253,9 +254,9 @@ class HTTPSocket(TCPSocket):
         request+= "\r\n"
         return request
 
-    def _build_post_response(target, status, header, body):
+    def _build_post_response(target, status, headers, body):
         version = 'HTTP/1.1'
-        request = "{version} {statuscode} {statusmessage}\r\n".format(version=version, statuscode=status.code statusmessage=status.message)
+        request = "{version} {statuscode} {statusmessage}\r\n".format(version=version, statuscode=status.code(statusmessage=status.message))
         for h in headers:
             request += "{tocken}: {value}\r\n".format(tocken=h, value=headers[h])
 
