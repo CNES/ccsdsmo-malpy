@@ -77,13 +77,35 @@ class ValidityState(IntEnum):
     INVALID = 5 # The validity expression has been evaluated to FALSE
 
 
+class ValidityStateList(mal.ElementList):
+    shortForm = -MALShortForm.VALIDITYSTATE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ValidityState(v))
+
+
 class ParameterDefinitionDetails(mal.Composite):
     """The ParameterDefinitionDetails structure holds a parameter definition. The conversion field defines the conditions where the relevant conversion is applied. For onboard parameters, the report interval should be a multiple of the minimum sampling interval of that parameter."""
 
     shortForm = MALShortForm.PARAMETERDEFINITIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 7
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -95,76 +117,82 @@ class ParameterDefinitionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*7
-            self.description = value[0]
-            self.rawType = value[1]
-            self.rawUnit = value[2]
-            self.generationEnabled = value[3]
-            self.reportInterval = value[4]
-            self.validityExpression = value[5]
-            self.conversion = value[6]
+            self.description = value[mal.Composite._fieldNumber + 0]
+            self.rawType = value[mal.Composite._fieldNumber + 1]
+            self.rawUnit = value[mal.Composite._fieldNumber + 2]
+            self.generationEnabled = value[mal.Composite._fieldNumber + 3]
+            self.reportInterval = value[mal.Composite._fieldNumber + 4]
+            self.validityExpression = value[mal.Composite._fieldNumber + 5]
+            self.conversion = value[mal.Composite._fieldNumber + 6]
 
     @property
     def description(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
 
     @property
     def rawType(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @rawType.setter
     def rawType(self, rawType):
-        self._value[1] = mal.Octet(rawType, canBeNull=False, attribName='rawType')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Octet(rawType, canBeNull=False, attribName='rawType')
+        self._isNull = False
 
     @property
     def rawUnit(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @rawUnit.setter
     def rawUnit(self, rawUnit):
-        self._value[2] = mal.String(rawUnit, canBeNull=True, attribName='rawUnit')
+        self._value[mal.Composite._fieldNumber + 2] = mal.String(rawUnit, canBeNull=True, attribName='rawUnit')
+        self._isNull = False
 
     @property
     def generationEnabled(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @generationEnabled.setter
     def generationEnabled(self, generationEnabled):
-        self._value[3] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._isNull = False
 
     @property
     def reportInterval(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @reportInterval.setter
     def reportInterval(self, reportInterval):
-        self._value[4] = mal.Duration(reportInterval, canBeNull=False, attribName='reportInterval')
+        self._value[mal.Composite._fieldNumber + 4] = mal.Duration(reportInterval, canBeNull=False, attribName='reportInterval')
+        self._isNull = False
 
     @property
     def validityExpression(self):
-        return self._value[5]
+        return self._value[mal.Composite._fieldNumber + 5]
 
     @validityExpression.setter
     def validityExpression(self, validityExpression):
-        self._value[5] = ParameterExpression(validityExpression, canBeNull=True, attribName='validityExpression')
+        self._value[mal.Composite._fieldNumber + 5] = mc.ParameterExpression(validityExpression, canBeNull=True, attribName='validityExpression')
+        self._isNull = False
 
     @property
     def conversion(self):
-        return self._value[6]
+        return self._value[mal.Composite._fieldNumber + 6]
 
     @conversion.setter
     def conversion(self, conversion):
-        self._value[6] = ParameterConversion(conversion, canBeNull=True, attribName='conversion')
+        self._value[mal.Composite._fieldNumber + 6] = ParameterConversion(conversion, canBeNull=True, attribName='conversion')
+        self._isNull = False
 
 
 class ParameterDefinitionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERDEFINITIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -185,9 +213,11 @@ class ParameterValue(mal.Composite):
     """This structure holds a specific value of the parameter. The type of the value shall match that specified in the parameter definition."""
 
     shortForm = MALShortForm.PARAMETERVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -199,40 +229,42 @@ class ParameterValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.validityState = value[0]
-            self.rawValue = value[1]
-            self.convertedValue = value[2]
+            self.validityState = value[mal.Composite._fieldNumber + 0]
+            self.rawValue = value[mal.Composite._fieldNumber + 1]
+            self.convertedValue = value[mal.Composite._fieldNumber + 2]
 
     @property
     def validityState(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @validityState.setter
     def validityState(self, validityState):
-        self._value[0] = mal.UOctet(validityState, canBeNull=False, attribName='validityState')
+        self._value[mal.Composite._fieldNumber + 0] = mal.UOctet(validityState, canBeNull=False, attribName='validityState')
+        self._isNull = False
 
     @property
     def rawValue(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @rawValue.setter
     def rawValue(self, rawValue):
-        self._value[1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        self._isNull = False
 
     @property
     def convertedValue(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @convertedValue.setter
     def convertedValue(self, convertedValue):
-        self._value[2] = mal.Attribute(convertedValue, canBeNull=True, attribName='convertedValue')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Attribute(convertedValue, canBeNull=True, attribName='convertedValue')
+        self._isNull = False
 
 
 class ParameterValueList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -253,9 +285,11 @@ class ParameterConversion(mal.Composite):
     """The ParameterConversion structure holds information about the conversions to be applied to a parameter."""
 
     shortForm = MALShortForm.PARAMETERCONVERSION
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -267,40 +301,42 @@ class ParameterConversion(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.convertedType = value[0]
-            self.convertedUnit = value[1]
-            self.conditionalConversions = value[2]
+            self.convertedType = value[mal.Composite._fieldNumber + 0]
+            self.convertedUnit = value[mal.Composite._fieldNumber + 1]
+            self.conditionalConversions = value[mal.Composite._fieldNumber + 2]
 
     @property
     def convertedType(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @convertedType.setter
     def convertedType(self, convertedType):
-        self._value[0] = mal.Octet(convertedType, canBeNull=False, attribName='convertedType')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Octet(convertedType, canBeNull=False, attribName='convertedType')
+        self._isNull = False
 
     @property
     def convertedUnit(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @convertedUnit.setter
     def convertedUnit(self, convertedUnit):
-        self._value[1] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
+        self._value[mal.Composite._fieldNumber + 1] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
+        self._isNull = False
 
     @property
     def conditionalConversions(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @conditionalConversions.setter
     def conditionalConversions(self, conditionalConversions):
-        self._value[2] = ConditionalConversionList(conditionalConversions, canBeNull=False, attribName='conditionalConversions')
+        self._value[mal.Composite._fieldNumber + 2] = mc.ConditionalConversionList(conditionalConversions, canBeNull=False, attribName='conditionalConversions')
+        self._isNull = False
 
 
 class ParameterConversionList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERCONVERSION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -321,9 +357,11 @@ class ParameterCreationRequest(mal.Composite):
     """The ParameterCreationRequest contains all the fields required when creating a new parameter in a provider."""
 
     shortForm = MALShortForm.PARAMETERCREATIONREQUEST
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -335,31 +373,32 @@ class ParameterCreationRequest(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.name = value[0]
-            self.paramDefDetails = value[1]
+            self.name = value[mal.Composite._fieldNumber + 0]
+            self.paramDefDetails = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._isNull = False
 
     @property
     def paramDefDetails(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @paramDefDetails.setter
     def paramDefDetails(self, paramDefDetails):
-        self._value[1] = ParameterDefinitionDetails(paramDefDetails, canBeNull=False, attribName='paramDefDetails')
+        self._value[mal.Composite._fieldNumber + 1] = ParameterDefinitionDetails(paramDefDetails, canBeNull=False, attribName='paramDefDetails')
+        self._isNull = False
 
 
 class ParameterCreationRequestList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERCREATIONREQUEST
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -380,9 +419,11 @@ class ParameterRawValue(mal.Composite):
     """The ParameterRawValue structure holds a new raw value for a specific parameter."""
 
     shortForm = MALShortForm.PARAMETERRAWVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -394,31 +435,32 @@ class ParameterRawValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.paramInstId = value[0]
-            self.rawValue = value[1]
+            self.paramInstId = value[mal.Composite._fieldNumber + 0]
+            self.rawValue = value[mal.Composite._fieldNumber + 1]
 
     @property
     def paramInstId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @paramInstId.setter
     def paramInstId(self, paramInstId):
-        self._value[0] = mal.Long(paramInstId, canBeNull=False, attribName='paramInstId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(paramInstId, canBeNull=False, attribName='paramInstId')
+        self._isNull = False
 
     @property
     def rawValue(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @rawValue.setter
     def rawValue(self, rawValue):
-        self._value[1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        self._isNull = False
 
 
 class ParameterRawValueList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERRAWVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -439,9 +481,11 @@ class ParameterValueDetails(mal.Composite):
     """This structure holds a specific time stamped value of the parameter. The type of the value shall match that specified in the parameter definition."""
 
     shortForm = MALShortForm.PARAMETERVALUEDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -453,49 +497,52 @@ class ParameterValueDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.paramId = value[0]
-            self.defId = value[1]
-            self.timestamp = value[2]
-            self.value = value[3]
+            self.paramId = value[mal.Composite._fieldNumber + 0]
+            self.defId = value[mal.Composite._fieldNumber + 1]
+            self.timestamp = value[mal.Composite._fieldNumber + 2]
+            self.value = value[mal.Composite._fieldNumber + 3]
 
     @property
     def paramId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @paramId.setter
     def paramId(self, paramId):
-        self._value[0] = mal.Long(paramId, canBeNull=False, attribName='paramId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(paramId, canBeNull=False, attribName='paramId')
+        self._isNull = False
 
     @property
     def defId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @defId.setter
     def defId(self, defId):
-        self._value[1] = mal.Long(defId, canBeNull=False, attribName='defId')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Long(defId, canBeNull=False, attribName='defId')
+        self._isNull = False
 
     @property
     def timestamp(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @timestamp.setter
     def timestamp(self, timestamp):
-        self._value[2] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._isNull = False
 
     @property
     def value(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @value.setter
     def value(self, value):
-        self._value[3] = ParameterValue(value, canBeNull=False, attribName='value')
+        self._value[mal.Composite._fieldNumber + 3] = ParameterValue(value, canBeNull=False, attribName='value')
+        self._isNull = False
 
 
 class ParameterValueDetailsList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERVALUEDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

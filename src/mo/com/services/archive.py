@@ -62,13 +62,35 @@ class ExpressionOperator(IntEnum):
     ICONTAINS = 8 # Case insensitive containment test (String types only).
 
 
+class ExpressionOperatorList(mal.ElementList):
+    shortForm = -MALShortForm.EXPRESSIONOPERATOR
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ExpressionOperator(v))
+
+
 class QueryFilter(mal.Composite):
     """The base structure for archive filters."""
 
     shortForm = None
+    _fieldNumber = mal.Composite._fieldNumber + 0
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*0
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -80,13 +102,12 @@ class QueryFilter(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*0
 
 
 class QueryFilterList(mal.ElementList):
     shortForm = None
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -107,9 +128,11 @@ class ArchiveDetails(mal.Composite):
     """The ArchiveDetails structure is used to hold information about a single entry in an Archive."""
 
     shortForm = MALShortForm.ARCHIVEDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 5
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -121,58 +144,62 @@ class ArchiveDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*5
-            self.instId = value[0]
-            self.details = value[1]
-            self.network = value[2]
-            self.timestamp = value[3]
-            self.provider = value[4]
+            self.instId = value[mal.Composite._fieldNumber + 0]
+            self.details = value[mal.Composite._fieldNumber + 1]
+            self.network = value[mal.Composite._fieldNumber + 2]
+            self.timestamp = value[mal.Composite._fieldNumber + 3]
+            self.provider = value[mal.Composite._fieldNumber + 4]
 
     @property
     def instId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @instId.setter
     def instId(self, instId):
-        self._value[0] = mal.Long(instId, canBeNull=False, attribName='instId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(instId, canBeNull=False, attribName='instId')
+        self._isNull = False
 
     @property
     def details(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @details.setter
     def details(self, details):
-        self._value[1] = ObjectDetails(details, canBeNull=False, attribName='details')
+        self._value[mal.Composite._fieldNumber + 1] = com.ObjectDetails(details, canBeNull=False, attribName='details')
+        self._isNull = False
 
     @property
     def network(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @network.setter
     def network(self, network):
-        self._value[2] = mal.Identifier(network, canBeNull=True, attribName='network')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Identifier(network, canBeNull=True, attribName='network')
+        self._isNull = False
 
     @property
     def timestamp(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @timestamp.setter
     def timestamp(self, timestamp):
-        self._value[3] = mal.FineTime(timestamp, canBeNull=True, attribName='timestamp')
+        self._value[mal.Composite._fieldNumber + 3] = mal.FineTime(timestamp, canBeNull=True, attribName='timestamp')
+        self._isNull = False
 
     @property
     def provider(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @provider.setter
     def provider(self, provider):
-        self._value[4] = mal.URI(provider, canBeNull=True, attribName='provider')
+        self._value[mal.Composite._fieldNumber + 4] = mal.URI(provider, canBeNull=True, attribName='provider')
+        self._isNull = False
 
 
 class ArchiveDetailsList(mal.ElementList):
     shortForm = -MALShortForm.ARCHIVEDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -193,9 +220,11 @@ class ArchiveQuery(mal.Composite):
     """The ArchiveQuery structure is used to specify filters on the common parts of an object in an archive."""
 
     shortForm = MALShortForm.ARCHIVEQUERY
+    _fieldNumber = mal.Composite._fieldNumber + 9
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*9
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -207,94 +236,102 @@ class ArchiveQuery(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*9
-            self.domain = value[0]
-            self.network = value[1]
-            self.provider = value[2]
-            self.related = value[3]
-            self.source = value[4]
-            self.startTime = value[5]
-            self.endTime = value[6]
-            self.sortOrder = value[7]
-            self.sortFieldName = value[8]
+            self.domain = value[mal.Composite._fieldNumber + 0]
+            self.network = value[mal.Composite._fieldNumber + 1]
+            self.provider = value[mal.Composite._fieldNumber + 2]
+            self.related = value[mal.Composite._fieldNumber + 3]
+            self.source = value[mal.Composite._fieldNumber + 4]
+            self.startTime = value[mal.Composite._fieldNumber + 5]
+            self.endTime = value[mal.Composite._fieldNumber + 6]
+            self.sortOrder = value[mal.Composite._fieldNumber + 7]
+            self.sortFieldName = value[mal.Composite._fieldNumber + 8]
 
     @property
     def domain(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @domain.setter
     def domain(self, domain):
-        self._value[0] = mal.IdentifierList(domain, canBeNull=True, attribName='domain')
+        self._value[mal.Composite._fieldNumber + 0] = mal.IdentifierList(domain, canBeNull=True, attribName='domain')
+        self._isNull = False
 
     @property
     def network(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @network.setter
     def network(self, network):
-        self._value[1] = mal.Identifier(network, canBeNull=True, attribName='network')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Identifier(network, canBeNull=True, attribName='network')
+        self._isNull = False
 
     @property
     def provider(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @provider.setter
     def provider(self, provider):
-        self._value[2] = mal.URI(provider, canBeNull=True, attribName='provider')
+        self._value[mal.Composite._fieldNumber + 2] = mal.URI(provider, canBeNull=True, attribName='provider')
+        self._isNull = False
 
     @property
     def related(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @related.setter
     def related(self, related):
-        self._value[3] = mal.Long(related, canBeNull=False, attribName='related')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Long(related, canBeNull=False, attribName='related')
+        self._isNull = False
 
     @property
     def source(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @source.setter
     def source(self, source):
-        self._value[4] = ObjectId(source, canBeNull=True, attribName='source')
+        self._value[mal.Composite._fieldNumber + 4] = com.ObjectId(source, canBeNull=True, attribName='source')
+        self._isNull = False
 
     @property
     def startTime(self):
-        return self._value[5]
+        return self._value[mal.Composite._fieldNumber + 5]
 
     @startTime.setter
     def startTime(self, startTime):
-        self._value[5] = mal.FineTime(startTime, canBeNull=True, attribName='startTime')
+        self._value[mal.Composite._fieldNumber + 5] = mal.FineTime(startTime, canBeNull=True, attribName='startTime')
+        self._isNull = False
 
     @property
     def endTime(self):
-        return self._value[6]
+        return self._value[mal.Composite._fieldNumber + 6]
 
     @endTime.setter
     def endTime(self, endTime):
-        self._value[6] = mal.FineTime(endTime, canBeNull=True, attribName='endTime')
+        self._value[mal.Composite._fieldNumber + 6] = mal.FineTime(endTime, canBeNull=True, attribName='endTime')
+        self._isNull = False
 
     @property
     def sortOrder(self):
-        return self._value[7]
+        return self._value[mal.Composite._fieldNumber + 7]
 
     @sortOrder.setter
     def sortOrder(self, sortOrder):
-        self._value[7] = mal.Boolean(sortOrder, canBeNull=True, attribName='sortOrder')
+        self._value[mal.Composite._fieldNumber + 7] = mal.Boolean(sortOrder, canBeNull=True, attribName='sortOrder')
+        self._isNull = False
 
     @property
     def sortFieldName(self):
-        return self._value[8]
+        return self._value[mal.Composite._fieldNumber + 8]
 
     @sortFieldName.setter
     def sortFieldName(self, sortFieldName):
-        self._value[8] = mal.String(sortFieldName, canBeNull=True, attribName='sortFieldName')
+        self._value[mal.Composite._fieldNumber + 8] = mal.String(sortFieldName, canBeNull=True, attribName='sortFieldName')
+        self._isNull = False
 
 
 class ArchiveQueryList(mal.ElementList):
     shortForm = -MALShortForm.ARCHIVEQUERY
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -315,9 +352,11 @@ class CompositeFilter(mal.Composite):
     """The CompositeFilter allows an archive query to specify a filter based on the content of the body of an object if that body is specified using the MAL data type specification."""
 
     shortForm = MALShortForm.COMPOSITEFILTER
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -329,40 +368,42 @@ class CompositeFilter(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.fieldName = value[0]
-            self.type = value[1]
-            self.fieldValue = value[2]
+            self.fieldName = value[mal.Composite._fieldNumber + 0]
+            self.type = value[mal.Composite._fieldNumber + 1]
+            self.fieldValue = value[mal.Composite._fieldNumber + 2]
 
     @property
     def fieldName(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @fieldName.setter
     def fieldName(self, fieldName):
-        self._value[0] = mal.String(fieldName, canBeNull=False, attribName='fieldName')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(fieldName, canBeNull=False, attribName='fieldName')
+        self._isNull = False
 
     @property
     def type(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @type.setter
     def type(self, type):
-        self._value[1] = ExpressionOperator(type, canBeNull=False, attribName='type')
+        self._value[mal.Composite._fieldNumber + 1] = ExpressionOperator(type, canBeNull=False, attribName='type')
+        self._isNull = False
 
     @property
     def fieldValue(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @fieldValue.setter
     def fieldValue(self, fieldValue):
-        self._value[2] = mal.Attribute(fieldValue, canBeNull=True, attribName='fieldValue')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Attribute(fieldValue, canBeNull=True, attribName='fieldValue')
+        self._isNull = False
 
 
 class CompositeFilterList(mal.ElementList):
     shortForm = -MALShortForm.COMPOSITEFILTER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -383,9 +424,11 @@ class CompositeFilterSet(QueryFilter):
     """Contains a list of CompositeFilters that are AND'd together to form a more complex filter."""
 
     shortForm = MALShortForm.COMPOSITEFILTERSET
+    _fieldNumber = QueryFilter._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -397,22 +440,22 @@ class CompositeFilterSet(QueryFilter):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.filters = value[0]
+            self.filters = value[QueryFilter._fieldNumber + 0]
 
     @property
     def filters(self):
-        return self._value[0]
+        return self._value[QueryFilter._fieldNumber + 0]
 
     @filters.setter
     def filters(self, filters):
-        self._value[0] = CompositeFilterList(filters, canBeNull=False, attribName='filters')
+        self._value[QueryFilter._fieldNumber + 0] = CompositeFilterList(filters, canBeNull=False, attribName='filters')
+        self._isNull = False
 
 
 class CompositeFilterSetList(mal.ElementList):
     shortForm = -MALShortForm.COMPOSITEFILTERSET
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

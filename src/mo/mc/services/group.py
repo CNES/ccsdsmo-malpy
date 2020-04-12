@@ -23,9 +23,11 @@ class GroupDetails(mal.Composite):
     """The GroupDetails structure holds the object type, domain, and set of object instance identifiers for a set of objects from another service."""
 
     shortForm = MALShortForm.GROUPDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -37,49 +39,52 @@ class GroupDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.description = value[0]
-            self.objectType = value[1]
-            self.domain = value[2]
-            self.instanceIds = value[3]
+            self.description = value[mal.Composite._fieldNumber + 0]
+            self.objectType = value[mal.Composite._fieldNumber + 1]
+            self.domain = value[mal.Composite._fieldNumber + 2]
+            self.instanceIds = value[mal.Composite._fieldNumber + 3]
 
     @property
     def description(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
 
     @property
     def objectType(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @objectType.setter
     def objectType(self, objectType):
-        self._value[1] = com.ObjectType(objectType, canBeNull=False, attribName='objectType')
+        self._value[mal.Composite._fieldNumber + 1] = com.ObjectType(objectType, canBeNull=False, attribName='objectType')
+        self._isNull = False
 
     @property
     def domain(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @domain.setter
     def domain(self, domain):
-        self._value[2] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._value[mal.Composite._fieldNumber + 2] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._isNull = False
 
     @property
     def instanceIds(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @instanceIds.setter
     def instanceIds(self, instanceIds):
-        self._value[3] = mal.LongList(instanceIds, canBeNull=False, attribName='instanceIds')
+        self._value[mal.Composite._fieldNumber + 3] = mal.LongList(instanceIds, canBeNull=False, attribName='instanceIds')
+        self._isNull = False
 
 
 class GroupDetailsList(mal.ElementList):
     shortForm = -MALShortForm.GROUPDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

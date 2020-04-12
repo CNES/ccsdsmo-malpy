@@ -37,13 +37,35 @@ class Severity(IntEnum):
     CRITICAL = 5 # Indicates behaviour with mission threatening consequences. Requires operator attention.
 
 
+class SeverityList(mal.ElementList):
+    shortForm = -MALShortForm.SEVERITY
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(Severity(v))
+
+
 class ArgumentDefinitionDetails(mal.Composite):
     """The ArgumentDefinitionDetails structure holds the details of an argument definition with a set of associated attributes, such as conversion used. The conditionalConversions define the conditions where a referenced conversion is applied. Only the first TRUE conversion should be applied."""
 
     shortForm = MALShortForm.ARGUMENTDEFINITIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 7
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -55,76 +77,82 @@ class ArgumentDefinitionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*7
-            self.argId = value[0]
-            self.description = value[1]
-            self.rawType = value[2]
-            self.rawUnit = value[3]
-            self.conditionalConversions = value[4]
-            self.convertedType = value[5]
-            self.convertedUnit = value[6]
+            self.argId = value[mal.Composite._fieldNumber + 0]
+            self.description = value[mal.Composite._fieldNumber + 1]
+            self.rawType = value[mal.Composite._fieldNumber + 2]
+            self.rawUnit = value[mal.Composite._fieldNumber + 3]
+            self.conditionalConversions = value[mal.Composite._fieldNumber + 4]
+            self.convertedType = value[mal.Composite._fieldNumber + 5]
+            self.convertedUnit = value[mal.Composite._fieldNumber + 6]
 
     @property
     def argId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @argId.setter
     def argId(self, argId):
-        self._value[0] = mal.Identifier(argId, canBeNull=False, attribName='argId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(argId, canBeNull=False, attribName='argId')
+        self._isNull = False
 
     @property
     def description(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @description.setter
     def description(self, description):
-        self._value[1] = mal.String(description, canBeNull=True, attribName='description')
+        self._value[mal.Composite._fieldNumber + 1] = mal.String(description, canBeNull=True, attribName='description')
+        self._isNull = False
 
     @property
     def rawType(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @rawType.setter
     def rawType(self, rawType):
-        self._value[2] = mal.Octet(rawType, canBeNull=False, attribName='rawType')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Octet(rawType, canBeNull=False, attribName='rawType')
+        self._isNull = False
 
     @property
     def rawUnit(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @rawUnit.setter
     def rawUnit(self, rawUnit):
-        self._value[3] = mal.String(rawUnit, canBeNull=True, attribName='rawUnit')
+        self._value[mal.Composite._fieldNumber + 3] = mal.String(rawUnit, canBeNull=True, attribName='rawUnit')
+        self._isNull = False
 
     @property
     def conditionalConversions(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @conditionalConversions.setter
     def conditionalConversions(self, conditionalConversions):
-        self._value[4] = ConditionalConversionList(conditionalConversions, canBeNull=True, attribName='conditionalConversions')
+        self._value[mal.Composite._fieldNumber + 4] = ConditionalConversionList(conditionalConversions, canBeNull=True, attribName='conditionalConversions')
+        self._isNull = False
 
     @property
     def convertedType(self):
-        return self._value[5]
+        return self._value[mal.Composite._fieldNumber + 5]
 
     @convertedType.setter
     def convertedType(self, convertedType):
-        self._value[5] = mal.Octet(convertedType, canBeNull=True, attribName='convertedType')
+        self._value[mal.Composite._fieldNumber + 5] = mal.Octet(convertedType, canBeNull=True, attribName='convertedType')
+        self._isNull = False
 
     @property
     def convertedUnit(self):
-        return self._value[6]
+        return self._value[mal.Composite._fieldNumber + 6]
 
     @convertedUnit.setter
     def convertedUnit(self, convertedUnit):
-        self._value[6] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
+        self._value[mal.Composite._fieldNumber + 6] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
+        self._isNull = False
 
 
 class ArgumentDefinitionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.ARGUMENTDEFINITIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -145,9 +173,11 @@ class AttributeValue(mal.Composite):
     """The AttributeValue structure holds an Attribute value. It allows a list of different Attribute types to be created whereas List of Attribute would require the values to be all of the same type."""
 
     shortForm = MALShortForm.ATTRIBUTEVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -159,22 +189,22 @@ class AttributeValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.value = value[0]
+            self.value = value[mal.Composite._fieldNumber + 0]
 
     @property
     def value(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @value.setter
     def value(self, value):
-        self._value[0] = mal.Attribute(value, canBeNull=False, attribName='value')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Attribute(value, canBeNull=False, attribName='value')
+        self._isNull = False
 
 
 class AttributeValueList(mal.ElementList):
     shortForm = -MALShortForm.ATTRIBUTEVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -195,9 +225,11 @@ class ConditionalConversion(mal.Composite):
     """The ConditionalConversion structure holds a condition expression to be evaluated to determine if a specific Conversion should be used. In the case that no test is required, i.e., the conversion should always be used, then the condition field should be set to NULL."""
 
     shortForm = MALShortForm.CONDITIONALCONVERSION
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -209,31 +241,32 @@ class ConditionalConversion(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.condition = value[0]
-            self.conversionId = value[1]
+            self.condition = value[mal.Composite._fieldNumber + 0]
+            self.conversionId = value[mal.Composite._fieldNumber + 1]
 
     @property
     def condition(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @condition.setter
     def condition(self, condition):
-        self._value[0] = ParameterExpression(condition, canBeNull=True, attribName='condition')
+        self._value[mal.Composite._fieldNumber + 0] = ParameterExpression(condition, canBeNull=True, attribName='condition')
+        self._isNull = False
 
     @property
     def conversionId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @conversionId.setter
     def conversionId(self, conversionId):
-        self._value[1] = com.ObjectKey(conversionId, canBeNull=False, attribName='conversionId')
+        self._value[mal.Composite._fieldNumber + 1] = com.ObjectKey(conversionId, canBeNull=False, attribName='conversionId')
+        self._isNull = False
 
 
 class ConditionalConversionList(mal.ElementList):
     shortForm = -MALShortForm.CONDITIONALCONVERSION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -254,9 +287,11 @@ class ParameterExpression(mal.Composite):
     """The ParameterExpression structure represents a simple expression between a parameter and a value for that parameter."""
 
     shortForm = MALShortForm.PARAMETEREXPRESSION
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -268,49 +303,52 @@ class ParameterExpression(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.parameterId = value[0]
-            self.operator = value[1]
-            self.useConverted = value[2]
-            self.value = value[3]
+            self.parameterId = value[mal.Composite._fieldNumber + 0]
+            self.operator = value[mal.Composite._fieldNumber + 1]
+            self.useConverted = value[mal.Composite._fieldNumber + 2]
+            self.value = value[mal.Composite._fieldNumber + 3]
 
     @property
     def parameterId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[0] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+        self._value[mal.Composite._fieldNumber + 0] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+        self._isNull = False
 
     @property
     def operator(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @operator.setter
     def operator(self, operator):
-        self._value[1] = com.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._value[mal.Composite._fieldNumber + 1] = com.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._isNull = False
 
     @property
     def useConverted(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @useConverted.setter
     def useConverted(self, useConverted):
-        self._value[2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._isNull = False
 
     @property
     def value(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @value.setter
     def value(self, value):
-        self._value[3] = mal.Attribute(value, canBeNull=True, attribName='value')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Attribute(value, canBeNull=True, attribName='value')
+        self._isNull = False
 
 
 class ParameterExpressionList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETEREXPRESSION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -331,9 +369,11 @@ class ObjectInstancePair(mal.Composite):
     """The ObjectInstancePair structure is used to hold the object instance identifier of an Identity object with its associated Definition object."""
 
     shortForm = MALShortForm.OBJECTINSTANCEPAIR
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -345,31 +385,32 @@ class ObjectInstancePair(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.objIdentityInstanceId = value[0]
-            self.objDefInstanceId = value[1]
+            self.objIdentityInstanceId = value[mal.Composite._fieldNumber + 0]
+            self.objDefInstanceId = value[mal.Composite._fieldNumber + 1]
 
     @property
     def objIdentityInstanceId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @objIdentityInstanceId.setter
     def objIdentityInstanceId(self, objIdentityInstanceId):
-        self._value[0] = mal.Long(objIdentityInstanceId, canBeNull=False, attribName='objIdentityInstanceId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(objIdentityInstanceId, canBeNull=False, attribName='objIdentityInstanceId')
+        self._isNull = False
 
     @property
     def objDefInstanceId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @objDefInstanceId.setter
     def objDefInstanceId(self, objDefInstanceId):
-        self._value[1] = mal.Long(objDefInstanceId, canBeNull=False, attribName='objDefInstanceId')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Long(objDefInstanceId, canBeNull=False, attribName='objDefInstanceId')
+        self._isNull = False
 
 
 class ObjectInstancePairList(mal.ElementList):
     shortForm = -MALShortForm.OBJECTINSTANCEPAIR
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

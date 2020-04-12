@@ -59,13 +59,35 @@ class ActionCategory(IntEnum):
     CRITICAL = 3 # Category for critical actions
 
 
+class ActionCategoryList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONCATEGORY
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ActionCategory(v))
+
+
 class ActionDefinitionDetails(mal.Composite):
     """The ActionDefinitionDetails structure holds the definition information of an action."""
 
     shortForm = MALShortForm.ACTIONDEFINITIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -77,49 +99,52 @@ class ActionDefinitionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.description = value[0]
-            self.category = value[1]
-            self.progressStepCount = value[2]
-            self.arguments = value[3]
+            self.description = value[mal.Composite._fieldNumber + 0]
+            self.category = value[mal.Composite._fieldNumber + 1]
+            self.progressStepCount = value[mal.Composite._fieldNumber + 2]
+            self.arguments = value[mal.Composite._fieldNumber + 3]
 
     @property
     def description(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
 
     @property
     def category(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @category.setter
     def category(self, category):
-        self._value[1] = mal.UOctet(category, canBeNull=False, attribName='category')
+        self._value[mal.Composite._fieldNumber + 1] = mal.UOctet(category, canBeNull=False, attribName='category')
+        self._isNull = False
 
     @property
     def progressStepCount(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @progressStepCount.setter
     def progressStepCount(self, progressStepCount):
-        self._value[2] = mal.UShort(progressStepCount, canBeNull=False, attribName='progressStepCount')
+        self._value[mal.Composite._fieldNumber + 2] = mal.UShort(progressStepCount, canBeNull=False, attribName='progressStepCount')
+        self._isNull = False
 
     @property
     def arguments(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @arguments.setter
     def arguments(self, arguments):
-        self._value[3] = ArgumentDefinitionDetailsList(arguments, canBeNull=True, attribName='arguments')
+        self._value[mal.Composite._fieldNumber + 3] = mc.ArgumentDefinitionDetailsList(arguments, canBeNull=True, attribName='arguments')
+        self._isNull = False
 
 
 class ActionDefinitionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.ACTIONDEFINITIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -140,9 +165,11 @@ class ActionInstanceDetails(mal.Composite):
     """The ActionInstanceDetails structure holds the information required for an instance of an Action such as the argument values to use."""
 
     shortForm = MALShortForm.ACTIONINSTANCEDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 7
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -154,76 +181,82 @@ class ActionInstanceDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*7
-            self.defInstId = value[0]
-            self.stageStartedRequired = value[1]
-            self.stageProgressRequired = value[2]
-            self.stageCompletedRequired = value[3]
-            self.argumentValues = value[4]
-            self.argumentIds = value[5]
-            self.isRawValue = value[6]
+            self.defInstId = value[mal.Composite._fieldNumber + 0]
+            self.stageStartedRequired = value[mal.Composite._fieldNumber + 1]
+            self.stageProgressRequired = value[mal.Composite._fieldNumber + 2]
+            self.stageCompletedRequired = value[mal.Composite._fieldNumber + 3]
+            self.argumentValues = value[mal.Composite._fieldNumber + 4]
+            self.argumentIds = value[mal.Composite._fieldNumber + 5]
+            self.isRawValue = value[mal.Composite._fieldNumber + 6]
 
     @property
     def defInstId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @defInstId.setter
     def defInstId(self, defInstId):
-        self._value[0] = mal.Long(defInstId, canBeNull=False, attribName='defInstId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(defInstId, canBeNull=False, attribName='defInstId')
+        self._isNull = False
 
     @property
     def stageStartedRequired(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @stageStartedRequired.setter
     def stageStartedRequired(self, stageStartedRequired):
-        self._value[1] = mal.Boolean(stageStartedRequired, canBeNull=False, attribName='stageStartedRequired')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(stageStartedRequired, canBeNull=False, attribName='stageStartedRequired')
+        self._isNull = False
 
     @property
     def stageProgressRequired(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @stageProgressRequired.setter
     def stageProgressRequired(self, stageProgressRequired):
-        self._value[2] = mal.Boolean(stageProgressRequired, canBeNull=False, attribName='stageProgressRequired')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(stageProgressRequired, canBeNull=False, attribName='stageProgressRequired')
+        self._isNull = False
 
     @property
     def stageCompletedRequired(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @stageCompletedRequired.setter
     def stageCompletedRequired(self, stageCompletedRequired):
-        self._value[3] = mal.Boolean(stageCompletedRequired, canBeNull=False, attribName='stageCompletedRequired')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(stageCompletedRequired, canBeNull=False, attribName='stageCompletedRequired')
+        self._isNull = False
 
     @property
     def argumentValues(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @argumentValues.setter
     def argumentValues(self, argumentValues):
-        self._value[4] = AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._value[mal.Composite._fieldNumber + 4] = mc.AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._isNull = False
 
     @property
     def argumentIds(self):
-        return self._value[5]
+        return self._value[mal.Composite._fieldNumber + 5]
 
     @argumentIds.setter
     def argumentIds(self, argumentIds):
-        self._value[5] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+        self._value[mal.Composite._fieldNumber + 5] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+        self._isNull = False
 
     @property
     def isRawValue(self):
-        return self._value[6]
+        return self._value[mal.Composite._fieldNumber + 6]
 
     @isRawValue.setter
     def isRawValue(self, isRawValue):
-        self._value[6] = mal.BooleanList(isRawValue, canBeNull=True, attribName='isRawValue')
+        self._value[mal.Composite._fieldNumber + 6] = mal.BooleanList(isRawValue, canBeNull=True, attribName='isRawValue')
+        self._isNull = False
 
 
 class ActionInstanceDetailsList(mal.ElementList):
     shortForm = -MALShortForm.ACTIONINSTANCEDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -244,9 +277,11 @@ class ActionCreationRequest(mal.Composite):
     """The ActionCreationRequest contains all the fields required when creating a new action in a provider."""
 
     shortForm = MALShortForm.ACTIONCREATIONREQUEST
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -258,31 +293,32 @@ class ActionCreationRequest(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.name = value[0]
-            self.actionDefDetails = value[1]
+            self.name = value[mal.Composite._fieldNumber + 0]
+            self.actionDefDetails = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._isNull = False
 
     @property
     def actionDefDetails(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @actionDefDetails.setter
     def actionDefDetails(self, actionDefDetails):
-        self._value[1] = ActionDefinitionDetails(actionDefDetails, canBeNull=False, attribName='actionDefDetails')
+        self._value[mal.Composite._fieldNumber + 1] = ActionDefinitionDetails(actionDefDetails, canBeNull=False, attribName='actionDefDetails')
+        self._isNull = False
 
 
 class ActionCreationRequestList(mal.ElementList):
     shortForm = -MALShortForm.ACTIONCREATIONREQUEST
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

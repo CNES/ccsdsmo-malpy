@@ -106,13 +106,35 @@ class CheckState(IntEnum):
     NOT_OK = 5 # The check is not OK.
 
 
+class CheckStateList(mal.ElementList):
+    shortForm = -MALShortForm.CHECKSTATE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(CheckState(v))
+
+
 class CheckDefinitionDetails(mal.Composite):
     """The CheckDefinitionDetails structure holds the definition of a check."""
 
     shortForm = None
+    _fieldNumber = mal.Composite._fieldNumber + 7
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -124,76 +146,82 @@ class CheckDefinitionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*7
-            self.description = value[0]
-            self.checkSeverity = value[1]
-            self.maxReportingInterval = value[2]
-            self.nominalCount = value[3]
-            self.nominalTime = value[4]
-            self.violationCount = value[5]
-            self.violationTime = value[6]
+            self.description = value[mal.Composite._fieldNumber + 0]
+            self.checkSeverity = value[mal.Composite._fieldNumber + 1]
+            self.maxReportingInterval = value[mal.Composite._fieldNumber + 2]
+            self.nominalCount = value[mal.Composite._fieldNumber + 3]
+            self.nominalTime = value[mal.Composite._fieldNumber + 4]
+            self.violationCount = value[mal.Composite._fieldNumber + 5]
+            self.violationTime = value[mal.Composite._fieldNumber + 6]
 
     @property
     def description(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
 
     @property
     def checkSeverity(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @checkSeverity.setter
     def checkSeverity(self, checkSeverity):
-        self._value[1] = Severity(checkSeverity, canBeNull=False, attribName='checkSeverity')
+        self._value[mal.Composite._fieldNumber + 1] = mc.Severity(checkSeverity, canBeNull=False, attribName='checkSeverity')
+        self._isNull = False
 
     @property
     def maxReportingInterval(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @maxReportingInterval.setter
     def maxReportingInterval(self, maxReportingInterval):
-        self._value[2] = mal.Duration(maxReportingInterval, canBeNull=False, attribName='maxReportingInterval')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Duration(maxReportingInterval, canBeNull=False, attribName='maxReportingInterval')
+        self._isNull = False
 
     @property
     def nominalCount(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @nominalCount.setter
     def nominalCount(self, nominalCount):
-        self._value[3] = mal.UInteger(nominalCount, canBeNull=False, attribName='nominalCount')
+        self._value[mal.Composite._fieldNumber + 3] = mal.UInteger(nominalCount, canBeNull=False, attribName='nominalCount')
+        self._isNull = False
 
     @property
     def nominalTime(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @nominalTime.setter
     def nominalTime(self, nominalTime):
-        self._value[4] = mal.Duration(nominalTime, canBeNull=False, attribName='nominalTime')
+        self._value[mal.Composite._fieldNumber + 4] = mal.Duration(nominalTime, canBeNull=False, attribName='nominalTime')
+        self._isNull = False
 
     @property
     def violationCount(self):
-        return self._value[5]
+        return self._value[mal.Composite._fieldNumber + 5]
 
     @violationCount.setter
     def violationCount(self, violationCount):
-        self._value[5] = mal.UInteger(violationCount, canBeNull=False, attribName='violationCount')
+        self._value[mal.Composite._fieldNumber + 5] = mal.UInteger(violationCount, canBeNull=False, attribName='violationCount')
+        self._isNull = False
 
     @property
     def violationTime(self):
-        return self._value[6]
+        return self._value[mal.Composite._fieldNumber + 6]
 
     @violationTime.setter
     def violationTime(self, violationTime):
-        self._value[6] = mal.Duration(violationTime, canBeNull=False, attribName='violationTime')
+        self._value[mal.Composite._fieldNumber + 6] = mal.Duration(violationTime, canBeNull=False, attribName='violationTime')
+        self._isNull = False
 
 
 class CheckDefinitionDetailsList(mal.ElementList):
     shortForm = None
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -214,9 +242,11 @@ class CheckLinkDetails(mal.Composite):
     """The CheckLinkDetails structure represents the link from a check definition to a check result for a specific parameter."""
 
     shortForm = MALShortForm.CHECKLINKDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 5
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -228,58 +258,62 @@ class CheckLinkDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*5
-            self.checkEnabled = value[0]
-            self.checkOnChange = value[1]
-            self.useConverted = value[2]
-            self.checkInterval = value[3]
-            self.condition = value[4]
+            self.checkEnabled = value[mal.Composite._fieldNumber + 0]
+            self.checkOnChange = value[mal.Composite._fieldNumber + 1]
+            self.useConverted = value[mal.Composite._fieldNumber + 2]
+            self.checkInterval = value[mal.Composite._fieldNumber + 3]
+            self.condition = value[mal.Composite._fieldNumber + 4]
 
     @property
     def checkEnabled(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @checkEnabled.setter
     def checkEnabled(self, checkEnabled):
-        self._value[0] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._isNull = False
 
     @property
     def checkOnChange(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @checkOnChange.setter
     def checkOnChange(self, checkOnChange):
-        self._value[1] = mal.Boolean(checkOnChange, canBeNull=False, attribName='checkOnChange')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(checkOnChange, canBeNull=False, attribName='checkOnChange')
+        self._isNull = False
 
     @property
     def useConverted(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @useConverted.setter
     def useConverted(self, useConverted):
-        self._value[2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._isNull = False
 
     @property
     def checkInterval(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @checkInterval.setter
     def checkInterval(self, checkInterval):
-        self._value[3] = mal.Duration(checkInterval, canBeNull=False, attribName='checkInterval')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Duration(checkInterval, canBeNull=False, attribName='checkInterval')
+        self._isNull = False
 
     @property
     def condition(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @condition.setter
     def condition(self, condition):
-        self._value[4] = ParameterExpression(condition, canBeNull=True, attribName='condition')
+        self._value[mal.Composite._fieldNumber + 4] = mc.ParameterExpression(condition, canBeNull=True, attribName='condition')
+        self._isNull = False
 
 
 class CheckLinkDetailsList(mal.ElementList):
     shortForm = -MALShortForm.CHECKLINKDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -300,9 +334,11 @@ class CheckResult(mal.Composite):
     """The CheckResult structure holds basic information about the check state and the value of the parameter at the time of the check. The timestamp of the event is the transition time of the check."""
 
     shortForm = MALShortForm.CHECKRESULT
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -314,49 +350,52 @@ class CheckResult(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.previousCheckState = value[0]
-            self.currentCheckState = value[1]
-            self.paramDefInstId = value[2]
-            self.checkedValue = value[3]
+            self.previousCheckState = value[mal.Composite._fieldNumber + 0]
+            self.currentCheckState = value[mal.Composite._fieldNumber + 1]
+            self.paramDefInstId = value[mal.Composite._fieldNumber + 2]
+            self.checkedValue = value[mal.Composite._fieldNumber + 3]
 
     @property
     def previousCheckState(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @previousCheckState.setter
     def previousCheckState(self, previousCheckState):
-        self._value[0] = CheckState(previousCheckState, canBeNull=False, attribName='previousCheckState')
+        self._value[mal.Composite._fieldNumber + 0] = CheckState(previousCheckState, canBeNull=False, attribName='previousCheckState')
+        self._isNull = False
 
     @property
     def currentCheckState(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @currentCheckState.setter
     def currentCheckState(self, currentCheckState):
-        self._value[1] = CheckState(currentCheckState, canBeNull=False, attribName='currentCheckState')
+        self._value[mal.Composite._fieldNumber + 1] = CheckState(currentCheckState, canBeNull=False, attribName='currentCheckState')
+        self._isNull = False
 
     @property
     def paramDefInstId(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @paramDefInstId.setter
     def paramDefInstId(self, paramDefInstId):
-        self._value[2] = mal.Long(paramDefInstId, canBeNull=True, attribName='paramDefInstId')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Long(paramDefInstId, canBeNull=True, attribName='paramDefInstId')
+        self._isNull = False
 
     @property
     def checkedValue(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @checkedValue.setter
     def checkedValue(self, checkedValue):
-        self._value[3] = mal.Attribute(checkedValue, canBeNull=True, attribName='checkedValue')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Attribute(checkedValue, canBeNull=True, attribName='checkedValue')
+        self._isNull = False
 
 
 class CheckResultList(mal.ElementList):
     shortForm = -MALShortForm.CHECKRESULT
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -377,9 +416,11 @@ class CheckLinkSummary(mal.Composite):
     """The CheckLinkSummary structure holds the ids of a specific check link and the check and parameter it links to."""
 
     shortForm = MALShortForm.CHECKLINKSUMMARY
+    _fieldNumber = mal.Composite._fieldNumber + 5
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -391,58 +432,62 @@ class CheckLinkSummary(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*5
-            self.checkId = value[0]
-            self.linkId = value[1]
-            self.linkDefinitionId = value[2]
-            self.checkEnabled = value[3]
-            self.parameterId = value[4]
+            self.checkId = value[mal.Composite._fieldNumber + 0]
+            self.linkId = value[mal.Composite._fieldNumber + 1]
+            self.linkDefinitionId = value[mal.Composite._fieldNumber + 2]
+            self.checkEnabled = value[mal.Composite._fieldNumber + 3]
+            self.parameterId = value[mal.Composite._fieldNumber + 4]
 
     @property
     def checkId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @checkId.setter
     def checkId(self, checkId):
-        self._value[0] = mal.Long(checkId, canBeNull=False, attribName='checkId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(checkId, canBeNull=False, attribName='checkId')
+        self._isNull = False
 
     @property
     def linkId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @linkId.setter
     def linkId(self, linkId):
-        self._value[1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._isNull = False
 
     @property
     def linkDefinitionId(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @linkDefinitionId.setter
     def linkDefinitionId(self, linkDefinitionId):
-        self._value[2] = mal.Long(linkDefinitionId, canBeNull=False, attribName='linkDefinitionId')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Long(linkDefinitionId, canBeNull=False, attribName='linkDefinitionId')
+        self._isNull = False
 
     @property
     def checkEnabled(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @checkEnabled.setter
     def checkEnabled(self, checkEnabled):
-        self._value[3] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[4] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._value[mal.Composite._fieldNumber + 4] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._isNull = False
 
 
 class CheckLinkSummaryList(mal.ElementList):
     shortForm = -MALShortForm.CHECKLINKSUMMARY
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -463,9 +508,11 @@ class CheckResultSummary(mal.Composite):
     """The CheckResultSummary structure holds details about a specific check link and its evaluated result."""
 
     shortForm = MALShortForm.CHECKRESULTSUMMARY
+    _fieldNumber = mal.Composite._fieldNumber + 5
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -477,58 +524,62 @@ class CheckResultSummary(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*5
-            self.linkId = value[0]
-            self.checkEnabled = value[1]
-            self.parameterId = value[2]
-            self.evaluationTime = value[3]
-            self.result = value[4]
+            self.linkId = value[mal.Composite._fieldNumber + 0]
+            self.checkEnabled = value[mal.Composite._fieldNumber + 1]
+            self.parameterId = value[mal.Composite._fieldNumber + 2]
+            self.evaluationTime = value[mal.Composite._fieldNumber + 3]
+            self.result = value[mal.Composite._fieldNumber + 4]
 
     @property
     def linkId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @linkId.setter
     def linkId(self, linkId):
-        self._value[0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._isNull = False
 
     @property
     def checkEnabled(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @checkEnabled.setter
     def checkEnabled(self, checkEnabled):
-        self._value[1] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._value[mal.Composite._fieldNumber + 2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._isNull = False
 
     @property
     def evaluationTime(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @evaluationTime.setter
     def evaluationTime(self, evaluationTime):
-        self._value[3] = mal.Time(evaluationTime, canBeNull=False, attribName='evaluationTime')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Time(evaluationTime, canBeNull=False, attribName='evaluationTime')
+        self._isNull = False
 
     @property
     def result(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @result.setter
     def result(self, result):
-        self._value[4] = CheckResult(result, canBeNull=False, attribName='result')
+        self._value[mal.Composite._fieldNumber + 4] = CheckResult(result, canBeNull=False, attribName='result')
+        self._isNull = False
 
 
 class CheckResultSummaryList(mal.ElementList):
     shortForm = -MALShortForm.CHECKRESULTSUMMARY
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -549,9 +600,11 @@ class CheckResultFilter(mal.Composite):
     """The CheckResultFilter structure holds a filter for the current check result transition information."""
 
     shortForm = MALShortForm.CHECKRESULTFILTER
+    _fieldNumber = mal.Composite._fieldNumber + 5
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -563,58 +616,62 @@ class CheckResultFilter(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*5
-            self.checkFilterViaGroups = value[0]
-            self.checkFilter = value[1]
-            self.parameterFilterViaGroups = value[2]
-            self.parameterFilter = value[3]
-            self.stateFilter = value[4]
+            self.checkFilterViaGroups = value[mal.Composite._fieldNumber + 0]
+            self.checkFilter = value[mal.Composite._fieldNumber + 1]
+            self.parameterFilterViaGroups = value[mal.Composite._fieldNumber + 2]
+            self.parameterFilter = value[mal.Composite._fieldNumber + 3]
+            self.stateFilter = value[mal.Composite._fieldNumber + 4]
 
     @property
     def checkFilterViaGroups(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @checkFilterViaGroups.setter
     def checkFilterViaGroups(self, checkFilterViaGroups):
-        self._value[0] = mal.Boolean(checkFilterViaGroups, canBeNull=False, attribName='checkFilterViaGroups')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(checkFilterViaGroups, canBeNull=False, attribName='checkFilterViaGroups')
+        self._isNull = False
 
     @property
     def checkFilter(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @checkFilter.setter
     def checkFilter(self, checkFilter):
-        self._value[1] = mal.LongList(checkFilter, canBeNull=False, attribName='checkFilter')
+        self._value[mal.Composite._fieldNumber + 1] = mal.LongList(checkFilter, canBeNull=False, attribName='checkFilter')
+        self._isNull = False
 
     @property
     def parameterFilterViaGroups(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @parameterFilterViaGroups.setter
     def parameterFilterViaGroups(self, parameterFilterViaGroups):
-        self._value[2] = mal.Boolean(parameterFilterViaGroups, canBeNull=False, attribName='parameterFilterViaGroups')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(parameterFilterViaGroups, canBeNull=False, attribName='parameterFilterViaGroups')
+        self._isNull = False
 
     @property
     def parameterFilter(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @parameterFilter.setter
     def parameterFilter(self, parameterFilter):
-        self._value[3] = mal.LongList(parameterFilter, canBeNull=False, attribName='parameterFilter')
+        self._value[mal.Composite._fieldNumber + 3] = mal.LongList(parameterFilter, canBeNull=False, attribName='parameterFilter')
+        self._isNull = False
 
     @property
     def stateFilter(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @stateFilter.setter
     def stateFilter(self, stateFilter):
-        self._value[4] = CheckStateList(stateFilter, canBeNull=False, attribName='stateFilter')
+        self._value[mal.Composite._fieldNumber + 4] = CheckStateList(stateFilter, canBeNull=False, attribName='stateFilter')
+        self._isNull = False
 
 
 class CheckResultFilterList(mal.ElementList):
     shortForm = -MALShortForm.CHECKRESULTFILTER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -635,9 +692,11 @@ class ReferenceValue(mal.Composite):
     """The ReferenceValue structure defines a value to compare against. A validCount of '1' and deltaTime of '0' would compare against the previous sample value."""
 
     shortForm = MALShortForm.REFERENCEVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -649,40 +708,42 @@ class ReferenceValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.validCount = value[0]
-            self.deltaTime = value[1]
-            self.parameterId = value[2]
+            self.validCount = value[mal.Composite._fieldNumber + 0]
+            self.deltaTime = value[mal.Composite._fieldNumber + 1]
+            self.parameterId = value[mal.Composite._fieldNumber + 2]
 
     @property
     def validCount(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @validCount.setter
     def validCount(self, validCount):
-        self._value[0] = mal.UShort(validCount, canBeNull=False, attribName='validCount')
+        self._value[mal.Composite._fieldNumber + 0] = mal.UShort(validCount, canBeNull=False, attribName='validCount')
+        self._isNull = False
 
     @property
     def deltaTime(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @deltaTime.setter
     def deltaTime(self, deltaTime):
-        self._value[1] = mal.Duration(deltaTime, canBeNull=False, attribName='deltaTime')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Duration(deltaTime, canBeNull=False, attribName='deltaTime')
+        self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._value[mal.Composite._fieldNumber + 2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._isNull = False
 
 
 class ReferenceValueList(mal.ElementList):
     shortForm = -MALShortForm.REFERENCEVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -703,9 +764,11 @@ class ConstantCheckDefinition(CheckDefinitionDetails):
     """The ConstantCheckDefinition structure holds the constant values to compare against for a consistency check."""
 
     shortForm = MALShortForm.CONSTANTCHECKDEFINITION
+    _fieldNumber = CheckDefinitionDetails._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -717,31 +780,32 @@ class ConstantCheckDefinition(CheckDefinitionDetails):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.operator = value[0]
-            self.values = value[1]
+            self.operator = value[CheckDefinitionDetails._fieldNumber + 0]
+            self.values = value[CheckDefinitionDetails._fieldNumber + 1]
 
     @property
     def operator(self):
-        return self._value[0]
+        return self._value[CheckDefinitionDetails._fieldNumber + 0]
 
     @operator.setter
     def operator(self, operator):
-        self._value[0] = com.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._value[CheckDefinitionDetails._fieldNumber + 0] = com.services.archive.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._isNull = False
 
     @property
     def values(self):
-        return self._value[1]
+        return self._value[CheckDefinitionDetails._fieldNumber + 1]
 
     @values.setter
     def values(self, values):
-        self._value[1] = AttributeValueList(values, canBeNull=False, attribName='values')
+        self._value[CheckDefinitionDetails._fieldNumber + 1] = mc.AttributeValueList(values, canBeNull=False, attribName='values')
+        self._isNull = False
 
 
 class ConstantCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.CONSTANTCHECKDEFINITION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -762,9 +826,11 @@ class ReferenceCheckDefinition(CheckDefinitionDetails):
     """The ReferenceCheckDefinition structure holds the key to another entity to compare against for a consistency check."""
 
     shortForm = MALShortForm.REFERENCECHECKDEFINITION
+    _fieldNumber = CheckDefinitionDetails._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -776,31 +842,32 @@ class ReferenceCheckDefinition(CheckDefinitionDetails):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.operator = value[0]
-            self.checkReference = value[1]
+            self.operator = value[CheckDefinitionDetails._fieldNumber + 0]
+            self.checkReference = value[CheckDefinitionDetails._fieldNumber + 1]
 
     @property
     def operator(self):
-        return self._value[0]
+        return self._value[CheckDefinitionDetails._fieldNumber + 0]
 
     @operator.setter
     def operator(self, operator):
-        self._value[0] = com.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._value[CheckDefinitionDetails._fieldNumber + 0] = com.services.archive.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._isNull = False
 
     @property
     def checkReference(self):
-        return self._value[1]
+        return self._value[CheckDefinitionDetails._fieldNumber + 1]
 
     @checkReference.setter
     def checkReference(self, checkReference):
-        self._value[1] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
+        self._value[CheckDefinitionDetails._fieldNumber + 1] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
+        self._isNull = False
 
 
 class ReferenceCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.REFERENCECHECKDEFINITION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -821,9 +888,11 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
     """The DeltaCheckDefinition defines a delta transition check."""
 
     shortForm = MALShortForm.DELTACHECKDEFINITION
+    _fieldNumber = CheckDefinitionDetails._fieldNumber + 5
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -835,58 +904,62 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*5
-            self.checkReference = value[0]
-            self.violateInRange = value[1]
-            self.valueDelta = value[2]
-            self.lowerThreshold = value[3]
-            self.upperThreshold = value[4]
+            self.checkReference = value[CheckDefinitionDetails._fieldNumber + 0]
+            self.violateInRange = value[CheckDefinitionDetails._fieldNumber + 1]
+            self.valueDelta = value[CheckDefinitionDetails._fieldNumber + 2]
+            self.lowerThreshold = value[CheckDefinitionDetails._fieldNumber + 3]
+            self.upperThreshold = value[CheckDefinitionDetails._fieldNumber + 4]
 
     @property
     def checkReference(self):
-        return self._value[0]
+        return self._value[CheckDefinitionDetails._fieldNumber + 0]
 
     @checkReference.setter
     def checkReference(self, checkReference):
-        self._value[0] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
+        self._value[CheckDefinitionDetails._fieldNumber + 0] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
+        self._isNull = False
 
     @property
     def violateInRange(self):
-        return self._value[1]
+        return self._value[CheckDefinitionDetails._fieldNumber + 1]
 
     @violateInRange.setter
     def violateInRange(self, violateInRange):
-        self._value[1] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
+        self._value[CheckDefinitionDetails._fieldNumber + 1] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
+        self._isNull = False
 
     @property
     def valueDelta(self):
-        return self._value[2]
+        return self._value[CheckDefinitionDetails._fieldNumber + 2]
 
     @valueDelta.setter
     def valueDelta(self, valueDelta):
-        self._value[2] = mal.Boolean(valueDelta, canBeNull=False, attribName='valueDelta')
+        self._value[CheckDefinitionDetails._fieldNumber + 2] = mal.Boolean(valueDelta, canBeNull=False, attribName='valueDelta')
+        self._isNull = False
 
     @property
     def lowerThreshold(self):
-        return self._value[3]
+        return self._value[CheckDefinitionDetails._fieldNumber + 3]
 
     @lowerThreshold.setter
     def lowerThreshold(self, lowerThreshold):
-        self._value[3] = mal.Attribute(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        self._value[CheckDefinitionDetails._fieldNumber + 3] = mal.Attribute(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        self._isNull = False
 
     @property
     def upperThreshold(self):
-        return self._value[4]
+        return self._value[CheckDefinitionDetails._fieldNumber + 4]
 
     @upperThreshold.setter
     def upperThreshold(self, upperThreshold):
-        self._value[4] = mal.Attribute(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        self._value[CheckDefinitionDetails._fieldNumber + 4] = mal.Attribute(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        self._isNull = False
 
 
 class DeltaCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.DELTACHECKDEFINITION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -907,9 +980,11 @@ class LimitCheckDefinition(CheckDefinitionDetails):
     """The LimitCheckDefinition defines a high and low limit check. It is valid to supply only one limit; the other limit is assumed to be the relevant maximum supported by the type being checked in this case."""
 
     shortForm = MALShortForm.LIMITCHECKDEFINITION
+    _fieldNumber = CheckDefinitionDetails._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -921,40 +996,42 @@ class LimitCheckDefinition(CheckDefinitionDetails):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.violateInRange = value[0]
-            self.lowerLimit = value[1]
-            self.upperLimit = value[2]
+            self.violateInRange = value[CheckDefinitionDetails._fieldNumber + 0]
+            self.lowerLimit = value[CheckDefinitionDetails._fieldNumber + 1]
+            self.upperLimit = value[CheckDefinitionDetails._fieldNumber + 2]
 
     @property
     def violateInRange(self):
-        return self._value[0]
+        return self._value[CheckDefinitionDetails._fieldNumber + 0]
 
     @violateInRange.setter
     def violateInRange(self, violateInRange):
-        self._value[0] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
+        self._value[CheckDefinitionDetails._fieldNumber + 0] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
+        self._isNull = False
 
     @property
     def lowerLimit(self):
-        return self._value[1]
+        return self._value[CheckDefinitionDetails._fieldNumber + 1]
 
     @lowerLimit.setter
     def lowerLimit(self, lowerLimit):
-        self._value[1] = mal.Attribute(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        self._value[CheckDefinitionDetails._fieldNumber + 1] = mal.Attribute(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        self._isNull = False
 
     @property
     def upperLimit(self):
-        return self._value[2]
+        return self._value[CheckDefinitionDetails._fieldNumber + 2]
 
     @upperLimit.setter
     def upperLimit(self, upperLimit):
-        self._value[2] = mal.Attribute(upperLimit, canBeNull=True, attribName='upperLimit')
+        self._value[CheckDefinitionDetails._fieldNumber + 2] = mal.Attribute(upperLimit, canBeNull=True, attribName='upperLimit')
+        self._isNull = False
 
 
 class LimitCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.LIMITCHECKDEFINITION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -975,9 +1052,11 @@ class CompoundCheckDefinition(CheckDefinitionDetails):
     """The CompoundCheckDefinition structure holds the object instance identifiers of one or more check link objects to monitor for a compound check."""
 
     shortForm = MALShortForm.COMPOUNDCHECKDEFINITION
+    _fieldNumber = CheckDefinitionDetails._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -989,31 +1068,32 @@ class CompoundCheckDefinition(CheckDefinitionDetails):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.minimumChecksInViolation = value[0]
-            self.checkLinkIds = value[1]
+            self.minimumChecksInViolation = value[CheckDefinitionDetails._fieldNumber + 0]
+            self.checkLinkIds = value[CheckDefinitionDetails._fieldNumber + 1]
 
     @property
     def minimumChecksInViolation(self):
-        return self._value[0]
+        return self._value[CheckDefinitionDetails._fieldNumber + 0]
 
     @minimumChecksInViolation.setter
     def minimumChecksInViolation(self, minimumChecksInViolation):
-        self._value[0] = mal.UInteger(minimumChecksInViolation, canBeNull=False, attribName='minimumChecksInViolation')
+        self._value[CheckDefinitionDetails._fieldNumber + 0] = mal.UInteger(minimumChecksInViolation, canBeNull=False, attribName='minimumChecksInViolation')
+        self._isNull = False
 
     @property
     def checkLinkIds(self):
-        return self._value[1]
+        return self._value[CheckDefinitionDetails._fieldNumber + 1]
 
     @checkLinkIds.setter
     def checkLinkIds(self, checkLinkIds):
-        self._value[1] = mal.LongList(checkLinkIds, canBeNull=False, attribName='checkLinkIds')
+        self._value[CheckDefinitionDetails._fieldNumber + 1] = mal.LongList(checkLinkIds, canBeNull=False, attribName='checkLinkIds')
+        self._isNull = False
 
 
 class CompoundCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.COMPOUNDCHECKDEFINITION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -1034,9 +1114,11 @@ class CheckTypedInstance(mal.Composite):
     """The CheckTypedInstance structure is used to hold the two COM object instance identifiers that form the identity and the body of the check definition in combination with the COM object type of the check body definition."""
 
     shortForm = MALShortForm.CHECKTYPEDINSTANCE
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -1048,31 +1130,32 @@ class CheckTypedInstance(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.objDefCheckType = value[0]
-            self.objInstIds = value[1]
+            self.objDefCheckType = value[mal.Composite._fieldNumber + 0]
+            self.objInstIds = value[mal.Composite._fieldNumber + 1]
 
     @property
     def objDefCheckType(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @objDefCheckType.setter
     def objDefCheckType(self, objDefCheckType):
-        self._value[0] = com.ObjectType(objDefCheckType, canBeNull=False, attribName='objDefCheckType')
+        self._value[mal.Composite._fieldNumber + 0] = com.ObjectType(objDefCheckType, canBeNull=False, attribName='objDefCheckType')
+        self._isNull = False
 
     @property
     def objInstIds(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @objInstIds.setter
     def objInstIds(self, objInstIds):
-        self._value[1] = ObjectInstancePair(objInstIds, canBeNull=True, attribName='objInstIds')
+        self._value[mal.Composite._fieldNumber + 1] = mc.ObjectInstancePair(objInstIds, canBeNull=True, attribName='objInstIds')
+        self._isNull = False
 
 
 class CheckTypedInstanceList(mal.ElementList):
     shortForm = -MALShortForm.CHECKTYPEDINSTANCE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

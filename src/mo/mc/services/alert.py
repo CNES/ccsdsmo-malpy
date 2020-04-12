@@ -44,9 +44,11 @@ class AlertDefinitionDetails(mal.Composite):
     """The AlertDefinitionDetails provides the definition of an alert including any argument definitions."""
 
     shortForm = MALShortForm.ALERTDEFINITIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -58,49 +60,52 @@ class AlertDefinitionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.description = value[0]
-            self.severity = value[1]
-            self.generationEnabled = value[2]
-            self.arguments = value[3]
+            self.description = value[mal.Composite._fieldNumber + 0]
+            self.severity = value[mal.Composite._fieldNumber + 1]
+            self.generationEnabled = value[mal.Composite._fieldNumber + 2]
+            self.arguments = value[mal.Composite._fieldNumber + 3]
 
     @property
     def description(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
 
     @property
     def severity(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @severity.setter
     def severity(self, severity):
-        self._value[1] = Severity(severity, canBeNull=False, attribName='severity')
+        self._value[mal.Composite._fieldNumber + 1] = mc.Severity(severity, canBeNull=False, attribName='severity')
+        self._isNull = False
 
     @property
     def generationEnabled(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @generationEnabled.setter
     def generationEnabled(self, generationEnabled):
-        self._value[2] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._isNull = False
 
     @property
     def arguments(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @arguments.setter
     def arguments(self, arguments):
-        self._value[3] = ArgumentDefinitionDetailsList(arguments, canBeNull=False, attribName='arguments')
+        self._value[mal.Composite._fieldNumber + 3] = mc.ArgumentDefinitionDetailsList(arguments, canBeNull=False, attribName='arguments')
+        self._isNull = False
 
 
 class AlertDefinitionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.ALERTDEFINITIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -121,9 +126,11 @@ class AlertEventDetails(mal.Composite):
     """The AlertEventDetails structure holds the details of an instance of an alert."""
 
     shortForm = MALShortForm.ALERTEVENTDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -135,31 +142,32 @@ class AlertEventDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.argumentValues = value[0]
-            self.argumentIds = value[1]
+            self.argumentValues = value[mal.Composite._fieldNumber + 0]
+            self.argumentIds = value[mal.Composite._fieldNumber + 1]
 
     @property
     def argumentValues(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @argumentValues.setter
     def argumentValues(self, argumentValues):
-        self._value[0] = AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._value[mal.Composite._fieldNumber + 0] = mc.AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._isNull = False
 
     @property
     def argumentIds(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @argumentIds.setter
     def argumentIds(self, argumentIds):
-        self._value[1] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+        self._value[mal.Composite._fieldNumber + 1] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+        self._isNull = False
 
 
 class AlertEventDetailsList(mal.ElementList):
     shortForm = -MALShortForm.ALERTEVENTDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -180,9 +188,11 @@ class AlertCreationRequest(mal.Composite):
     """The AlertCreationRequest contains all the fields required when creating a new alert in a provider."""
 
     shortForm = MALShortForm.ALERTCREATIONREQUEST
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -194,31 +204,32 @@ class AlertCreationRequest(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.name = value[0]
-            self.alertDefDetails = value[1]
+            self.name = value[mal.Composite._fieldNumber + 0]
+            self.alertDefDetails = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._isNull = False
 
     @property
     def alertDefDetails(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @alertDefDetails.setter
     def alertDefDetails(self, alertDefDetails):
-        self._value[1] = AlertDefinitionDetails(alertDefDetails, canBeNull=False, attribName='alertDefDetails')
+        self._value[mal.Composite._fieldNumber + 1] = AlertDefinitionDetails(alertDefDetails, canBeNull=False, attribName='alertDefDetails')
+        self._isNull = False
 
 
 class AlertCreationRequestList(mal.ElementList):
     shortForm = -MALShortForm.ALERTCREATIONREQUEST
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

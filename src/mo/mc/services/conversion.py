@@ -24,9 +24,11 @@ class DiscreteConversionDetails(mal.Composite):
     """The DiscreteConversionDetails structure holds a bidirectional conversion between raw and converted values. The first element of the pair is the raw value and the second is the converted value. Both sets of values must be unique."""
 
     shortForm = MALShortForm.DISCRETECONVERSIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -38,22 +40,22 @@ class DiscreteConversionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.mapping = value[0]
+            self.mapping = value[mal.Composite._fieldNumber + 0]
 
     @property
     def mapping(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @mapping.setter
     def mapping(self, mapping):
-        self._value[0] = mal.PairList(mapping, canBeNull=False, attribName='mapping')
+        self._value[mal.Composite._fieldNumber + 0] = mal.PairList(mapping, canBeNull=False, attribName='mapping')
+        self._isNull = False
 
 
 class DiscreteConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.DISCRETECONVERSIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -74,9 +76,11 @@ class LineConversionDetails(mal.Composite):
     """The LineConversionDetails structure is a bi-directional conversion between raw and converted values. It is defined by a series of points between which values are to be interpolated. The extrapolate attribute indicates if values can also be linearly extrapolated beyond the initial and final points."""
 
     shortForm = MALShortForm.LINECONVERSIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -88,31 +92,32 @@ class LineConversionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.extrapolate = value[0]
-            self.points = value[1]
+            self.extrapolate = value[mal.Composite._fieldNumber + 0]
+            self.points = value[mal.Composite._fieldNumber + 1]
 
     @property
     def extrapolate(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @extrapolate.setter
     def extrapolate(self, extrapolate):
-        self._value[0] = mal.Boolean(extrapolate, canBeNull=False, attribName='extrapolate')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(extrapolate, canBeNull=False, attribName='extrapolate')
+        self._isNull = False
 
     @property
     def points(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @points.setter
     def points(self, points):
-        self._value[1] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._value[mal.Composite._fieldNumber + 1] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._isNull = False
 
 
 class LineConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.LINECONVERSIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -133,9 +138,11 @@ class PolyConversionDetails(mal.Composite):
     """The PolyConversionDetails structure holds only forward (raw to converted) polynomial conversions. They are defined by a series of points for the polynomial coefficients."""
 
     shortForm = MALShortForm.POLYCONVERSIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -147,22 +154,22 @@ class PolyConversionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.points = value[0]
+            self.points = value[mal.Composite._fieldNumber + 0]
 
     @property
     def points(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @points.setter
     def points(self, points):
-        self._value[0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._isNull = False
 
 
 class PolyConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.POLYCONVERSIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -183,9 +190,11 @@ class RangeConversionDetails(mal.Composite):
     """The RangeConversionDetails structure holds a range for a one-way conversion to convert between a continuous range to a discrete value. A range is defined as from this point up to, but not including, the next point."""
 
     shortForm = MALShortForm.RANGECONVERSIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -197,22 +206,22 @@ class RangeConversionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.points = value[0]
+            self.points = value[mal.Composite._fieldNumber + 0]
 
     @property
     def points(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @points.setter
     def points(self, points):
-        self._value[0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._isNull = False
 
 
 class RangeConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.RANGECONVERSIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

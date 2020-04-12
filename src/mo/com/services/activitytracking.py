@@ -21,9 +21,11 @@ class ActivityTransfer(mal.Composite):
     """The structure holds details for a Release, Reception, or Forward event of an activity."""
 
     shortForm = MALShortForm.ACTIVITYTRANSFER
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -35,40 +37,42 @@ class ActivityTransfer(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.success = value[0]
-            self.estimateDuration = value[1]
-            self.nextDestination = value[2]
+            self.success = value[mal.Composite._fieldNumber + 0]
+            self.estimateDuration = value[mal.Composite._fieldNumber + 1]
+            self.nextDestination = value[mal.Composite._fieldNumber + 2]
 
     @property
     def success(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @success.setter
     def success(self, success):
-        self._value[0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._isNull = False
 
     @property
     def estimateDuration(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @estimateDuration.setter
     def estimateDuration(self, estimateDuration):
-        self._value[1] = mal.Duration(estimateDuration, canBeNull=True, attribName='estimateDuration')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Duration(estimateDuration, canBeNull=True, attribName='estimateDuration')
+        self._isNull = False
 
     @property
     def nextDestination(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @nextDestination.setter
     def nextDestination(self, nextDestination):
-        self._value[2] = mal.URI(nextDestination, canBeNull=True, attribName='nextDestination')
+        self._value[mal.Composite._fieldNumber + 2] = mal.URI(nextDestination, canBeNull=True, attribName='nextDestination')
+        self._isNull = False
 
 
 class ActivityTransferList(mal.ElementList):
     shortForm = -MALShortForm.ACTIVITYTRANSFER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -89,9 +93,11 @@ class ActivityAcceptance(mal.Composite):
     """The structure is used to hold details of an Acceptance event."""
 
     shortForm = MALShortForm.ACTIVITYACCEPTANCE
+    _fieldNumber = mal.Composite._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -103,22 +109,22 @@ class ActivityAcceptance(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.success = value[0]
+            self.success = value[mal.Composite._fieldNumber + 0]
 
     @property
     def success(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @success.setter
     def success(self, success):
-        self._value[0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._isNull = False
 
 
 class ActivityAcceptanceList(mal.ElementList):
     shortForm = -MALShortForm.ACTIVITYACCEPTANCE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -139,9 +145,11 @@ class ActivityExecution(mal.Composite):
     """The structure is used to report the execution status of an activity in the final destination."""
 
     shortForm = MALShortForm.ACTIVITYEXECUTION
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -153,40 +161,42 @@ class ActivityExecution(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.success = value[0]
-            self.executionStage = value[1]
-            self.stageCount = value[2]
+            self.success = value[mal.Composite._fieldNumber + 0]
+            self.executionStage = value[mal.Composite._fieldNumber + 1]
+            self.stageCount = value[mal.Composite._fieldNumber + 2]
 
     @property
     def success(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @success.setter
     def success(self, success):
-        self._value[0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._isNull = False
 
     @property
     def executionStage(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @executionStage.setter
     def executionStage(self, executionStage):
-        self._value[1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
+        self._value[mal.Composite._fieldNumber + 1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
+        self._isNull = False
 
     @property
     def stageCount(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @stageCount.setter
     def stageCount(self, stageCount):
-        self._value[2] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
+        self._value[mal.Composite._fieldNumber + 2] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
+        self._isNull = False
 
 
 class ActivityExecutionList(mal.ElementList):
     shortForm = -MALShortForm.ACTIVITYEXECUTION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -207,9 +217,11 @@ class OperationActivity(mal.Composite):
     """The OperationActivity structure contains the details of a MAL operation activity."""
 
     shortForm = MALShortForm.OPERATIONACTIVITY
+    _fieldNumber = mal.Composite._fieldNumber + 1
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -221,22 +233,22 @@ class OperationActivity(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*1
-            self.interactionType = value[0]
+            self.interactionType = value[mal.Composite._fieldNumber + 0]
 
     @property
     def interactionType(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @interactionType.setter
     def interactionType(self, interactionType):
-        self._value[0] = mal.InteractionType(interactionType, canBeNull=False, attribName='interactionType')
+        self._value[mal.Composite._fieldNumber + 0] = mal.InteractionType(interactionType, canBeNull=False, attribName='interactionType')
+        self._isNull = False
 
 
 class OperationActivityList(mal.ElementList):
     shortForm = -MALShortForm.OPERATIONACTIVITY
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

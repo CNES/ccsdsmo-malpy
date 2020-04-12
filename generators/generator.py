@@ -406,20 +406,40 @@ class MALErrorXML(object):
         self.comment = node.attrib.get('comment', None)
 
 class MALBuffer(object):
-    def __init__(self, generator):
+    def __init__(self, generator, servicename=None):
         self.generator = generator
+        self.service = servicename
         self.content = DO_NOT_EDIT
 
     def write(self, content):
         self.content += content
 
+    def _element_completename(self, elementtype):
+        # case maltypes
+        if not self.service:
+            # same area
+            if elementtype.area == self.generator.area.name:
+                return elementtype.name
+            # different area
+            else:
+                return "{}.{}".format(elementtype.area.lower(), elementtype.name)
+        # case service
+        else:
+            # pure maltype
+            if not elementtype.service:
+                return "{}.{}".format(elementtype.area.lower(), elementtype.name)
+            # same service
+            elif elementtype.service.lower() == self.service:
+                return elementtype.name
+            # other service
+            else:
+                return "{}.{}.{}.{}".format(elementtype.area.lower(), "services", elementtype.service.lower(), elementtype.name)
+
     def _element_parentclass(self, d):
         if d.extends is None:
             return 'ABC'
-        elif d.extends.area == self.generator.area.name:
-            return d.extends.name
         else:
-            return d.extends.area.lower() + '.' + d.extends.name
+            return self._element_completename(d.extends)
 
     def write_module_header(self):
         self.write(
@@ -517,7 +537,7 @@ class MALBuffer(object):
             minvalue = self.generator.ctrldict[d.name][0]
             maxvalue = self.generator.ctrldict[d.name][1]
             self.write(
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
     "        if type(value) == int and ( value < {} or value > {} ):\n".format(minvalue, maxvalue) +
     "            raise ValueError(\"Authorized value is between {} and {}.\")\n".format(minvalue, maxvalue)
@@ -531,7 +551,7 @@ class MALBuffer(object):
 
     def write_abstractelement_class(self, d):
         blockelement = [
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n"
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
     "        self._isNull = False\n"
     "        self._canBeNull = canBeNull\n"
     "        self.attribName = attribName\n"
@@ -553,7 +573,7 @@ class MALBuffer(object):
     "class {}({}):\n".format("ElementList", "Element") +
     "    shortForm = None\n" +
     "\n" +
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n"+
     "\n" +
     "    @property\n" +
@@ -574,7 +594,9 @@ class MALBuffer(object):
 
     def write_attribute_class(self, d):
         blockattribute = [
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n"
+    "    value_type = None\n"
+        ,
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
     "        super().__init__(value, canBeNull, attribName)\n"
     "        if value is None and self._canBeNull:\n"
     "            self._isNull = True\n"
@@ -582,6 +604,10 @@ class MALBuffer(object):
     "            self._value = value.copy().value\n"
     "        elif type(value) == type(self).value_type:\n"
     "            self._value = value\n"
+    "        elif type(self) == type(Attribute(None)) and value.shortForm in range(1,19):\n" +
+    "            self._value = value.copy().value\n" +
+    "            self.shortForm = value.shortForm\n" +
+    "            self.value_type = value.value_type\n" +
     "        else:\n"
     "            raise TypeError(\"Expected {}, got {}.\".format(type(self).value_type, type(value)))\n"
         ,
@@ -592,10 +618,16 @@ class MALBuffer(object):
 
     def write_abstractcomposite_class(self, d):
         blockcomposite = [
+    "    _fieldNumber = 0\n"
+        ,
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
+    "        super().__init__(value, canBeNull, attribName)\n"
+    "        self._value = []\n"
+        ,
     "    def copy(self):\n"
-    "        if self._isNull:\n" +
-    "            value = None\n" +
-    "        else:\n" +
+    "        if self._isNull:\n"
+    "            value = None\n"
+    "        else:\n"
     "            value = []\n"
     "            for v in self.value:\n"
     "                value.append(v.copy())\n"
@@ -624,11 +656,16 @@ class MALBuffer(object):
             self.write(
     "    shortForm = None\n"
             )
+        fieldNumber = "{}._fieldNumber + {}".format(parentclass, len(d.fields))
+        self.write(
+    "    _fieldNumber = {}\n".format(fieldNumber)
+            )
 
         self.write("\n")
         self.write(
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
+    "        self._value += [None]*{}\n".format(len(d.fields)) +
     "        if value is None and self._canBeNull:\n" +
     "            self._isNull = True\n" +
     "        elif type(value) == type(self):\n" +
@@ -639,36 +676,31 @@ class MALBuffer(object):
     "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
     "            else:\n" +
     "                self._value = value.copy().value\n" +
-    "        else:\n" +
-    "            self._value = [None]*{}\n".format(len(d.fields))
+    "        else:\n"
         )
         for i, field in enumerate(d.fields):
-            if field.maltype.area == self.generator.area.name:
-                fieldtype = field.maltype.name
-            else:
-                fieldtype = field.maltype.area.lower() + "." + field.maltype.name
+            index = "{}._fieldNumber + {}".format(parentclass, i)
             self.write(
-    "            self.{0} = value[{1}]\n".format(field.name, i)
+    "            self.{} = value[{}]\n".format(field.name, index)
             )
 
         for i, field in enumerate(d.fields):
+            index = "{}._fieldNumber + {}".format(parentclass, i)
+            fieldtype = self._element_completename(field.maltype)
+
             if field.maltype.isList:
-                typename = field.maltype.name + 'List'
-            else:
-                typename = field.maltype.name
-            if field.maltype.area == self.generator.area.name:
-                fieldtype = typename
-            else:
-                fieldtype = field.maltype.area.lower() + "." + typename
+                fieldtype += 'List'
+
             self.write("\n")
             self.write(
     "    @property\n" +
     "    def {}(self):\n".format(field.name) +
-    "        return self._value[{}]\n".format(i) +
+    "        return self._value[{}]\n".format(index) +
     "\n" +
     "    @{}.setter\n".format(field.name) +
     "    def {0}(self, {0}):\n".format(field.name) +
-    "        self._value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(i, fieldtype, field.name, field.canBeNull)
+    "        self._value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull) +
+    "        self._isNull = False\n"
         )
 
         self.write("\n")
@@ -693,7 +725,7 @@ class MALBuffer(object):
             )
         self.write(
     "\n" +
-    "    def __init__(self, value, canBeNull=True, attribName=None):\n" +
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
     "        self._value = []\n" +
     "        if type(value) == type(self):\n" +
@@ -716,14 +748,18 @@ class MALBuffer(object):
     def write_datatypes(self, data_types):
         self.write_shortforms(data_types)
 
-        if 'Enumeration' in data_types:
-            for dname, d in data_types['Enumeration'].items():
-                self.write_enumeration_class(d)
-
+        # Abstract ElementList is needed for EnumerationLists
         if 'Element' in data_types:
             if 'Element' in data_types['Element']:
                 self.write_abstractelement_class(data_types['Element']['Element'])
                 self.write_abstractelementlist_class()
+
+        if 'Enumeration' in data_types:
+            for dname, d in data_types['Enumeration'].items():
+                self.write_enumeration_class(d)
+                self.write_elementlist_class(d)
+
+        if 'Element' in data_types:
             if 'Attribute' in data_types['Element']:
                 self.write_attribute_class(data_types['Element']['Attribute'])
             if 'Composite' in data_types['Element']:
@@ -739,6 +775,7 @@ class MALBuffer(object):
             for dname, d in data_types['Composite'].items():
                 self.write_composite_class(d)
                 self.write_elementlist_class(d)
+
 
     def write_serviceprovider_module(self, service):
 
@@ -764,8 +801,8 @@ class MALBuffer(object):
     "    pass\n\n"
                 )
 
-                for message in operation.messages:
-                    print('..', message.fields)
+                #for message in operation.messages:
+                #    print('..', message.fields)
 
         self.write_datatypes(service.datatypes)
 
@@ -773,7 +810,6 @@ class MALTypeModuleGenerator(object):
     def __init__(self, module, xml_def_filepath, outpath):
         self.module = module
         self.xml_def_filepath = xml_def_filepath
-        print( module, outpath)
         self.outpath = os.path.join(outpath, module)
         self.datatype_buffer = MALBuffer(self)
         self.service_buffers = {}
@@ -821,16 +857,6 @@ class MALTypeModuleGenerator(object):
         with open(maltypespath, 'w') as f:
             f.write(self.datatype_buffer.content)
 
-    def write_datatype(self, content):
-        self.datatype_buffer.write(content)
-
-    def write_service(self, servicename, content):
-        if not servicename in self.service_buffers:
-            self.service_buffers[servicename] = MALBuffer()
-        self.service_buffers[servicename].write(content)
-
-
-
     def generate(self):
         """
         Root {
@@ -870,7 +896,7 @@ class MALTypeModuleGenerator(object):
             for service in services:
                 servicename = service.name.lower()
                 if not servicename in self.service_buffers:
-                    self.service_buffers[servicename] = MALBuffer(self)
+                    self.service_buffers[servicename] = MALBuffer(self, servicename)
                 self.service_buffers[servicename].write_serviceprovider_module(service)
 
 

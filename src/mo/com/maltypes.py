@@ -24,9 +24,11 @@ class ObjectType(mal.Composite):
     """The ObjectType structure uniquely identifies the type of an object. It is the combination of the area number, service number, area version, and service object type number. The combined parts are able to fit inside a MAL::Long (for implementations that prefer to index on a single numeric field rather than a structure)."""
 
     shortForm = MALShortForm.OBJECTTYPE
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -38,49 +40,52 @@ class ObjectType(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.area = value[0]
-            self.service = value[1]
-            self.version = value[2]
-            self.number = value[3]
+            self.area = value[mal.Composite._fieldNumber + 0]
+            self.service = value[mal.Composite._fieldNumber + 1]
+            self.version = value[mal.Composite._fieldNumber + 2]
+            self.number = value[mal.Composite._fieldNumber + 3]
 
     @property
     def area(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @area.setter
     def area(self, area):
-        self._value[0] = mal.UShort(area, canBeNull=False, attribName='area')
+        self._value[mal.Composite._fieldNumber + 0] = mal.UShort(area, canBeNull=False, attribName='area')
+        self._isNull = False
 
     @property
     def service(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @service.setter
     def service(self, service):
-        self._value[1] = mal.UShort(service, canBeNull=False, attribName='service')
+        self._value[mal.Composite._fieldNumber + 1] = mal.UShort(service, canBeNull=False, attribName='service')
+        self._isNull = False
 
     @property
     def version(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @version.setter
     def version(self, version):
-        self._value[2] = mal.UOctet(version, canBeNull=False, attribName='version')
+        self._value[mal.Composite._fieldNumber + 2] = mal.UOctet(version, canBeNull=False, attribName='version')
+        self._isNull = False
 
     @property
     def number(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @number.setter
     def number(self, number):
-        self._value[3] = mal.UShort(number, canBeNull=False, attribName='number')
+        self._value[mal.Composite._fieldNumber + 3] = mal.UShort(number, canBeNull=False, attribName='number')
+        self._isNull = False
 
 
 class ObjectTypeList(mal.ElementList):
     shortForm = -MALShortForm.OBJECTTYPE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -101,9 +106,11 @@ class ObjectKey(mal.Composite):
     """The ObjectKey structure combines a domain and an object instance identifier such that it identifies the instance of an object for a specific domain."""
 
     shortForm = MALShortForm.OBJECTKEY
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -115,31 +122,32 @@ class ObjectKey(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.domain = value[0]
-            self.instId = value[1]
+            self.domain = value[mal.Composite._fieldNumber + 0]
+            self.instId = value[mal.Composite._fieldNumber + 1]
 
     @property
     def domain(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @domain.setter
     def domain(self, domain):
-        self._value[0] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._value[mal.Composite._fieldNumber + 0] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._isNull = False
 
     @property
     def instId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @instId.setter
     def instId(self, instId):
-        self._value[1] = mal.Long(instId, canBeNull=False, attribName='instId')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Long(instId, canBeNull=False, attribName='instId')
+        self._isNull = False
 
 
 class ObjectKeyList(mal.ElementList):
     shortForm = -MALShortForm.OBJECTKEY
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -160,9 +168,11 @@ class ObjectId(mal.Composite):
     """The ObjectId structure combines an object type and an object key such that it identifies the instance and type of an object for a specific domain."""
 
     shortForm = MALShortForm.OBJECTID
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -174,31 +184,32 @@ class ObjectId(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.type = value[0]
-            self.key = value[1]
+            self.type = value[mal.Composite._fieldNumber + 0]
+            self.key = value[mal.Composite._fieldNumber + 1]
 
     @property
     def type(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @type.setter
     def type(self, type):
-        self._value[0] = ObjectType(type, canBeNull=False, attribName='type')
+        self._value[mal.Composite._fieldNumber + 0] = ObjectType(type, canBeNull=False, attribName='type')
+        self._isNull = False
 
     @property
     def key(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @key.setter
     def key(self, key):
-        self._value[1] = ObjectKey(key, canBeNull=False, attribName='key')
+        self._value[mal.Composite._fieldNumber + 1] = ObjectKey(key, canBeNull=False, attribName='key')
+        self._isNull = False
 
 
 class ObjectIdList(mal.ElementList):
     shortForm = -MALShortForm.OBJECTID
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -219,9 +230,11 @@ class ObjectDetails(mal.Composite):
     """The ObjectDetails type is used to hold the extra information associated with an object instance, namely the related and source links."""
 
     shortForm = MALShortForm.OBJECTDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -233,31 +246,32 @@ class ObjectDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.related = value[0]
-            self.source = value[1]
+            self.related = value[mal.Composite._fieldNumber + 0]
+            self.source = value[mal.Composite._fieldNumber + 1]
 
     @property
     def related(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @related.setter
     def related(self, related):
-        self._value[0] = mal.Long(related, canBeNull=True, attribName='related')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(related, canBeNull=True, attribName='related')
+        self._isNull = False
 
     @property
     def source(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @source.setter
     def source(self, source):
-        self._value[1] = ObjectId(source, canBeNull=True, attribName='source')
+        self._value[mal.Composite._fieldNumber + 1] = ObjectId(source, canBeNull=True, attribName='source')
+        self._isNull = False
 
 
 class ObjectDetailsList(mal.ElementList):
     shortForm = -MALShortForm.OBJECTDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -278,9 +292,11 @@ class InstanceBooleanPair(mal.Composite):
     """Simple pair of an object instance identifier and a Boolean value."""
 
     shortForm = MALShortForm.INSTANCEBOOLEANPAIR
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -292,31 +308,32 @@ class InstanceBooleanPair(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.id = value[0]
-            self.value = value[1]
+            self.id = value[mal.Composite._fieldNumber + 0]
+            self.value = value[mal.Composite._fieldNumber + 1]
 
     @property
     def id(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @id.setter
     def id(self, id):
-        self._value[0] = mal.Long(id, canBeNull=False, attribName='id')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(id, canBeNull=False, attribName='id')
+        self._isNull = False
 
     @property
     def value(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @value.setter
     def value(self, value):
-        self._value[1] = mal.Boolean(value, canBeNull=False, attribName='value')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(value, canBeNull=False, attribName='value')
+        self._isNull = False
 
 
 class InstanceBooleanPairList(mal.ElementList):
     shortForm = -MALShortForm.INSTANCEBOOLEANPAIR
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

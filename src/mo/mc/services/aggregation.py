@@ -82,6 +82,26 @@ class AggregationCategory(IntEnum):
     DIAGNOSTIC = 2 # Diagnostic aggregation.
 
 
+class AggregationCategoryList(mal.ElementList):
+    shortForm = -MALShortForm.AGGREGATIONCATEGORY
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(AggregationCategory(v))
+
+
 class ThresholdType(IntEnum):
     """ThresholdType is an enumeration definition holding the types of filtering thresholds."""
 
@@ -89,6 +109,26 @@ class ThresholdType(IntEnum):
 
     PERCENTAGE = 1 # Threshold value is a percentage.
     DELTA = 2 # Threshold value is a delta.
+
+
+class ThresholdTypeList(mal.ElementList):
+    shortForm = -MALShortForm.THRESHOLDTYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(ThresholdType(v))
 
 
 class GenerationMode(IntEnum):
@@ -101,13 +141,35 @@ class GenerationMode(IntEnum):
     FILTERED_TIMEOUT = 3 # The item is filtered but it exceeded its timeout value.
 
 
+class GenerationModeList(mal.ElementList):
+    shortForm = -MALShortForm.GENERATIONMODE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(GenerationMode(v))
+
+
 class AggregationDefinitionDetails(mal.Composite):
     """The AggregationDefinitionDetails structure holds definition details of an aggregation."""
 
     shortForm = MALShortForm.AGGREGATIONDEFINITIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 9
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*9
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -119,94 +181,102 @@ class AggregationDefinitionDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*9
-            self.description = value[0]
-            self.category = value[1]
-            self.reportInterval = value[2]
-            self.sendUnchanged = value[3]
-            self.sendDefinitions = value[4]
-            self.filterEnabled = value[5]
-            self.filteredTimeout = value[6]
-            self.generationEnabled = value[7]
-            self.parameterSets = value[8]
+            self.description = value[mal.Composite._fieldNumber + 0]
+            self.category = value[mal.Composite._fieldNumber + 1]
+            self.reportInterval = value[mal.Composite._fieldNumber + 2]
+            self.sendUnchanged = value[mal.Composite._fieldNumber + 3]
+            self.sendDefinitions = value[mal.Composite._fieldNumber + 4]
+            self.filterEnabled = value[mal.Composite._fieldNumber + 5]
+            self.filteredTimeout = value[mal.Composite._fieldNumber + 6]
+            self.generationEnabled = value[mal.Composite._fieldNumber + 7]
+            self.parameterSets = value[mal.Composite._fieldNumber + 8]
 
     @property
     def description(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[0] = mal.String(description, canBeNull=False, attribName='description')
+        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
 
     @property
     def category(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @category.setter
     def category(self, category):
-        self._value[1] = mal.UOctet(category, canBeNull=False, attribName='category')
+        self._value[mal.Composite._fieldNumber + 1] = mal.UOctet(category, canBeNull=False, attribName='category')
+        self._isNull = False
 
     @property
     def reportInterval(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @reportInterval.setter
     def reportInterval(self, reportInterval):
-        self._value[2] = mal.Duration(reportInterval, canBeNull=False, attribName='reportInterval')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Duration(reportInterval, canBeNull=False, attribName='reportInterval')
+        self._isNull = False
 
     @property
     def sendUnchanged(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @sendUnchanged.setter
     def sendUnchanged(self, sendUnchanged):
-        self._value[3] = mal.Boolean(sendUnchanged, canBeNull=False, attribName='sendUnchanged')
+        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(sendUnchanged, canBeNull=False, attribName='sendUnchanged')
+        self._isNull = False
 
     @property
     def sendDefinitions(self):
-        return self._value[4]
+        return self._value[mal.Composite._fieldNumber + 4]
 
     @sendDefinitions.setter
     def sendDefinitions(self, sendDefinitions):
-        self._value[4] = mal.Boolean(sendDefinitions, canBeNull=False, attribName='sendDefinitions')
+        self._value[mal.Composite._fieldNumber + 4] = mal.Boolean(sendDefinitions, canBeNull=False, attribName='sendDefinitions')
+        self._isNull = False
 
     @property
     def filterEnabled(self):
-        return self._value[5]
+        return self._value[mal.Composite._fieldNumber + 5]
 
     @filterEnabled.setter
     def filterEnabled(self, filterEnabled):
-        self._value[5] = mal.Boolean(filterEnabled, canBeNull=False, attribName='filterEnabled')
+        self._value[mal.Composite._fieldNumber + 5] = mal.Boolean(filterEnabled, canBeNull=False, attribName='filterEnabled')
+        self._isNull = False
 
     @property
     def filteredTimeout(self):
-        return self._value[6]
+        return self._value[mal.Composite._fieldNumber + 6]
 
     @filteredTimeout.setter
     def filteredTimeout(self, filteredTimeout):
-        self._value[6] = mal.Duration(filteredTimeout, canBeNull=False, attribName='filteredTimeout')
+        self._value[mal.Composite._fieldNumber + 6] = mal.Duration(filteredTimeout, canBeNull=False, attribName='filteredTimeout')
+        self._isNull = False
 
     @property
     def generationEnabled(self):
-        return self._value[7]
+        return self._value[mal.Composite._fieldNumber + 7]
 
     @generationEnabled.setter
     def generationEnabled(self, generationEnabled):
-        self._value[7] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._value[mal.Composite._fieldNumber + 7] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._isNull = False
 
     @property
     def parameterSets(self):
-        return self._value[8]
+        return self._value[mal.Composite._fieldNumber + 8]
 
     @parameterSets.setter
     def parameterSets(self, parameterSets):
-        self._value[8] = AggregationParameterSetList(parameterSets, canBeNull=False, attribName='parameterSets')
+        self._value[mal.Composite._fieldNumber + 8] = AggregationParameterSetList(parameterSets, canBeNull=False, attribName='parameterSets')
+        self._isNull = False
 
 
 class AggregationDefinitionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONDEFINITIONDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -227,9 +297,11 @@ class AggregationParameterSet(mal.Composite):
     """The AggregationParameterSet structure holds the identifier and optional filter for a parameter, or set of parameters, in an aggregation."""
 
     shortForm = MALShortForm.AGGREGATIONPARAMETERSET
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -241,49 +313,52 @@ class AggregationParameterSet(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.domain = value[0]
-            self.parameters = value[1]
-            self.sampleInterval = value[2]
-            self.reportFilter = value[3]
+            self.domain = value[mal.Composite._fieldNumber + 0]
+            self.parameters = value[mal.Composite._fieldNumber + 1]
+            self.sampleInterval = value[mal.Composite._fieldNumber + 2]
+            self.reportFilter = value[mal.Composite._fieldNumber + 3]
 
     @property
     def domain(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @domain.setter
     def domain(self, domain):
-        self._value[0] = mal.IdentifierList(domain, canBeNull=True, attribName='domain')
+        self._value[mal.Composite._fieldNumber + 0] = mal.IdentifierList(domain, canBeNull=True, attribName='domain')
+        self._isNull = False
 
     @property
     def parameters(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @parameters.setter
     def parameters(self, parameters):
-        self._value[1] = mal.LongList(parameters, canBeNull=False, attribName='parameters')
+        self._value[mal.Composite._fieldNumber + 1] = mal.LongList(parameters, canBeNull=False, attribName='parameters')
+        self._isNull = False
 
     @property
     def sampleInterval(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @sampleInterval.setter
     def sampleInterval(self, sampleInterval):
-        self._value[2] = mal.Duration(sampleInterval, canBeNull=False, attribName='sampleInterval')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Duration(sampleInterval, canBeNull=False, attribName='sampleInterval')
+        self._isNull = False
 
     @property
     def reportFilter(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @reportFilter.setter
     def reportFilter(self, reportFilter):
-        self._value[3] = ThresholdFilter(reportFilter, canBeNull=True, attribName='reportFilter')
+        self._value[mal.Composite._fieldNumber + 3] = ThresholdFilter(reportFilter, canBeNull=True, attribName='reportFilter')
+        self._isNull = False
 
 
 class AggregationParameterSetList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONPARAMETERSET
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -304,9 +379,11 @@ class AggregationValue(mal.Composite):
     """The AggregationValue structure holds the values for one or more sets of parameter values. The value sets must be held in the same order as that defined in the matching AggregationDefinitionDetails."""
 
     shortForm = MALShortForm.AGGREGATIONVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -318,40 +395,42 @@ class AggregationValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.generationMode = value[0]
-            self.filtered = value[1]
-            self.parameterSetValues = value[2]
+            self.generationMode = value[mal.Composite._fieldNumber + 0]
+            self.filtered = value[mal.Composite._fieldNumber + 1]
+            self.parameterSetValues = value[mal.Composite._fieldNumber + 2]
 
     @property
     def generationMode(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @generationMode.setter
     def generationMode(self, generationMode):
-        self._value[0] = GenerationMode(generationMode, canBeNull=False, attribName='generationMode')
+        self._value[mal.Composite._fieldNumber + 0] = GenerationMode(generationMode, canBeNull=False, attribName='generationMode')
+        self._isNull = False
 
     @property
     def filtered(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @filtered.setter
     def filtered(self, filtered):
-        self._value[1] = mal.Boolean(filtered, canBeNull=False, attribName='filtered')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(filtered, canBeNull=False, attribName='filtered')
+        self._isNull = False
 
     @property
     def parameterSetValues(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @parameterSetValues.setter
     def parameterSetValues(self, parameterSetValues):
-        self._value[2] = AggregationSetValueList(parameterSetValues, canBeNull=False, attribName='parameterSetValues')
+        self._value[mal.Composite._fieldNumber + 2] = AggregationSetValueList(parameterSetValues, canBeNull=False, attribName='parameterSetValues')
+        self._isNull = False
 
 
 class AggregationValueList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -372,9 +451,11 @@ class AggregationSetValue(mal.Composite):
     """The AggregationSetValue structure holds the values for one set of parameter values. If the definition sendUnchanged field is set to FALSE parameter values that are unchanged since the previous report are replaced by a NULL in this list. The parameter values must be held in the same order as that defined in the matching AggregationDefinitionDetails."""
 
     shortForm = MALShortForm.AGGREGATIONSETVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -386,40 +467,42 @@ class AggregationSetValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.deltaTime = value[0]
-            self.intervalTime = value[1]
-            self.values = value[2]
+            self.deltaTime = value[mal.Composite._fieldNumber + 0]
+            self.intervalTime = value[mal.Composite._fieldNumber + 1]
+            self.values = value[mal.Composite._fieldNumber + 2]
 
     @property
     def deltaTime(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @deltaTime.setter
     def deltaTime(self, deltaTime):
-        self._value[0] = mal.Duration(deltaTime, canBeNull=True, attribName='deltaTime')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Duration(deltaTime, canBeNull=True, attribName='deltaTime')
+        self._isNull = False
 
     @property
     def intervalTime(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @intervalTime.setter
     def intervalTime(self, intervalTime):
-        self._value[1] = mal.Duration(intervalTime, canBeNull=True, attribName='intervalTime')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Duration(intervalTime, canBeNull=True, attribName='intervalTime')
+        self._isNull = False
 
     @property
     def values(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @values.setter
     def values(self, values):
-        self._value[2] = AggregationParameterValueList(values, canBeNull=False, attribName='values')
+        self._value[mal.Composite._fieldNumber + 2] = AggregationParameterValueList(values, canBeNull=False, attribName='values')
+        self._isNull = False
 
 
 class AggregationSetValueList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONSETVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -440,9 +523,11 @@ class AggregationParameterValue(mal.Composite):
     """The structure holds a single parameter value with its definition instance identifier."""
 
     shortForm = MALShortForm.AGGREGATIONPARAMETERVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -454,31 +539,32 @@ class AggregationParameterValue(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.value = value[0]
-            self.paramDefInstId = value[1]
+            self.value = value[mal.Composite._fieldNumber + 0]
+            self.paramDefInstId = value[mal.Composite._fieldNumber + 1]
 
     @property
     def value(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @value.setter
     def value(self, value):
-        self._value[0] = ParameterValue(value, canBeNull=False, attribName='value')
+        self._value[mal.Composite._fieldNumber + 0] = mc.services.parameter.ParameterValue(value, canBeNull=False, attribName='value')
+        self._isNull = False
 
     @property
     def paramDefInstId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @paramDefInstId.setter
     def paramDefInstId(self, paramDefInstId):
-        self._value[1] = mal.Long(paramDefInstId, canBeNull=True, attribName='paramDefInstId')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Long(paramDefInstId, canBeNull=True, attribName='paramDefInstId')
+        self._isNull = False
 
 
 class AggregationParameterValueList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONPARAMETERVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -499,9 +585,11 @@ class ThresholdFilter(mal.Composite):
     """The ThresholdFilter structure holds the filter for a parameter."""
 
     shortForm = MALShortForm.THRESHOLDFILTER
+    _fieldNumber = mal.Composite._fieldNumber + 3
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -513,40 +601,42 @@ class ThresholdFilter(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*3
-            self.thresholdType = value[0]
-            self.thresholdValue = value[1]
-            self.useConverted = value[2]
+            self.thresholdType = value[mal.Composite._fieldNumber + 0]
+            self.thresholdValue = value[mal.Composite._fieldNumber + 1]
+            self.useConverted = value[mal.Composite._fieldNumber + 2]
 
     @property
     def thresholdType(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @thresholdType.setter
     def thresholdType(self, thresholdType):
-        self._value[0] = ThresholdType(thresholdType, canBeNull=False, attribName='thresholdType')
+        self._value[mal.Composite._fieldNumber + 0] = ThresholdType(thresholdType, canBeNull=False, attribName='thresholdType')
+        self._isNull = False
 
     @property
     def thresholdValue(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @thresholdValue.setter
     def thresholdValue(self, thresholdValue):
-        self._value[1] = mal.Attribute(thresholdValue, canBeNull=False, attribName='thresholdValue')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Attribute(thresholdValue, canBeNull=False, attribName='thresholdValue')
+        self._isNull = False
 
     @property
     def useConverted(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @useConverted.setter
     def useConverted(self, useConverted):
-        self._value[2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._isNull = False
 
 
 class ThresholdFilterList(mal.ElementList):
     shortForm = -MALShortForm.THRESHOLDFILTER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -567,9 +657,11 @@ class AggregationCreationRequest(mal.Composite):
     """The AggregationCreationRequest contains all the fields required when creating a new aggregation in a provider."""
 
     shortForm = MALShortForm.AGGREGATIONCREATIONREQUEST
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -581,31 +673,32 @@ class AggregationCreationRequest(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.name = value[0]
-            self.aggDefDetails = value[1]
+            self.name = value[mal.Composite._fieldNumber + 0]
+            self.aggDefDetails = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._isNull = False
 
     @property
     def aggDefDetails(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @aggDefDetails.setter
     def aggDefDetails(self, aggDefDetails):
-        self._value[1] = AggregationDefinitionDetails(aggDefDetails, canBeNull=False, attribName='aggDefDetails')
+        self._value[mal.Composite._fieldNumber + 1] = AggregationDefinitionDetails(aggDefDetails, canBeNull=False, attribName='aggDefDetails')
+        self._isNull = False
 
 
 class AggregationCreationRequestList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONCREATIONREQUEST
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -626,9 +719,11 @@ class AggregationValueDetails(mal.Composite):
     """This structure holds a specific time stamped value of the aggregation. """
 
     shortForm = MALShortForm.AGGREGATIONVALUEDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -640,49 +735,52 @@ class AggregationValueDetails(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.aggId = value[0]
-            self.defId = value[1]
-            self.timestamp = value[2]
-            self.value = value[3]
+            self.aggId = value[mal.Composite._fieldNumber + 0]
+            self.defId = value[mal.Composite._fieldNumber + 1]
+            self.timestamp = value[mal.Composite._fieldNumber + 2]
+            self.value = value[mal.Composite._fieldNumber + 3]
 
     @property
     def aggId(self):
-        return self._value[0]
+        return self._value[mal.Composite._fieldNumber + 0]
 
     @aggId.setter
     def aggId(self, aggId):
-        self._value[0] = mal.Long(aggId, canBeNull=False, attribName='aggId')
+        self._value[mal.Composite._fieldNumber + 0] = mal.Long(aggId, canBeNull=False, attribName='aggId')
+        self._isNull = False
 
     @property
     def defId(self):
-        return self._value[1]
+        return self._value[mal.Composite._fieldNumber + 1]
 
     @defId.setter
     def defId(self, defId):
-        self._value[1] = mal.Long(defId, canBeNull=False, attribName='defId')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Long(defId, canBeNull=False, attribName='defId')
+        self._isNull = False
 
     @property
     def timestamp(self):
-        return self._value[2]
+        return self._value[mal.Composite._fieldNumber + 2]
 
     @timestamp.setter
     def timestamp(self, timestamp):
-        self._value[2] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._isNull = False
 
     @property
     def value(self):
-        return self._value[3]
+        return self._value[mal.Composite._fieldNumber + 3]
 
     @value.setter
     def value(self, value):
-        self._value[3] = AggregationValue(value, canBeNull=False, attribName='value')
+        self._value[mal.Composite._fieldNumber + 3] = AggregationValue(value, canBeNull=False, attribName='value')
+        self._isNull = False
 
 
 class AggregationValueDetailsList(mal.ElementList):
     shortForm = -MALShortForm.AGGREGATIONVALUEDETAILS
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):

@@ -45,57 +45,12 @@ class MALShortForm(IntEnum):
     FILE = 30
 
 
-class InteractionType(IntEnum):
-    """InteractionType is an enumeration holding the possible interaction pattern types."""
-
-    shortForm = MALShortForm.INTERACTIONTYPE
-
-    SEND = 1 # Used for Send interactions.
-    SUBMIT = 2 # Used for Submit interactions.
-    REQUEST = 3 # Used for Request interactions.
-    INVOKE = 4 # Used for Invoke interactions.
-    PROGRESS = 5 # Used for Progress interactions.
-    PUBSUB = 6 # Used for Publish/Subscribe interactions.
-
-
-class SessionType(IntEnum):
-    """SessionType is an enumeration holding the session types."""
-
-    shortForm = MALShortForm.SESSIONTYPE
-
-    LIVE = 1 # Used for Live sessions.
-    SIMULATION = 2 # Used for Simulation sessions.
-    REPLAY = 3 # Used for Replay sessions.
-
-
-class QoSLevel(IntEnum):
-    """QoSLevel is an enumeration holding the possible QoS levels."""
-
-    shortForm = MALShortForm.QOSLEVEL
-
-    BESTEFFORT = 1 # Used for Best Effort QoS Level.
-    ASSURED = 2 # Used for Assured QoS Level.
-    QUEUED = 3 # Used for Queued QoS Level.
-    TIMELY = 4 # Used for Timely QoS Level.
-
-
-class UpdateType(IntEnum):
-    """UpdateType is an enumeration holding the possible Update types."""
-
-    shortForm = MALShortForm.UPDATETYPE
-
-    CREATION = 1 # Update is notification of the creation of the item.
-    UPDATE = 2 # Update is just a periodic update of the item and has not changed its value.
-    MODIFICATION = 3 # Update is for a changed value or modification of the item.
-    DELETION = 4 # Update is notification of the removal of the item.
-
-
 class Element(ABC):
     """Element is the base type of all data constructs. All types that make up the MAL data model are derived from it."""
 
     shortForm = None
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         self._isNull = False
         self._canBeNull = canBeNull
         self.attribName = attribName
@@ -113,7 +68,7 @@ class Element(ABC):
 class ElementList(Element):
     shortForm = None
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
 
     @property
@@ -130,12 +85,139 @@ class ElementList(Element):
         return self.__class__(value)
 
 
+class InteractionType(IntEnum):
+    """InteractionType is an enumeration holding the possible interaction pattern types."""
+
+    shortForm = MALShortForm.INTERACTIONTYPE
+
+    SEND = 1 # Used for Send interactions.
+    SUBMIT = 2 # Used for Submit interactions.
+    REQUEST = 3 # Used for Request interactions.
+    INVOKE = 4 # Used for Invoke interactions.
+    PROGRESS = 5 # Used for Progress interactions.
+    PUBSUB = 6 # Used for Publish/Subscribe interactions.
+
+
+class InteractionTypeList(ElementList):
+    shortForm = -MALShortForm.INTERACTIONTYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(InteractionType(v))
+
+
+class SessionType(IntEnum):
+    """SessionType is an enumeration holding the session types."""
+
+    shortForm = MALShortForm.SESSIONTYPE
+
+    LIVE = 1 # Used for Live sessions.
+    SIMULATION = 2 # Used for Simulation sessions.
+    REPLAY = 3 # Used for Replay sessions.
+
+
+class SessionTypeList(ElementList):
+    shortForm = -MALShortForm.SESSIONTYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(SessionType(v))
+
+
+class QoSLevel(IntEnum):
+    """QoSLevel is an enumeration holding the possible QoS levels."""
+
+    shortForm = MALShortForm.QOSLEVEL
+
+    BESTEFFORT = 1 # Used for Best Effort QoS Level.
+    ASSURED = 2 # Used for Assured QoS Level.
+    QUEUED = 3 # Used for Queued QoS Level.
+    TIMELY = 4 # Used for Timely QoS Level.
+
+
+class QoSLevelList(ElementList):
+    shortForm = -MALShortForm.QOSLEVEL
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(QoSLevel(v))
+
+
+class UpdateType(IntEnum):
+    """UpdateType is an enumeration holding the possible Update types."""
+
+    shortForm = MALShortForm.UPDATETYPE
+
+    CREATION = 1 # Update is notification of the creation of the item.
+    UPDATE = 2 # Update is just a periodic update of the item and has not changed its value.
+    MODIFICATION = 3 # Update is for a changed value or modification of the item.
+    DELETION = 4 # Update is notification of the removal of the item.
+
+
+class UpdateTypeList(ElementList):
+    shortForm = -MALShortForm.UPDATETYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else: 
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(UpdateType(v))
+
+
 class Attribute(Element):
     """Attribute is the base type of all attributes of the MAL data model. Attributes are contained within Composites and are used to build complex structures that make the data model."""
 
     shortForm = None
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    value_type = None
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if value is None and self._canBeNull:
             self._isNull = True
@@ -143,6 +225,10 @@ class Attribute(Element):
             self._value = value.copy().value
         elif type(value) == type(self).value_type:
             self._value = value
+        elif type(self) == type(Attribute(None)) and value.shortForm in range(1,19):
+            self._value = value.copy().value
+            self.shortForm = value.shortForm
+            self.value_type = value.value_type
         else:
             raise TypeError("Expected {}, got {}.".format(type(self).value_type, type(value)))
 
@@ -154,6 +240,12 @@ class Composite(Element):
     """Composite is the base structure for composite structures that contain a set of elements."""
 
     shortForm = None
+
+    _fieldNumber = 0
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
 
     def copy(self):
         if self._isNull:
@@ -175,7 +267,7 @@ class Blob(Attribute):
 class BlobList(ElementList):
     shortForm = -MALShortForm.BLOB
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -202,7 +294,7 @@ class Boolean(Attribute):
 class BooleanList(ElementList):
     shortForm = -MALShortForm.BOOLEAN
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -229,7 +321,7 @@ class Duration(Attribute):
 class DurationList(ElementList):
     shortForm = -MALShortForm.DURATION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -257,7 +349,7 @@ Three special values exist for this type: POSITIVE_INFINITY, NEGATIVE_INFINITY, 
 class FloatList(ElementList):
     shortForm = -MALShortForm.FLOAT
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -285,7 +377,7 @@ Three special values exist for this type: POSITIVE_INFINITY, NEGATIVE_INFINITY, 
 class DoubleList(ElementList):
     shortForm = -MALShortForm.DOUBLE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -312,7 +404,7 @@ class Identifier(Attribute):
 class IdentifierList(ElementList):
     shortForm = -MALShortForm.IDENTIFIER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -335,7 +427,7 @@ class Octet(Attribute):
     shortForm = MALShortForm.OCTET
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < -128 or value > 127 ):
             raise ValueError("Authorized value is between -128 and 127.")
@@ -344,7 +436,7 @@ class Octet(Attribute):
 class OctetList(ElementList):
     shortForm = -MALShortForm.OCTET
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -367,7 +459,7 @@ class UOctet(Attribute):
     shortForm = MALShortForm.UOCTET
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < 0 or value > 255 ):
             raise ValueError("Authorized value is between 0 and 255.")
@@ -376,7 +468,7 @@ class UOctet(Attribute):
 class UOctetList(ElementList):
     shortForm = -MALShortForm.UOCTET
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -399,7 +491,7 @@ class Short(Attribute):
     shortForm = MALShortForm.SHORT
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < -32768 or value > 32767 ):
             raise ValueError("Authorized value is between -32768 and 32767.")
@@ -408,7 +500,7 @@ class Short(Attribute):
 class ShortList(ElementList):
     shortForm = -MALShortForm.SHORT
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -431,7 +523,7 @@ class UShort(Attribute):
     shortForm = MALShortForm.USHORT
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < 0 or value > 65535 ):
             raise ValueError("Authorized value is between 0 and 65535.")
@@ -440,7 +532,7 @@ class UShort(Attribute):
 class UShortList(ElementList):
     shortForm = -MALShortForm.USHORT
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -463,7 +555,7 @@ class Integer(Attribute):
     shortForm = MALShortForm.INTEGER
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < -2147483648 or value > 21474836487 ):
             raise ValueError("Authorized value is between -2147483648 and 21474836487.")
@@ -472,7 +564,7 @@ class Integer(Attribute):
 class IntegerList(ElementList):
     shortForm = -MALShortForm.INTEGER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -495,7 +587,7 @@ class UInteger(Attribute):
     shortForm = MALShortForm.UINTEGER
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < 0 or value > 4294967295 ):
             raise ValueError("Authorized value is between 0 and 4294967295.")
@@ -504,7 +596,7 @@ class UInteger(Attribute):
 class UIntegerList(ElementList):
     shortForm = -MALShortForm.UINTEGER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -527,7 +619,7 @@ class Long(Attribute):
     shortForm = MALShortForm.LONG
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < -9223372036854775808 or value > 9223372036854775807 ):
             raise ValueError("Authorized value is between -9223372036854775808 and 9223372036854775807.")
@@ -536,7 +628,7 @@ class Long(Attribute):
 class LongList(ElementList):
     shortForm = -MALShortForm.LONG
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -559,7 +651,7 @@ class ULong(Attribute):
     shortForm = MALShortForm.ULONG
     value_type = int
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         if type(value) == int and ( value < 0 or value > 18446744073709551615 ):
             raise ValueError("Authorized value is between 0 and 18446744073709551615.")
@@ -568,7 +660,7 @@ class ULong(Attribute):
 class ULongList(ElementList):
     shortForm = -MALShortForm.ULONG
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -595,7 +687,7 @@ class String(Attribute):
 class StringList(ElementList):
     shortForm = -MALShortForm.STRING
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -622,7 +714,7 @@ class Time(Attribute):
 class TimeList(ElementList):
     shortForm = -MALShortForm.TIME
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -649,7 +741,7 @@ class FineTime(Attribute):
 class FineTimeList(ElementList):
     shortForm = -MALShortForm.FINETIME
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -676,7 +768,7 @@ class URI(Attribute):
 class URIList(ElementList):
     shortForm = -MALShortForm.URI
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -697,9 +789,11 @@ class Subscription(Composite):
     """The Subscription structure is used when subscribing for updates using the PUBSUB interaction pattern. It contains a single identifier that identifies the subscription being defined and a set of entities being requested."""
 
     shortForm = MALShortForm.SUBSCRIPTION
+    _fieldNumber = Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -711,31 +805,32 @@ class Subscription(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.subscriptionId = value[0]
-            self.entities = value[1]
+            self.subscriptionId = value[Composite._fieldNumber + 0]
+            self.entities = value[Composite._fieldNumber + 1]
 
     @property
     def subscriptionId(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @subscriptionId.setter
     def subscriptionId(self, subscriptionId):
-        self._value[0] = Identifier(subscriptionId, canBeNull=False, attribName='subscriptionId')
+        self._value[Composite._fieldNumber + 0] = Identifier(subscriptionId, canBeNull=False, attribName='subscriptionId')
+        self._isNull = False
 
     @property
     def entities(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @entities.setter
     def entities(self, entities):
-        self._value[1] = EntityRequestList(entities, canBeNull=False, attribName='entities')
+        self._value[Composite._fieldNumber + 1] = EntityRequestList(entities, canBeNull=False, attribName='entities')
+        self._isNull = False
 
 
 class SubscriptionList(ElementList):
     shortForm = -MALShortForm.SUBSCRIPTION
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -756,9 +851,11 @@ class EntityRequest(Composite):
     """The EntityRequest structure is used when subscribing for updates using the PUBSUB interaction pattern."""
 
     shortForm = MALShortForm.ENTITYREQUEST
+    _fieldNumber = Composite._fieldNumber + 6
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*6
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -770,67 +867,72 @@ class EntityRequest(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*6
-            self.subDomain = value[0]
-            self.allAreas = value[1]
-            self.allServices = value[2]
-            self.allOperations = value[3]
-            self.onlyOnChange = value[4]
-            self.entityKeys = value[5]
+            self.subDomain = value[Composite._fieldNumber + 0]
+            self.allAreas = value[Composite._fieldNumber + 1]
+            self.allServices = value[Composite._fieldNumber + 2]
+            self.allOperations = value[Composite._fieldNumber + 3]
+            self.onlyOnChange = value[Composite._fieldNumber + 4]
+            self.entityKeys = value[Composite._fieldNumber + 5]
 
     @property
     def subDomain(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @subDomain.setter
     def subDomain(self, subDomain):
-        self._value[0] = IdentifierList(subDomain, canBeNull=True, attribName='subDomain')
+        self._value[Composite._fieldNumber + 0] = IdentifierList(subDomain, canBeNull=True, attribName='subDomain')
+        self._isNull = False
 
     @property
     def allAreas(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @allAreas.setter
     def allAreas(self, allAreas):
-        self._value[1] = Boolean(allAreas, canBeNull=False, attribName='allAreas')
+        self._value[Composite._fieldNumber + 1] = Boolean(allAreas, canBeNull=False, attribName='allAreas')
+        self._isNull = False
 
     @property
     def allServices(self):
-        return self._value[2]
+        return self._value[Composite._fieldNumber + 2]
 
     @allServices.setter
     def allServices(self, allServices):
-        self._value[2] = Boolean(allServices, canBeNull=False, attribName='allServices')
+        self._value[Composite._fieldNumber + 2] = Boolean(allServices, canBeNull=False, attribName='allServices')
+        self._isNull = False
 
     @property
     def allOperations(self):
-        return self._value[3]
+        return self._value[Composite._fieldNumber + 3]
 
     @allOperations.setter
     def allOperations(self, allOperations):
-        self._value[3] = Boolean(allOperations, canBeNull=False, attribName='allOperations')
+        self._value[Composite._fieldNumber + 3] = Boolean(allOperations, canBeNull=False, attribName='allOperations')
+        self._isNull = False
 
     @property
     def onlyOnChange(self):
-        return self._value[4]
+        return self._value[Composite._fieldNumber + 4]
 
     @onlyOnChange.setter
     def onlyOnChange(self, onlyOnChange):
-        self._value[4] = Boolean(onlyOnChange, canBeNull=False, attribName='onlyOnChange')
+        self._value[Composite._fieldNumber + 4] = Boolean(onlyOnChange, canBeNull=False, attribName='onlyOnChange')
+        self._isNull = False
 
     @property
     def entityKeys(self):
-        return self._value[5]
+        return self._value[Composite._fieldNumber + 5]
 
     @entityKeys.setter
     def entityKeys(self, entityKeys):
-        self._value[5] = EntityKeyList(entityKeys, canBeNull=False, attribName='entityKeys')
+        self._value[Composite._fieldNumber + 5] = EntityKeyList(entityKeys, canBeNull=False, attribName='entityKeys')
+        self._isNull = False
 
 
 class EntityRequestList(ElementList):
     shortForm = -MALShortForm.ENTITYREQUEST
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -851,9 +953,11 @@ class EntityKey(Composite):
     """The EntityKey structure is used to identify an entity in the PUBSUB interaction pattern."""
 
     shortForm = MALShortForm.ENTITYKEY
+    _fieldNumber = Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -865,49 +969,52 @@ class EntityKey(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.firstSubKey = value[0]
-            self.secondSubKey = value[1]
-            self.thirdSubKey = value[2]
-            self.fourthSubKey = value[3]
+            self.firstSubKey = value[Composite._fieldNumber + 0]
+            self.secondSubKey = value[Composite._fieldNumber + 1]
+            self.thirdSubKey = value[Composite._fieldNumber + 2]
+            self.fourthSubKey = value[Composite._fieldNumber + 3]
 
     @property
     def firstSubKey(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @firstSubKey.setter
     def firstSubKey(self, firstSubKey):
-        self._value[0] = Identifier(firstSubKey, canBeNull=True, attribName='firstSubKey')
+        self._value[Composite._fieldNumber + 0] = Identifier(firstSubKey, canBeNull=True, attribName='firstSubKey')
+        self._isNull = False
 
     @property
     def secondSubKey(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @secondSubKey.setter
     def secondSubKey(self, secondSubKey):
-        self._value[1] = Long(secondSubKey, canBeNull=True, attribName='secondSubKey')
+        self._value[Composite._fieldNumber + 1] = Long(secondSubKey, canBeNull=True, attribName='secondSubKey')
+        self._isNull = False
 
     @property
     def thirdSubKey(self):
-        return self._value[2]
+        return self._value[Composite._fieldNumber + 2]
 
     @thirdSubKey.setter
     def thirdSubKey(self, thirdSubKey):
-        self._value[2] = Long(thirdSubKey, canBeNull=True, attribName='thirdSubKey')
+        self._value[Composite._fieldNumber + 2] = Long(thirdSubKey, canBeNull=True, attribName='thirdSubKey')
+        self._isNull = False
 
     @property
     def fourthSubKey(self):
-        return self._value[3]
+        return self._value[Composite._fieldNumber + 3]
 
     @fourthSubKey.setter
     def fourthSubKey(self, fourthSubKey):
-        self._value[3] = Long(fourthSubKey, canBeNull=True, attribName='fourthSubKey')
+        self._value[Composite._fieldNumber + 3] = Long(fourthSubKey, canBeNull=True, attribName='fourthSubKey')
+        self._isNull = False
 
 
 class EntityKeyList(ElementList):
     shortForm = -MALShortForm.ENTITYKEY
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -928,9 +1035,11 @@ class UpdateHeader(Composite):
     """The UpdateHeader structure is used by updates using the PUBSUB interaction pattern. It holds information that identifies a single update."""
 
     shortForm = MALShortForm.UPDATEHEADER
+    _fieldNumber = Composite._fieldNumber + 4
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -942,49 +1051,52 @@ class UpdateHeader(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*4
-            self.timestamp = value[0]
-            self.sourceURI = value[1]
-            self.updateType = value[2]
-            self.key = value[3]
+            self.timestamp = value[Composite._fieldNumber + 0]
+            self.sourceURI = value[Composite._fieldNumber + 1]
+            self.updateType = value[Composite._fieldNumber + 2]
+            self.key = value[Composite._fieldNumber + 3]
 
     @property
     def timestamp(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @timestamp.setter
     def timestamp(self, timestamp):
-        self._value[0] = Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._value[Composite._fieldNumber + 0] = Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._isNull = False
 
     @property
     def sourceURI(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @sourceURI.setter
     def sourceURI(self, sourceURI):
-        self._value[1] = URI(sourceURI, canBeNull=False, attribName='sourceURI')
+        self._value[Composite._fieldNumber + 1] = URI(sourceURI, canBeNull=False, attribName='sourceURI')
+        self._isNull = False
 
     @property
     def updateType(self):
-        return self._value[2]
+        return self._value[Composite._fieldNumber + 2]
 
     @updateType.setter
     def updateType(self, updateType):
-        self._value[2] = UpdateType(updateType, canBeNull=False, attribName='updateType')
+        self._value[Composite._fieldNumber + 2] = UpdateType(updateType, canBeNull=False, attribName='updateType')
+        self._isNull = False
 
     @property
     def key(self):
-        return self._value[3]
+        return self._value[Composite._fieldNumber + 3]
 
     @key.setter
     def key(self, key):
-        self._value[3] = EntityKey(key, canBeNull=False, attribName='key')
+        self._value[Composite._fieldNumber + 3] = EntityKey(key, canBeNull=False, attribName='key')
+        self._isNull = False
 
 
 class UpdateHeaderList(ElementList):
     shortForm = -MALShortForm.UPDATEHEADER
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -1005,9 +1117,11 @@ class IdBooleanPair(Composite):
     """IdBooleanPair is a simple pair type of an identifier and Boolean value."""
 
     shortForm = MALShortForm.IDBOOLEANPAIR
+    _fieldNumber = Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -1019,31 +1133,32 @@ class IdBooleanPair(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.id = value[0]
-            self.value = value[1]
+            self.id = value[Composite._fieldNumber + 0]
+            self.value = value[Composite._fieldNumber + 1]
 
     @property
     def id(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @id.setter
     def id(self, id):
-        self._value[0] = Identifier(id, canBeNull=True, attribName='id')
+        self._value[Composite._fieldNumber + 0] = Identifier(id, canBeNull=True, attribName='id')
+        self._isNull = False
 
     @property
     def value(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @value.setter
     def value(self, value):
-        self._value[1] = Boolean(value, canBeNull=True, attribName='value')
+        self._value[Composite._fieldNumber + 1] = Boolean(value, canBeNull=True, attribName='value')
+        self._isNull = False
 
 
 class IdBooleanPairList(ElementList):
     shortForm = -MALShortForm.IDBOOLEANPAIR
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -1064,9 +1179,11 @@ class Pair(Composite):
     """Pair is a simple composite structure for holding pairs. The pairs can be user-defined attributes."""
 
     shortForm = MALShortForm.PAIR
+    _fieldNumber = Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -1078,31 +1195,32 @@ class Pair(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.first = value[0]
-            self.second = value[1]
+            self.first = value[Composite._fieldNumber + 0]
+            self.second = value[Composite._fieldNumber + 1]
 
     @property
     def first(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @first.setter
     def first(self, first):
-        self._value[0] = Attribute(first, canBeNull=True, attribName='first')
+        self._value[Composite._fieldNumber + 0] = Attribute(first, canBeNull=True, attribName='first')
+        self._isNull = False
 
     @property
     def second(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @second.setter
     def second(self, second):
-        self._value[1] = Attribute(second, canBeNull=True, attribName='second')
+        self._value[Composite._fieldNumber + 1] = Attribute(second, canBeNull=True, attribName='second')
+        self._isNull = False
 
 
 class PairList(ElementList):
     shortForm = -MALShortForm.PAIR
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -1123,9 +1241,11 @@ class NamedValue(Composite):
     """The NamedValue structure represents a simple pair type of an identifier and abstract attribute value."""
 
     shortForm = MALShortForm.NAMEDVALUE
+    _fieldNumber = Composite._fieldNumber + 2
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -1137,31 +1257,32 @@ class NamedValue(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*2
-            self.name = value[0]
-            self.value = value[1]
+            self.name = value[Composite._fieldNumber + 0]
+            self.value = value[Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[0] = Identifier(name, canBeNull=True, attribName='name')
+        self._value[Composite._fieldNumber + 0] = Identifier(name, canBeNull=True, attribName='name')
+        self._isNull = False
 
     @property
     def value(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @value.setter
     def value(self, value):
-        self._value[1] = Attribute(value, canBeNull=True, attribName='value')
+        self._value[Composite._fieldNumber + 1] = Attribute(value, canBeNull=True, attribName='value')
+        self._isNull = False
 
 
 class NamedValueList(ElementList):
     shortForm = -MALShortForm.NAMEDVALUE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
@@ -1182,9 +1303,11 @@ class File(Composite):
     """The File structure represents a File and holds details about a File. It can also, optionally, hold a BLOB of the file data. The file type is denoted using the internet MIME media types, the list of official MIME types is held at http://www.iana.org/assignments/media-types/index.html."""
 
     shortForm = MALShortForm.FILE
+    _fieldNumber = Composite._fieldNumber + 7
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
+        self._value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -1196,76 +1319,82 @@ class File(Composite):
             else:
                 self._value = value.copy().value
         else:
-            self._value = [None]*7
-            self.name = value[0]
-            self.mimeType = value[1]
-            self.creationDate = value[2]
-            self.modificationDate = value[3]
-            self.size = value[4]
-            self.content = value[5]
-            self.metaData = value[6]
+            self.name = value[Composite._fieldNumber + 0]
+            self.mimeType = value[Composite._fieldNumber + 1]
+            self.creationDate = value[Composite._fieldNumber + 2]
+            self.modificationDate = value[Composite._fieldNumber + 3]
+            self.size = value[Composite._fieldNumber + 4]
+            self.content = value[Composite._fieldNumber + 5]
+            self.metaData = value[Composite._fieldNumber + 6]
 
     @property
     def name(self):
-        return self._value[0]
+        return self._value[Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[0] = Identifier(name, canBeNull=False, attribName='name')
+        self._value[Composite._fieldNumber + 0] = Identifier(name, canBeNull=False, attribName='name')
+        self._isNull = False
 
     @property
     def mimeType(self):
-        return self._value[1]
+        return self._value[Composite._fieldNumber + 1]
 
     @mimeType.setter
     def mimeType(self, mimeType):
-        self._value[1] = String(mimeType, canBeNull=True, attribName='mimeType')
+        self._value[Composite._fieldNumber + 1] = String(mimeType, canBeNull=True, attribName='mimeType')
+        self._isNull = False
 
     @property
     def creationDate(self):
-        return self._value[2]
+        return self._value[Composite._fieldNumber + 2]
 
     @creationDate.setter
     def creationDate(self, creationDate):
-        self._value[2] = Time(creationDate, canBeNull=True, attribName='creationDate')
+        self._value[Composite._fieldNumber + 2] = Time(creationDate, canBeNull=True, attribName='creationDate')
+        self._isNull = False
 
     @property
     def modificationDate(self):
-        return self._value[3]
+        return self._value[Composite._fieldNumber + 3]
 
     @modificationDate.setter
     def modificationDate(self, modificationDate):
-        self._value[3] = Time(modificationDate, canBeNull=True, attribName='modificationDate')
+        self._value[Composite._fieldNumber + 3] = Time(modificationDate, canBeNull=True, attribName='modificationDate')
+        self._isNull = False
 
     @property
     def size(self):
-        return self._value[4]
+        return self._value[Composite._fieldNumber + 4]
 
     @size.setter
     def size(self, size):
-        self._value[4] = ULong(size, canBeNull=True, attribName='size')
+        self._value[Composite._fieldNumber + 4] = ULong(size, canBeNull=True, attribName='size')
+        self._isNull = False
 
     @property
     def content(self):
-        return self._value[5]
+        return self._value[Composite._fieldNumber + 5]
 
     @content.setter
     def content(self, content):
-        self._value[5] = Blob(content, canBeNull=True, attribName='content')
+        self._value[Composite._fieldNumber + 5] = Blob(content, canBeNull=True, attribName='content')
+        self._isNull = False
 
     @property
     def metaData(self):
-        return self._value[6]
+        return self._value[Composite._fieldNumber + 6]
 
     @metaData.setter
     def metaData(self, metaData):
-        self._value[6] = NamedValueList(metaData, canBeNull=True, attribName='metaData')
+        self._value[Composite._fieldNumber + 6] = NamedValueList(metaData, canBeNull=True, attribName='metaData')
+        self._isNull = False
 
 
 class FileList(ElementList):
     shortForm = -MALShortForm.FILE
 
-    def __init__(self, value, canBeNull=True, attribName=None):
+    def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._value = []
         if type(value) == type(self):
