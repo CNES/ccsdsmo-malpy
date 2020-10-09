@@ -353,5 +353,5 @@ class InstanceBooleanPairList(mal.ElementList):
 class Errors(IntEnum):
     """All MAL errors."""
 
-    INVALID = 70000 # Operation specific
-    DUPLICATE = 70001 # Operation specific
+    INVALID = 70000  # Operation specific
+    DUPLICATE = 70001  # Operation specific

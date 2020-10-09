@@ -1,5 +1,6 @@
 import time
 from enum import IntEnum
+from .maltypes import QoSLevel, SessionType, InteractionType
 
 class MAL_IP_STAGES(IntEnum):
     SEND = 0
@@ -49,6 +50,7 @@ class InvalidIPStageError(Exception):
 
 class BackendShutdown(Exception):
     pass
+
 
 class MALHeader(object):
     """
@@ -119,7 +121,10 @@ class MALMessage(object):
 
     def __init__(self, header=None, msg_parts=[]):
         self.header = header or MALHeader()
-        self.msg_parts = msg_parts
+        if type(msg_parts) is not list:
+            self.msg_parts = [msg_parts]
+        else:
+            self.msg_parts = msg_parts
 
     def __len__(self):
         return sum([len(part) for part in self.msg_parts])
@@ -138,12 +143,22 @@ class Handler(object):
     SERVICE = None
     OPERATION = None
 
+    def __init__(self, transport, encoding):
+        self.transport = transport
+        self.encoding = encoding
+        self.transport.parent = self
+        self.encoding.parent = self
+
     def send_message(self, message):
+        print(self.encoding)
         message = self.encoding.encode(message)
+        print(message)
         return self.transport.send(message)
 
     def receive_message(self):
+        print(self.encoding)
         message = self.transport.recv()
+        print(message)
         return self.encoding.decode(message)
 
 
@@ -167,11 +182,9 @@ class ConsumerHandler(Handler):
         return cls._transaction_id_counter
 
     def __init__(self, transport, encoding, provider_uri,
-                 session, session_name="", domain=None, network_zone=None,
-                 priority=None, auth_id=None, qos_level=None):
-        super().__init__()
-        self.transport = transport
-        self.encoding = encoding
+                 session=SessionType.LIVE, session_name="", domain=[], network_zone=None,
+                 priority=None, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
+        super().__init__(transport, encoding)
         self.provider_uri = provider_uri
         self.session = session
         self.session_name = session_name
@@ -225,11 +238,8 @@ class ProviderHandler(Handler):
     SERVICE = None
     OPERATION = None
 
-
     def __init__(self, transport, encoding):
-        super().__init__()
-        self.transport = transport
-        self.encoding = encoding
+        super().__init__(transport, encoding)
 
     def define_header(self, received_message_header):
         self.response_header = received_message_header.copy()
@@ -241,7 +251,6 @@ class ProviderHandler(Handler):
         header = self.response_header.copy()
         header.ip_stage = ip_stage
         return header
-
 
 
 class SendProviderHandler(ProviderHandler):
@@ -267,12 +276,13 @@ class SendConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
+    IP_TYPE = InteractionType.SEND
+
     def send(self, body):
         header = self.create_message_header(MAL_IP_STAGES.SEND)
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
         self.interaction_terminated = True
-
 
 
 class SubmitProviderHandler(ProviderHandler):
@@ -290,7 +300,6 @@ class SubmitProviderHandler(ProviderHandler):
         else:
             raise InvalidIPStageError("In %s. Expected SUBMIT. Got %s" %
                                       (self.__class__.__name__, ip_stage))
-
 
     def ack(self, body, async_send=False):
         header = self.create_message_header(MAL_IP_STAGES.SUBMIT_ACK)
@@ -311,6 +320,8 @@ class SubmitConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
+    IP_TYPE = InteractionType.SUBMIT
+
     def submit(self, body):
         header = self.create_message_header(MAL_IP_STAGES.SUBMIT)
         message = MALMessage(header=header, msg_parts=body)
@@ -328,7 +339,6 @@ class SubmitConsumerHandler(ConsumerHandler):
         else:
             raise InvalidIPStageError("In %s. Expected SUBMIT_ACK. Got %s" %
                                       (self.__class__.__name__, ip_stage))
-
 
 
 class RequestProviderHandler(ProviderHandler):
@@ -365,6 +375,8 @@ class RequestConsumerHandler(ConsumerHandler):
     A consumer handler for operations belonging to the SEND
     interaction pattern
     """
+
+    IP_TYPE = InteractionType.REQUEST
 
     def request(self, body):
         header = self.create_message_header(MAL_IP_STAGES.REQUEST)
@@ -429,6 +441,8 @@ class InvokeConsumerHandler(ConsumerHandler):
     A consumer handler for operations belonging to the SEND
     interaction pattern
     """
+
+    IP_TYPE = InteractionType.INVOKE
 
     def invoke(self, body):
         header = self.create_message_header(MAL_IP_STAGES.INVOKE)
@@ -515,6 +529,8 @@ class ProgressConsumerHandler(ConsumerHandler):
     A consumer handler for operations belonging to the SEND
     interaction pattern
     """
+
+    IP_TYPE = InteractionType.PROGRESS
 
     def progress(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PROGRESS)
@@ -648,6 +664,7 @@ class PubSubProviderHandler(ProviderHandler):
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_ERROR. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
+
 class PubSubBrokerHandler(ProviderHandler):
 
     def receive_registration_message(self):
@@ -742,7 +759,7 @@ class PubSubBrokerHandler(ProviderHandler):
         self.send_message(message)
 
 
-class PubSubConsumerHandler(ProviderHandler):
+class PubSubConsumerHandler(ConsumerHandler):
 
     def register(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PUBSUB_REGISTER)
@@ -764,7 +781,6 @@ class PubSubConsumerHandler(ProviderHandler):
         header = self.create_message_header(MAL_IP_STAGES.PUBSUB_DEREGISTER)
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
-
 
     def receive_deregister_ack(self):
         message, ip_stage = self.receive_message()

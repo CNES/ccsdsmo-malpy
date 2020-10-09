@@ -72,7 +72,7 @@ class ExpressionOperatorList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -102,6 +102,7 @@ class QueryFilter(mal.Composite):
             else:
                 self._value = value.copy().value
         else:
+            raise RuntimeError("This class is abstract and should not be directly called")
 
 
 class QueryFilterList(mal.ElementList):
@@ -114,7 +115,7 @@ class QueryFilterList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -206,7 +207,7 @@ class ArchiveDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -338,7 +339,7 @@ class ArchiveQueryList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -410,7 +411,7 @@ class CompositeFilterList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -462,7 +463,7 @@ class CompositeFilterSetList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

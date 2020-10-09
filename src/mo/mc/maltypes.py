@@ -430,5 +430,5 @@ class ObjectInstancePairList(mal.ElementList):
 class Errors(IntEnum):
     """All MAL errors."""
 
-    READONLY = 70020 # Operation specific
-    REFERENCED = 70021 # Operation specific
+    READONLY = 70020  # Operation specific
+    REFERENCED = 70021  # Operation specific

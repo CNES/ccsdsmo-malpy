@@ -4,7 +4,6 @@ import re
 import sys
 
 from malpydefinitions import MALPY_ENCODING
-import mo
 from mo import mal, com, mc
 from mo.com.services import *
 from mo.mc.services import *
@@ -26,6 +25,7 @@ MAL_MODULES = [
 
 class Encoder(object):
     encoding = None
+    parent = None
 
     def encode(self, message):
         raise NotImplementedError("This is to be implemented.")
@@ -45,6 +45,7 @@ class PickleEncoder(Encoder):
     def decode(self, message):
         return pickle.loads(message)
 
+
 MAL_XML_NAMESPACE_URL = "http://www.ccsds.org/schema/malxml/MAL"
 MAL_XML = "xmlns:malxml"
 MAL_XML_BODY = 'malxml:Body'
@@ -53,10 +54,23 @@ XML_NAMESPACE = "http://www.w3.org/2000/xmlns/"
 XMLNS_XSI = "xmlns:xsi"
 XMLNS = "xmlns"
 
+
 class XMLEncoder(Encoder):
     encoding = MALPY_ENCODING.XML
 
     def encode(self, message):
+        encoded_body = self.encode_body(message.msg_parts)
+        encoded_message = mal.MALMessage(header=message.header,
+                                         msg_parts=encoded_body)
+        return encoded_message
+
+    def decode(self, message):
+        decoded_body = self.decode_body(message.msg_parts)
+        decoded_message = mal.MALMessage(header=message.header,
+                                         msg_parts=decoded_body)
+        return decoded_message
+
+    def encode_body(self, body):
 
         def _encode_internal(element, parent):
             domdoc = parent.ownerDocument
@@ -95,17 +109,19 @@ class XMLEncoder(Encoder):
         rootElement.setAttributeNS(XML_NAMESPACE, MAL_XML, MAL_XML_NAMESPACE_URL);
 
         # Recursively go through the object to encode it (a composite is a list of list)
-        for element in message:
+        for element in body:
             _encode_internal(element, rootElement)
-        encodedmessage = d.toprettyxml(encoding="UTF-8")
-        return encodedmessage
+        encoded_body = d.toprettyxml(encoding="UTF-8")
+        return encoded_body
 
-
-    def decode(self, message):
+    def decode_body(self, body):
 
         # If the XML document was indented, there will be text node made of tabs
         # and newline characters. Those are not relevant for decoding.
         emptyNodePattern = re.compile(r"^[\n\t]*$")
+        maltypes = []
+        for module in MAL_MODULES:
+            maltypes.extend(dir(sys.modules[module]))
 
         def _cleanupEmptyChildNodes(node):
 
@@ -117,9 +133,6 @@ class XMLEncoder(Encoder):
                     _cleanupEmptyChildNodes(element)
             node.childNodes = clean_childNodes
 
-        maltypes = []
-        for module in MAL_MODULES:
-            maltypes.extend(dir(sys.modules[module]))
         def str_to_class(classname):
             for module in MAL_MODULES:
                 try:
@@ -205,8 +218,7 @@ class XMLEncoder(Encoder):
                             print("OUT", node, elementName)
                             return malobject(internal)
 
-
-        d = xml.dom.minidom.parseString(message)
+        d = xml.dom.minidom.parseString(body)
         rootElement = d.firstChild
         _cleanupEmptyChildNodes(rootElement)
         return _decode_internal(rootElement)

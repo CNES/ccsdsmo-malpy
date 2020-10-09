@@ -35,11 +35,14 @@ DO_NOT_EDIT = \
 "# This file is generated. Do NOT edit it by hand.   #\n" + \
 "#####################################################\n\n"
 
+
 def maltag(name):
     return "{}{}".format('{' + MAL_NS + '}', name)
 
+
 def comtag(name):
     return "{}{}".format('{' + COM_NS + '}', name)
+
 
 OPERATIONTYPE = {
     maltag('sendIP'): "Send",
@@ -49,6 +52,7 @@ OPERATIONTYPE = {
     maltag('progressIP'): "Progress",
     maltag('pubsubIP'): "PubSub"
     }
+
 
 MESSAGETYPE = {
     maltag('send'): "SEND",
@@ -62,6 +66,7 @@ MESSAGETYPE = {
     maltag('publishNotify'): "PUBLISH"
     }
 
+
 def _parse_datatype(node):
     if node.tag == maltag('fundamental') or node.tag == maltag('attribute'):
         return MALElementXML(node)
@@ -70,7 +75,8 @@ def _parse_datatype(node):
     elif node.tag == maltag('enumeration'):
         return MALEnumerationXML(node)
     else:
-        raise RuntimeError("Unexpected node tag : {}".format (node.tag))
+        raise RuntimeError("Unexpected node tag : {}".format(node.tag))
+
 
 def _parse_datatypes(node):
     datatypes_dict = {}
@@ -82,8 +88,10 @@ def _parse_datatypes(node):
         datatypes_dict[dtype][d.name] = d
     return datatypes_dict
 
+
 def _parse_service(node):
     return MALServiceXML(node)
+
 
 def _parse_errors(node):
     error_dict = {}
@@ -144,8 +152,10 @@ class MALMessageXML(object):
         for subnode in node:
             self.fields.append(MALMessageFieldXML(subnode))
 
+
 class MALOperationXML(object):
     __slots__ = ['name', 'number', 'comment', 'supportReplay', 'interactionType', 'messages', 'errors']
+
     def __init__(self, node=None):
         self.name = None
         self.number = None
@@ -185,6 +195,7 @@ class MALOperationXML(object):
 
 class MALServiceDocumentationXML(object):
     __slots__ = ['title', 'order', 'text']
+
     def __init__(self, node=None):
         self.title = None
         self.order = None
@@ -200,6 +211,7 @@ class MALServiceDocumentationXML(object):
 
 class MALCapabilitySetXML(object):
     __slots__ = ['number', 'operations']
+
     def __init__(self, node=None):
         self.number = None
         self.operations = []
@@ -214,6 +226,7 @@ class MALCapabilitySetXML(object):
 
 class MALServiceXML(object):
     __slots__ = ['name', 'number', 'comment', 'documentation', 'capabilitySets', 'features', 'datatypes']
+
     def __init__(self, node=None):
         self.name = None
         self.number = None
@@ -244,7 +257,6 @@ class MALServiceXML(object):
                 raise NotImplementedError("Node type {} was not implemented".format(subnode.tag))
 
 
-
 class MALElementXML(object):
     __slots__ = ['name', 'fundamental', 'shortFormPart', 'comment', 'extends']
     datatype = "Element"
@@ -260,7 +272,7 @@ class MALElementXML(object):
 
     def parse(self, node):
         self.name = node.attrib['name']
-        self.fundamental = ( node.tag == maltag('fundamental') )
+        self.fundamental = (node.tag == maltag('fundamental'))
         self.shortFormPart = node.attrib.get('shortFormPart', None)
         self.comment = node.attrib.get('comment', None)
         if node.tag == maltag('attribute'):
@@ -298,7 +310,7 @@ class MALTypeXML(object):
         self.area = node.attrib['area']
         if 'service' in node.attrib:
             self.service = node.attrib['service']
-        self.isList = ( node.attrib.get('list', 'false') == 'true' )
+        self.isList = (node.attrib.get('list', 'false') == 'true')
 
 
 class MALCompositeFieldXML(object):
@@ -315,7 +327,7 @@ class MALCompositeFieldXML(object):
 
     def parse(self, node):
         self.name = node.attrib['name']
-        self.canBeNull = ( node.attrib.get('canBeNull', 'true') == 'true' )
+        self.canBeNull = (node.attrib.get('canBeNull', 'true') == 'true')
         self.comment = node.get('comment', None)
         if len(list(node)) != 1:
             raise RuntimeError("In {}, mal:field has more than one subnode".format(self.name))
@@ -372,6 +384,7 @@ class MALEnumerationItemXML(object):
 class MALEnumerationXML(object):
     __slots__ = ['name', 'comment', 'shortFormPart', 'items']
     datatype = "Enumeration"
+
     def __init__(self, node=None):
         self.name = None
         self.shortFormPart = None
@@ -405,7 +418,9 @@ class MALErrorXML(object):
         self.number = node.attrib['number']
         self.comment = node.attrib.get('comment', None)
 
+
 class MALBuffer(object):
+
     def __init__(self, generator, servicename=None):
         self.generator = generator
         self.service = servicename
@@ -433,7 +448,11 @@ class MALBuffer(object):
                 return elementtype.name
             # other service
             else:
-                return "{}.{}.{}.{}".format(elementtype.area.lower(), "services", elementtype.service.lower(), elementtype.name)
+                return "{}.{}.{}.{}".format(elementtype.area.lower(),
+                                            "services",
+                                            elementtype.service.lower(),
+                                            elementtype.name
+                                            )
 
     def _element_parentclass(self, d):
         if d.extends is None:
@@ -479,7 +498,7 @@ class MALBuffer(object):
         for e in errors:
             self.write(4*' ' + "{} = {}".format(e.name, e.number))
             if e.comment is not None:
-                self.write(' # '+e.comment)
+                self.write('  # '+e.comment)
             self.write('\n')
 
         self.write("\n")
@@ -636,7 +655,6 @@ class MALBuffer(object):
 
         self.write_element_class(d, blockcomposite)
 
-
     def write_composite_class(self, d, blocks=[]):
         parentclass = self._element_parentclass(d)
 
@@ -678,6 +696,12 @@ class MALBuffer(object):
     "                self._value = value.copy().value\n" +
     "        else:\n"
         )
+        if len(d.fields) == 0:
+            # In this case it's an abstract composite
+            self.write(
+    "            raise RuntimeError(\"This class is abstract and should not be directly called\")\n"
+        )
+
         for i, field in enumerate(d.fields):
             index = "{}._fieldNumber + {}".format(parentclass, i)
             self.write(
@@ -775,7 +799,6 @@ class MALBuffer(object):
             for dname, d in data_types['Composite'].items():
                 self.write_composite_class(d)
                 self.write_elementlist_class(d)
-
 
     def write_serviceprovider_module(self, service):
 
