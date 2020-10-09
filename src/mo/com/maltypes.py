@@ -92,7 +92,7 @@ class ObjectTypeList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -154,7 +154,7 @@ class ObjectKeyList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -216,7 +216,7 @@ class ObjectIdList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -278,7 +278,7 @@ class ObjectDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -340,7 +340,7 @@ class InstanceBooleanPairList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

@@ -16,23 +16,43 @@ number = 3
 
 # CapabilitySet 1
 class EnableGeneration(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 1
+
 
 
 # CapabilitySet 2
 class ListDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 2
+
 
 
 # CapabilitySet 3
 class AddAlert(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 3
+
 
 class UpdateDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 4
+
 
 class RemoveAlert(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 5
+
 
 class MALShortForm(IntEnum):
     ALERTDEFINITIONDETAILS = 1
@@ -112,7 +132,7 @@ class AlertDefinitionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -174,7 +194,7 @@ class AlertEventDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -236,7 +256,7 @@ class AlertCreationRequestList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

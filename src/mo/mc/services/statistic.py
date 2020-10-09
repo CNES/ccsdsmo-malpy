@@ -27,44 +27,84 @@ number = 5
 
 # CapabilitySet 1
 class GetStatistics(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 1
+
 
 class ResetEvaluation(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 2
+
 
 
 # CapabilitySet 2
 class MonitorStatistics(mal.PubSubProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 3
+
 
 
 # CapabilitySet 3
 class EnableService(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 4
+
 
 class GetServiceStatus(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 5
+
 
 
 # CapabilitySet 4
 class EnableReporting(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 6
+
 
 
 # CapabilitySet 5
 class ListParameterEvaluations(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 7
+
 
 
 # CapabilitySet 6
 class AddParameterEvaluation(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 8
+
 
 class UpdateParameterEvaluation(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 9
+
 
 class RemoveParameterEvaluation(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 10
+
 
 class MALShortForm(IntEnum):
     STATISTICFUNCTIONDETAILS = 1
@@ -127,7 +167,7 @@ class StatisticFunctionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -229,7 +269,7 @@ class StatisticLinkDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -331,7 +371,7 @@ class StatisticValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -403,7 +443,7 @@ class StatisticCreationRequestList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -495,7 +535,7 @@ class StatisticLinkSummaryList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -557,7 +597,7 @@ class StatisticEvaluationReportList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

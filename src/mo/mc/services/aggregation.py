@@ -9,8 +9,8 @@ Filtering is where an aggregation is only generated when the change in the value
 As there may be a large amount of time between reports of an aggregation when filtering is applied, the filtering concept also has a maximum reporting interval. If a report of the aggregation has not passed the filter in the maximum reporting interval a report is generated regardless. This allows there to be regular reports of an aggregation sent regardless of filtering.
 It should be noted that applying a filter with a maximum reporting interval to an ad-hoc aggregation will cause the aggregation to generate reports in a periodic way if the maximum reporting interval is left to expire. This is expected behaviour.
 There are a number of intervals defined in the structures of the service, the diagram in Figure 3-12 illustrates the use of these:
- insert timing diagram 
-The diagram shows a single report of an aggregation being generated which contains two parameter sets. Each set of parameter values in the aggregation report contains two optional durations, delta time and interval time. 
+ insert timing diagram
+The diagram shows a single report of an aggregation being generated which contains two parameter sets. Each set of parameter values in the aggregation report contains two optional durations, delta time and interval time.
 <ul>
  <li>The timestamp of the first value of the first set (T1) is defined as the timestamp of the aggregation report plus the delta time of the first set.</li>
  <li>The timestamp of the second value of the first set (T2) is defined as the timestamp of the first parameter (T1) plus the interval time of the set.</li>
@@ -28,36 +28,68 @@ number = 6
 
 # CapabilitySet 1
 class MonitorValue(mal.PubSubProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 1
+
 
 
 # CapabilitySet 2
 class GetValue(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 2
+
 
 
 # CapabilitySet 3
 class EnableGeneration(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 3
+
 
 class EnableFilter(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 4
+
 
 
 # CapabilitySet 4
 class ListDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 5
+
 
 
 # CapabilitySet 5
 class AddAggregation(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 6
+
 
 class UpdateDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 7
+
 
 class RemoveAggregation(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 8
+
 
 class MALShortForm(IntEnum):
     AGGREGATIONCATEGORY = 7
@@ -78,8 +110,8 @@ class AggregationCategory(IntEnum):
 
     shortForm = MALShortForm.AGGREGATIONCATEGORY
 
-    GENERAL = 1 # General aggregation.
-    DIAGNOSTIC = 2 # Diagnostic aggregation.
+    GENERAL = 1  # General aggregation.
+    DIAGNOSTIC = 2  # Diagnostic aggregation.
 
 
 class AggregationCategoryList(mal.ElementList):
@@ -92,7 +124,7 @@ class AggregationCategoryList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -107,8 +139,8 @@ class ThresholdType(IntEnum):
 
     shortForm = MALShortForm.THRESHOLDTYPE
 
-    PERCENTAGE = 1 # Threshold value is a percentage.
-    DELTA = 2 # Threshold value is a delta.
+    PERCENTAGE = 1  # Threshold value is a percentage.
+    DELTA = 2  # Threshold value is a delta.
 
 
 class ThresholdTypeList(mal.ElementList):
@@ -121,7 +153,7 @@ class ThresholdTypeList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -136,9 +168,9 @@ class GenerationMode(IntEnum):
 
     shortForm = MALShortForm.GENERATIONMODE
 
-    ADHOC = 1 # The aggregation value was generated because of an ad-hoc implementation dependent reason.
-    PERIODIC = 2 # The aggregation value was generated because of a periodic report.
-    FILTERED_TIMEOUT = 3 # The item is filtered but it exceeded its timeout value.
+    ADHOC = 1  # The aggregation value was generated because of an ad-hoc implementation dependent reason.
+    PERIODIC = 2  # The aggregation value was generated because of a periodic report.
+    FILTERED_TIMEOUT = 3  # The item is filtered but it exceeded its timeout value.
 
 
 class GenerationModeList(mal.ElementList):
@@ -151,7 +183,7 @@ class GenerationModeList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -283,7 +315,7 @@ class AggregationDefinitionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -365,7 +397,7 @@ class AggregationParameterSetList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -437,7 +469,7 @@ class AggregationValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -509,7 +541,7 @@ class AggregationSetValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -571,7 +603,7 @@ class AggregationParameterValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -643,7 +675,7 @@ class ThresholdFilterList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -705,7 +737,7 @@ class AggregationCreationRequestList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -787,7 +819,7 @@ class AggregationValueDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

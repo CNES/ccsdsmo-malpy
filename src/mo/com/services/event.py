@@ -22,5 +22,9 @@ number = 1
 
 # CapabilitySet 1
 class MonitorEvent(mal.PubSubProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 1
+
 

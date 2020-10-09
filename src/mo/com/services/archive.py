@@ -16,28 +16,52 @@ number = 2
 
 # CapabilitySet 1
 class Retrieve(mal.InvokeProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 1
+
 
 class Query(mal.ProgressProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 2
+
 
 class Count(mal.InvokeProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 3
+
 
 
 # CapabilitySet 2
 class Store(mal.RequestProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 4
+
 
 
 # CapabilitySet 3
 class Update(mal.SubmitProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 5
+
 
 
 # CapabilitySet 4
 class Delete(mal.RequestProviderHandler):
-    pass
+    AREA = 2
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 6
+
 
 class MALShortForm(IntEnum):
     EXPRESSIONOPERATOR = 5
@@ -52,14 +76,14 @@ class ExpressionOperator(IntEnum):
 
     shortForm = MALShortForm.EXPRESSIONOPERATOR
 
-    EQUAL = 1 # Checks for equality.
-    DIFFER = 2 # Checks for difference (not equal).
-    GREATER = 3 # Checks for greater than.
-    GREATER_OR_EQUAL = 4 # Checks for greater than or equal to.
-    LESS = 5 # Checks for less than.
-    LESS_OR_EQUAL = 6 # Checks for less than or equal to.
-    CONTAINS = 7 # Case sensitive containment test (String types only)
-    ICONTAINS = 8 # Case insensitive containment test (String types only).
+    EQUAL = 1  # Checks for equality.
+    DIFFER = 2  # Checks for difference (not equal).
+    GREATER = 3  # Checks for greater than.
+    GREATER_OR_EQUAL = 4  # Checks for greater than or equal to.
+    LESS = 5  # Checks for less than.
+    LESS_OR_EQUAL = 6  # Checks for less than or equal to.
+    CONTAINS = 7  # Case sensitive containment test (String types only)
+    ICONTAINS = 8  # Case insensitive containment test (String types only).
 
 
 class ExpressionOperatorList(mal.ElementList):

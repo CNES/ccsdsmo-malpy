@@ -30,11 +30,11 @@ class Severity(IntEnum):
 
     shortForm = MALShortForm.SEVERITY
 
-    INFORMATIONAL = 1 # Indicates a nominal situation with no consequences.
-    WARNING = 2 # Indicates unexpected behaviour without directly threatening consequences.
-    ALARM = 3 # Indicates behaviour of serious concern requiring the attention of an operator, but not necessarily a malfunction.
-    SEVERE = 4 # Indicates that the monitored item has malfunctioned. Requires operator attention.
-    CRITICAL = 5 # Indicates behaviour with mission threatening consequences. Requires operator attention.
+    INFORMATIONAL = 1  # Indicates a nominal situation with no consequences.
+    WARNING = 2  # Indicates unexpected behaviour without directly threatening consequences.
+    ALARM = 3  # Indicates behaviour of serious concern requiring the attention of an operator, but not necessarily a malfunction.
+    SEVERE = 4  # Indicates that the monitored item has malfunctioned. Requires operator attention.
+    CRITICAL = 5  # Indicates behaviour with mission threatening consequences. Requires operator attention.
 
 
 class SeverityList(mal.ElementList):
@@ -47,7 +47,7 @@ class SeverityList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -159,7 +159,7 @@ class ArgumentDefinitionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -211,7 +211,7 @@ class AttributeValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -273,7 +273,7 @@ class ConditionalConversionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -355,7 +355,7 @@ class ParameterExpressionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -417,7 +417,7 @@ class ObjectInstancePairList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

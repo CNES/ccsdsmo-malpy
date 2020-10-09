@@ -498,7 +498,7 @@ class MALBuffer(object):
         for e in errors:
             self.write(4*' ' + "{} = {}".format(e.name, e.number))
             if e.comment is not None:
-                self.write('  # '+e.comment)
+                self.write('  # ' + e.comment)
             self.write('\n')
 
         self.write("\n")
@@ -524,7 +524,7 @@ class MALBuffer(object):
     "    {name} = {nvalue}".format(name=item.value, nvalue=item.nvalue)
             )
             if item.comment is not None:
-                self.write(' # '+item.comment)
+                self.write('  # ' + item.comment)
                 self.write('\n')
         self.write("\n")
         self.write("\n")
@@ -756,7 +756,7 @@ class MALBuffer(object):
     "            if value.value is None:\n" +
     "                if self._canBeNull:\n" +
     "                    self._isNull = True\n" +
-    "                else: \n"
+    "                else:\n"
     "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
     "            else:\n" +
     "                self._value = value.copy().value\n" +
@@ -821,7 +821,11 @@ class MALBuffer(object):
                 parentclassname = "mal." + operation.interactionType + "ProviderHandler"
                 self.write(
     "class {}({}):\n".format(operationclassname, parentclassname) +
-    "    pass\n\n"
+    "    AREA = {}\n".format(self.generator.area.number) +
+    "    VERSION = {}\n".format(self.generator.area.version) +
+    "    SERVICE = {}\n".format(service.number) +
+    "    OPERATION = {}\n".format(operation.number) +
+    "\n\n"
                 )
 
                 #for message in operation.messages:

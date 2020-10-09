@@ -28,55 +28,107 @@ number = 4
 
 # CapabilitySet 1
 class GetCurrentTransitionList(mal.ProgressProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 1
+
 
 class GetSummaryReport(mal.ProgressProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 2
+
 
 
 # CapabilitySet 2
 class EnableService(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 3
+
 
 class GetServiceStatus(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 4
+
 
 
 # CapabilitySet 3
 class EnableCheck(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 5
+
 
 
 # CapabilitySet 4
 class TriggerCheck(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 6
+
 
 
 # CapabilitySet 5
 class ListDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 7
+
 
 class ListCheckLinks(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 8
+
 
 
 # CapabilitySet 6
 class AddCheck(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 9
+
 
 class UpdateDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 10
+
 
 class RemoveCheck(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 11
+
 
 
 # CapabilitySet 7
 class AddParameterCheck(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 12
+
 
 class RemoveParameterCheck(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 4
+    OPERATION = 13
+
 
 class MALShortForm(IntEnum):
     CHECKSTATE = 6
@@ -99,11 +151,11 @@ class CheckState(IntEnum):
 
     shortForm = MALShortForm.CHECKSTATE
 
-    DISABLED = 1 # The check is disabled.
-    UNCHECKED = 2 # The check is enabled but has not passed the selection condition expression.
-    INVALID = 3 # Check is enabled, has passed the selection condition, but the entity being checked is not in a valid state and therefore has not been checked.
-    OK = 4 # The check is OK.
-    NOT_OK = 5 # The check is not OK.
+    DISABLED = 1  # The check is disabled.
+    UNCHECKED = 2  # The check is enabled but has not passed the selection condition expression.
+    INVALID = 3  # Check is enabled, has passed the selection condition, but the entity being checked is not in a valid state and therefore has not been checked.
+    OK = 4  # The check is OK.
+    NOT_OK = 5  # The check is not OK.
 
 
 class CheckStateList(mal.ElementList):
@@ -116,7 +168,7 @@ class CheckStateList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -228,7 +280,7 @@ class CheckDefinitionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -320,7 +372,7 @@ class CheckLinkDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -402,7 +454,7 @@ class CheckResultList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -494,7 +546,7 @@ class CheckLinkSummaryList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -586,7 +638,7 @@ class CheckResultSummaryList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -678,7 +730,7 @@ class CheckResultFilterList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -750,7 +802,7 @@ class ReferenceValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -812,7 +864,7 @@ class ConstantCheckDefinitionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -874,7 +926,7 @@ class ReferenceCheckDefinitionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -966,7 +1018,7 @@ class DeltaCheckDefinitionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1038,7 +1090,7 @@ class LimitCheckDefinitionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1100,7 +1152,7 @@ class CompoundCheckDefinitionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1162,7 +1214,7 @@ class CheckTypedInstanceList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

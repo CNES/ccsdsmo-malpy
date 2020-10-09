@@ -10,9 +10,16 @@ from transport import http
 import encoding
 
 
+class MyRequestProviderHandler(mal.RequestProviderHandler):
+    AREA = 100
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 1
+
+
 def clientthread(socket):
     enc = encoding.XMLEncoder()
-    request = mal.RequestProviderHandler(socket, enc)
+    request = MyRequestProviderHandler(socket, enc)
     message = request.receive_request()
     print("[**] Received '{}'".format(message.msg_parts))
     request.response(mal.String("I got it!"))

@@ -1,6 +1,7 @@
 import time
 from enum import IntEnum
-from .maltypes import QoSLevel, SessionType, InteractionType
+from .maltypes import QoSLevel, SessionType, InteractionType, number
+
 
 class MAL_IP_STAGES(IntEnum):
     SEND = 0
@@ -39,6 +40,7 @@ class MAL_IP_ERRORS(IntEnum):
     PUBSUB_PUBLISH_REGISTER_ERROR = 14
     PUBSUB_PUBLISH_ERROR = 16
     PUBSUB_NOTIFY_ERROR = 17
+
 
 class MalformedMessageError(Exception):
     pass
@@ -121,20 +123,16 @@ class MALMessage(object):
 
     def __init__(self, header=None, msg_parts=[]):
         self.header = header or MALHeader()
-        if type(msg_parts) is not list:
-            self.msg_parts = [msg_parts]
-        else:
-            self.msg_parts = msg_parts
+        self.msg_parts = msg_parts
 
     def __len__(self):
-        return sum([len(part) for part in self.msg_parts])
+        def _sublen(k):
+            if type(k) is list:
+                return sum([_sublen(x) for x in k])
+            else:
+                return len(k)
 
-    @property
-    def data(self):
-        """ Returns the complet encoded content of the message
-            by concatenating all msg_parts together
-        """
-        b"".join(self.msg_parts)
+        return _sublen(self.msg_parts)
 
 
 class Handler(object):
@@ -150,15 +148,11 @@ class Handler(object):
         self.encoding.parent = self
 
     def send_message(self, message):
-        print(self.encoding)
         message = self.encoding.encode(message)
-        print(message)
         return self.transport.send(message)
 
     def receive_message(self):
-        print(self.encoding)
         message = self.transport.recv()
-        print(message)
         return self.encoding.decode(message)
 
 
@@ -183,7 +177,7 @@ class ConsumerHandler(Handler):
 
     def __init__(self, transport, encoding, provider_uri,
                  session=SessionType.LIVE, session_name="", domain=[], network_zone=None,
-                 priority=None, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
+                 priority=0, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
         super().__init__(transport, encoding)
         self.provider_uri = provider_uri
         self.session = session

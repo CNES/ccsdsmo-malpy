@@ -90,12 +90,12 @@ class InteractionType(IntEnum):
 
     shortForm = MALShortForm.INTERACTIONTYPE
 
-    SEND = 1 # Used for Send interactions.
-    SUBMIT = 2 # Used for Submit interactions.
-    REQUEST = 3 # Used for Request interactions.
-    INVOKE = 4 # Used for Invoke interactions.
-    PROGRESS = 5 # Used for Progress interactions.
-    PUBSUB = 6 # Used for Publish/Subscribe interactions.
+    SEND = 1  # Used for Send interactions.
+    SUBMIT = 2  # Used for Submit interactions.
+    REQUEST = 3  # Used for Request interactions.
+    INVOKE = 4  # Used for Invoke interactions.
+    PROGRESS = 5  # Used for Progress interactions.
+    PUBSUB = 6  # Used for Publish/Subscribe interactions.
 
 
 class InteractionTypeList(ElementList):
@@ -108,7 +108,7 @@ class InteractionTypeList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -123,9 +123,9 @@ class SessionType(IntEnum):
 
     shortForm = MALShortForm.SESSIONTYPE
 
-    LIVE = 1 # Used for Live sessions.
-    SIMULATION = 2 # Used for Simulation sessions.
-    REPLAY = 3 # Used for Replay sessions.
+    LIVE = 1  # Used for Live sessions.
+    SIMULATION = 2  # Used for Simulation sessions.
+    REPLAY = 3  # Used for Replay sessions.
 
 
 class SessionTypeList(ElementList):
@@ -138,7 +138,7 @@ class SessionTypeList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -153,10 +153,10 @@ class QoSLevel(IntEnum):
 
     shortForm = MALShortForm.QOSLEVEL
 
-    BESTEFFORT = 1 # Used for Best Effort QoS Level.
-    ASSURED = 2 # Used for Assured QoS Level.
-    QUEUED = 3 # Used for Queued QoS Level.
-    TIMELY = 4 # Used for Timely QoS Level.
+    BESTEFFORT = 1  # Used for Best Effort QoS Level.
+    ASSURED = 2  # Used for Assured QoS Level.
+    QUEUED = 3  # Used for Queued QoS Level.
+    TIMELY = 4  # Used for Timely QoS Level.
 
 
 class QoSLevelList(ElementList):
@@ -169,7 +169,7 @@ class QoSLevelList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -184,10 +184,10 @@ class UpdateType(IntEnum):
 
     shortForm = MALShortForm.UPDATETYPE
 
-    CREATION = 1 # Update is notification of the creation of the item.
-    UPDATE = 2 # Update is just a periodic update of the item and has not changed its value.
-    MODIFICATION = 3 # Update is for a changed value or modification of the item.
-    DELETION = 4 # Update is notification of the removal of the item.
+    CREATION = 1  # Update is notification of the creation of the item.
+    UPDATE = 2  # Update is just a periodic update of the item and has not changed its value.
+    MODIFICATION = 3  # Update is for a changed value or modification of the item.
+    DELETION = 4  # Update is notification of the removal of the item.
 
 
 class UpdateTypeList(ElementList):
@@ -200,7 +200,7 @@ class UpdateTypeList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -274,7 +274,7 @@ class BlobList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -301,7 +301,7 @@ class BooleanList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -328,7 +328,7 @@ class DurationList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -356,7 +356,7 @@ class FloatList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -384,7 +384,7 @@ class DoubleList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -411,7 +411,7 @@ class IdentifierList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -443,7 +443,7 @@ class OctetList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -475,7 +475,7 @@ class UOctetList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -507,7 +507,7 @@ class ShortList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -539,7 +539,7 @@ class UShortList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -571,7 +571,7 @@ class IntegerList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -603,7 +603,7 @@ class UIntegerList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -635,7 +635,7 @@ class LongList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -667,7 +667,7 @@ class ULongList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -694,7 +694,7 @@ class StringList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -721,7 +721,7 @@ class TimeList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -748,7 +748,7 @@ class FineTimeList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -775,7 +775,7 @@ class URIList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -837,7 +837,7 @@ class SubscriptionList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -939,7 +939,7 @@ class EntityRequestList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1021,7 +1021,7 @@ class EntityKeyList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1103,7 +1103,7 @@ class UpdateHeaderList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1165,7 +1165,7 @@ class IdBooleanPairList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1227,7 +1227,7 @@ class PairList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1289,7 +1289,7 @@ class NamedValueList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -1401,7 +1401,7 @@ class FileList(ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

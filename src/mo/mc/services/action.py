@@ -21,26 +21,50 @@ number = 1
 
 # CapabilitySet 1
 class SubmitAction(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 1
+
 
 class PreCheckAction(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 2
+
 
 
 # CapabilitySet 2
 class ListDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 3
+
 
 
 # CapabilitySet 3
 class AddAction(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 4
+
 
 class UpdateDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 5
+
 
 class RemoveAction(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 6
+
 
 class MALShortForm(IntEnum):
     ACTIONCATEGORY = 4
@@ -54,9 +78,9 @@ class ActionCategory(IntEnum):
 
     shortForm = MALShortForm.ACTIONCATEGORY
 
-    DEFAULT = 1 # Default category
-    HIPRIORITY = 2 # Category for high priority actions
-    CRITICAL = 3 # Category for critical actions
+    DEFAULT = 1  # Default category
+    HIPRIORITY = 2  # Category for high priority actions
+    CRITICAL = 3  # Category for critical actions
 
 
 class ActionCategoryList(mal.ElementList):
@@ -69,7 +93,7 @@ class ActionCategoryList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -151,7 +175,7 @@ class ActionDefinitionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -263,7 +287,7 @@ class ActionInstanceDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -325,7 +349,7 @@ class ActionCreationRequestList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

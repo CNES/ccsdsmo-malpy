@@ -21,38 +21,70 @@ number = 2
 
 # CapabilitySet 1
 class MonitorValue(mal.PubSubProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 1
+
 
 
 # CapabilitySet 2
 class GetValue(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 2
+
 
 
 # CapabilitySet 3
 class SetValue(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 3
+
 
 
 # CapabilitySet 4
 class EnableGeneration(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 4
+
 
 
 # CapabilitySet 5
 class ListDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 5
+
 
 
 # CapabilitySet 6
 class AddParameter(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 6
+
 
 class UpdateDefinition(mal.RequestProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 7
+
 
 class RemoveParameter(mal.SubmitProviderHandler):
-    pass
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 8
+
 
 class MALShortForm(IntEnum):
     VALIDITYSTATE = 4
@@ -69,12 +101,12 @@ class ValidityState(IntEnum):
 
     shortForm = MALShortForm.VALIDITYSTATE
 
-    VALID = 0 # Valid.
-    EXPIRED = 1 # The parameter has a timeout associated which has expired
-    INVALID_RAW = 2 # The parameter raw value cannot be obtained, or calculated for synthetic parameters
-    INVALID_CONVERSION = 3 # The validity expression either has evaluated to TRUE or there is no validity defined, but the conversion of the parameter value has failed (for example an unexpected value for a discrete conversion)
-    UNVERIFIED = 4 # The validity of the validity expression has been evaluated to FALSE and therefore cannot be used to verify the current value
-    INVALID = 5 # The validity expression has been evaluated to FALSE
+    VALID = 0  # Valid.
+    EXPIRED = 1  # The parameter has a timeout associated which has expired
+    INVALID_RAW = 2  # The parameter raw value cannot be obtained, or calculated for synthetic parameters
+    INVALID_CONVERSION = 3  # The validity expression either has evaluated to TRUE or there is no validity defined, but the conversion of the parameter value has failed (for example an unexpected value for a discrete conversion)
+    UNVERIFIED = 4  # The validity of the validity expression has been evaluated to FALSE and therefore cannot be used to verify the current value
+    INVALID = 5  # The validity expression has been evaluated to FALSE
 
 
 class ValidityStateList(mal.ElementList):
@@ -87,7 +119,7 @@ class ValidityStateList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -199,7 +231,7 @@ class ParameterDefinitionDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -271,7 +303,7 @@ class ParameterValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -343,7 +375,7 @@ class ParameterConversionList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -405,7 +437,7 @@ class ParameterCreationRequestList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -467,7 +499,7 @@ class ParameterRawValueList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value
@@ -549,7 +581,7 @@ class ParameterValueDetailsList(mal.ElementList):
             if value.value is None:
                 if self._canBeNull:
                     self._isNull = True
-                else: 
+                else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
                 self._value = value.copy().value

@@ -1,5 +1,5 @@
 import pickle
-import xml.dom
+import xml.dom.minidom
 import re
 import sys
 
@@ -22,6 +22,7 @@ MAL_MODULES = [
     'mo.mc.services.parameter',
     'mo.mc.services.statistic'
     ]
+
 
 class Encoder(object):
     encoding = None
@@ -109,6 +110,9 @@ class XMLEncoder(Encoder):
         rootElement.setAttributeNS(XML_NAMESPACE, MAL_XML, MAL_XML_NAMESPACE_URL);
 
         # Recursively go through the object to encode it (a composite is a list of list)
+        if type(body) is not list:
+            body = [body]
+
         for element in body:
             _encode_internal(element, rootElement)
         encoded_body = d.toprettyxml(encoding="UTF-8")
@@ -218,6 +222,8 @@ class XMLEncoder(Encoder):
                             print("OUT", node, elementName)
                             return malobject(internal)
 
+        if body == b"":
+            return None
         d = xml.dom.minidom.parseString(body)
         rootElement = d.firstChild
         _cleanupEmptyChildNodes(rootElement)

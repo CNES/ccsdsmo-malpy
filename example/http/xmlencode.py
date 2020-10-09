@@ -25,6 +25,7 @@ m = mal.Subscription(
     )
 
 print("copy*********************")
+#print(len(m))
 a = m.copy()
 b = mal.Subscription(a)
 e = encoding.XMLEncoder()
