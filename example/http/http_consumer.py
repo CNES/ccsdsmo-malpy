@@ -7,11 +7,13 @@ from mo import mal
 from transport import http
 import encoding
 
+
 class MyRequestConsumerHandler(mal.RequestConsumerHandler):
     AREA = 100
     VERSION = 1
     SERVICE = 1
     OPERATION = 1
+
 
 def main():
 

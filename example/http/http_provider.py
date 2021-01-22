@@ -23,6 +23,8 @@ def clientthread(socket):
     message = request.receive_request()
     print("[**] Received '{}'".format(message.msg_parts))
     request.response(mal.String("I got it!"))
+
+    print("[**] Closing connection with %s %d." % (socket.uri[0], socket.uri[1]))
     socket.disconnect()
 
 

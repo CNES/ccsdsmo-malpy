@@ -241,9 +241,10 @@ class ProviderHandler(Handler):
         self.response_header.uri_to = self.response_header.uri_from
         self.response_header.uri_from = uri_from
 
-    def create_message_header(self, ip_stage):
+    def create_message_header(self, ip_stage, is_error_message=False):
         header = self.response_header.copy()
         header.ip_stage = ip_stage
+        header.is_error_message = is_error_message
         return header
 
 
@@ -256,7 +257,8 @@ class SendProviderHandler(ProviderHandler):
     def receive_send(self):
         message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.SEND:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.SEND:
             self.interaction_terminated = True
             return message
         else:
@@ -289,7 +291,8 @@ class SubmitProviderHandler(ProviderHandler):
         message = self.receive_message()
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.SUBMIT:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.SUBMIT:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected SUBMIT. Got %s" %
@@ -322,12 +325,13 @@ class SubmitConsumerHandler(ConsumerHandler):
         self.send_message(message)
 
     def receive_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.SUBMIT_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.SUBMIT_ACK:
             self.interaction_terminated = True
             return message
-        elif ip_stage == MAL_IP_STAGES.SUBMIT_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.SUBMIT_ERROR:
             self.interaction_terminated = True
             raise RuntimeError(message)
         else:
@@ -345,7 +349,8 @@ class RequestProviderHandler(ProviderHandler):
         message = self.receive_message()
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.REQUEST:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.REQUEST:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected REQUEST. Got %s" %
@@ -380,10 +385,11 @@ class RequestConsumerHandler(ConsumerHandler):
     def receive_response(self):
         message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.REQUEST_RESPONSE:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.REQUEST_RESPONSE:
             self.interaction_terminated = True
             return message
-        elif ip_stage == MAL_IP_STAGES.REQUEST_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.REQUEST_ERROR:
             self.interaction_terminated = True
             raise RuntimeError(message)
         else:
@@ -401,7 +407,8 @@ class InvokeProviderHandler(ProviderHandler):
         message = self.receive_message()
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.INVOKE:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.INVOKE:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected INVOKE. Got %s" %
@@ -445,23 +452,25 @@ class InvokeConsumerHandler(ConsumerHandler):
         self.interaction_terminated = True
 
     def receive_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.INVOKE_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.INVOKE_ACK:
             return message
-        elif ip_stage == MAL_IP_STAGES.INVOKE_ACK_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.INVOKE_ACK_ERROR:
             raise RuntimeError(message)
         else:
             raise InvalidIPStageError("In %s. Expected INVOKE_ACK. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
     def receive_response(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.INVOKE_RESPONSE:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.INVOKE_RESPONSE:
             self.interaction_terminated = True
             return message
-        elif ip_stage == MAL_IP_STAGES.INVOKE_RESPONSE_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.INVOKE_RESPONSE_ERROR:
             self.interaction_terminated = True
             raise RuntimeError(message)
         else:
@@ -479,7 +488,8 @@ class ProgressProviderHandler(ProviderHandler):
         message = self.receive_message()
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.INVOKE:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PROGRESS:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PROGRESS. Got %s" %
@@ -530,55 +540,66 @@ class ProgressConsumerHandler(ConsumerHandler):
         header = self.create_message_header(MAL_IP_STAGES.PROGRESS)
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
-        self.interaction_terminated = True
 
     def receive_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PROGRESS_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PROGRESS_ACK:
             return message
-        elif ip_stage == MAL_IP_STAGES.PROGRESS_ACK_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.PROGRESS_ACK_ERROR:
             raise RuntimeError(message)
         else:
             raise InvalidIPStageError("In %s. Expected PROGRESS_ACK. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
     def receive_update(self):
-        message, ip_stage = self.receive_message()
+        """ As it is not possible to know beforehand if the received message is
+        an update or the final response, we only do receive_update. The content of
+        the header message will let us know te corresponding state.
+        """
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PROGRESS_UPDATE:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PROGRESS_UPDATE:
+            return message
+        elif not is_error_message and ip_stage == MAL_IP_STAGES.PROGRESS_RESPONSE:
             self.interaction_terminated = True
             return message
-        elif ip_stage == MAL_IP_STAGES.PROGRESS_UPDATE_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.PROGRESS_UPDATE_ERROR:
+            self.interaction_terminated = True
+            raise RuntimeError(message)
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.PROGRESS_RESPONSE_ERROR:
             self.interaction_terminated = True
             raise RuntimeError(message)
         else:
-            raise InvalidIPStageError("In %s. Expected PROGRESS_UPDATE. Got %s" %
+            raise InvalidIPStageError("In %s. Expected PROGRESS_UPDATE or PROGRESS_RESPONSE. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
-    def receive_response(self):
-        message, ip_stage = self.receive_message()
-        ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PROGRESS_RESPONSE:
-            self.interaction_terminated = True
-            return message
-        elif ip_stage == MAL_IP_STAGES.PROGRESS_RESPONSE_ERROR:
-            self.interaction_terminated = True
-            raise RuntimeError(message)
-        else:
-            raise InvalidIPStageError("In %s. Expected PROGRESS_RESPONSE. Got %s" %
-                                      (self.__class__.__name__, ip_stage))
+#    def receive_response(self):
+#        message = self.receive_message()
+#        ip_stage = message.header.ip_stage
+#        if ip_stage == MAL_IP_STAGES.PROGRESS_RESPONSE:
+#            self.interaction_terminated = True
+#            return message
+#        elif ip_stage == MAL_IP_STAGES.PROGRESS_RESPONSE_ERROR:
+#            self.interaction_terminated = True
+#            raise RuntimeError(message)
+#        else:
+#            raise InvalidIPStageError("In %s. Expected PROGRESS_RESPONSE. Got %s" %
+#                                      (self.__class__.__name__, ip_stage))
 
 
 class PubSubProviderHandler(ProviderHandler):
 
     def receive_registration_message(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER:
+        elif not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_REGISTER or PUBSUB_DEREGISTER. Got %s" %
@@ -620,11 +641,12 @@ class PubSubProviderHandler(ProviderHandler):
         self.send_message(message)
 
     def receive_publish_register_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER_ACK:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.PUBSUB_PUBLISH_REGISTER_ERROR:
             raise RuntimeError(message)
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_REGISTER_ACK. Got %s" %
@@ -636,9 +658,10 @@ class PubSubProviderHandler(ProviderHandler):
         self.send_message(message)
 
     def receive_publish_deregister_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER_ACK:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_REGISTER_ACK. Got %s" %
@@ -650,9 +673,10 @@ class PubSubProviderHandler(ProviderHandler):
         self.send_message(message)
 
     def receive_publish_error(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_ERROR:
+        is_error_message = message.header.is_error_message
+        if is_error_message and ip_stage == MAL_IP_ERRORS.PUBSUB_PUBLISH_ERROR:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_ERROR. Got %s" %
@@ -662,12 +686,13 @@ class PubSubProviderHandler(ProviderHandler):
 class PubSubBrokerHandler(ProviderHandler):
 
     def receive_registration_message(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER:
+        elif not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_REGISTER or PUBSUB_DEREGISTER. Got %s" %
@@ -704,11 +729,12 @@ class PubSubBrokerHandler(ProviderHandler):
         self.send_message(message)
 
     def receive_publish_registration_message(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER:
+        elif not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_REGISTER or PUBSUB_PUBLISH_DEREGISTER. Got %s" %
@@ -725,9 +751,9 @@ class PubSubBrokerHandler(ProviderHandler):
         self.send_message(message)
 
     def receive_publish_deregister(self):
-        message, ip_stage = self.receive_message()
-        ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER:
+        message = self.receive_message()
+        ip_stage = message.header.ip_stageis_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH_DEREGISTER. Got %s" %
@@ -739,9 +765,10 @@ class PubSubBrokerHandler(ProviderHandler):
         self.send_message(message)
 
     def receive_publish(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH:
             return message
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_PUBLISH. Got %s" %
@@ -761,11 +788,12 @@ class PubSubConsumerHandler(ConsumerHandler):
         self.send_message(message)
 
     def receive_register_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER_ACK:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_REGISTER_ACK_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.PUBSUB_REGISTER_ACK_ERROR:
             raise RuntimeError(message)
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_REGISTER_ACK. Got %s" %
@@ -777,23 +805,26 @@ class PubSubConsumerHandler(ConsumerHandler):
         self.send_message(message)
 
     def receive_deregister_ack(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER_ACK:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER_ACK:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER_ACK_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER_ACK_ERROR:
             raise RuntimeError(message)
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_DEREGISTER_ACK. Got %s" %
                                       (self.__class__.__name__, ip_stage))
 
     def receive_notify(self):
-        message, ip_stage = self.receive_message()
+        message = self.receive_message()
         ip_stage = message.header.ip_stage
-        if ip_stage == MAL_IP_STAGES.PUBSUB_NOTIFY:
+        is_error_message = message.header.is_error_message
+        if not is_error_message and  ip_stage == MAL_IP_STAGES.PUBSUB_NOTIFY:
             return message
-        elif ip_stage == MAL_IP_STAGES.PUBSUB_NOTIFY_ERROR:
+        elif is_error_message and ip_stage == MAL_IP_ERRORS.PUBSUB_NOTIFY_ERROR:
             raise RuntimeError(message)
         else:
             raise InvalidIPStageError("In %s. Expected PUBSUB_NOTIFY. Got %s" %
                                       (self.__class__.__name__, ip_stage))
+
