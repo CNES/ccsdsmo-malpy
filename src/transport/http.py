@@ -1,5 +1,8 @@
 import socket as pythonsocket
 import time
+import pickle
+import http.client
+
 from email.header import Header, decode_header, make_header
 from io import BytesIO
 from malpydefinitions import MALPY_ENCODING
@@ -9,7 +12,7 @@ from .abstract_transport import MALSocket
 
 
 def _encode_uri(uri):
-    return 'http://{}:{}'.format(uri[0], uri[1])
+    return '{}:{}'.format(uri[0], uri[1])
 
 
 def _decode_uri(uri):
@@ -105,91 +108,12 @@ class Status:
 
 #TODO: check if http uses \r\n \n or anything x...
 
-
-def _build_post_request(target, headers, body):
-    version = 'HTTP/1.1'
-    method = 'POST'
-    request = "{method} {target} {version}\n".format(
-        method=method, target=target, version=version
-        ).encode('utf-8')
-    for h in headers:
-        request += "{token}: {value}\n".format(
-            token=h, value=headers[h]
-            ).encode('utf-8')
-    request += b"\n"
-    request += body
-
-    return request
-
-
-def _read_post_request(request):
-    iorequest = BytesIO(request)
-    statusline = iorequest.readline().decode('utf8')[:-1]
-
-    method, target, version = statusline.split(' ')
-    if version != 'HTTP/1.1':
-        msg = "MALpy cannot handle other versions than 'HTTP/1.1', got '{}'".format(version)
-        raise RuntimeError(msg)
-    if method != 'POST':
-        msg = "MALpy only handles POST message, got {}".format(method)
-        raise RuntimeError(msg)
-
-    headers = dict()
-    while True:
-        line = iorequest.readline().decode('utf8')
-        if line == "\n":
-            break
-        else:
-            line = line[:-1]  # Remove \n
-            key, *values = line.split(': ')
-            headers[key] = ': '.join(values)
-    body = iorequest.read()
-    return headers, body
-
-
-def _build_post_response(target, status, headers, body):
-    version = 'HTTP/1.1'
-    request = "{version} {statuscode} {statusmessage}\n".format(
-        version=version, statuscode=status.code, statusmessage=status.message
-        ).encode('utf8')
-    for h in headers:
-        request += "{token}: {value}\n".format(
-            token=h, value=headers[h]
-            ).encode('utf8')
-
-    request += b"\n"
-    request += body
-    return request
-
-
-def _read_post_response(response):
-    ioresponse = BytesIO(response)
-    statusline = ioresponse.readline().decode('utf8')[:-1]
-    version, statuscode, *statusmessage = statusline.split(' ')
-    headers = dict()
-    if version != 'HTTP/1.1':
-        msg = "MALpy cannot handle other versions than 'HTTP/1.1', got ''{}'".format(version)
-        raise RuntimeError(msg)
-    if statuscode != '200':
-        raise RuntimeError((statuscode, ' '.join(statusmessage)))
-    else:
-        while True:
-            line = ioresponse.readline().decode('utf8')
-            if line == "\n":
-                break
-            else:
-                line = line[:-1]  # Remove \n
-                key, *values = line.split(': ')
-                headers[key] = ': '.join(values)
-        body = ioresponse.read()
-    return headers, body
-
-
 class HTTPSocket(MALSocket):
     _messagesize = 1024
 
-    def __init__(self, socket=None):
+    def __init__(self, socket=None, CONTEXT=None):
         self.expect_response = None
+        self.CONTEXT=CONTEXT
         if socket:
             self.socket = socket
         else:
@@ -209,8 +133,11 @@ class HTTPSocket(MALSocket):
 
     def connect(self, uri):
         """ @param uri: (host, port) """
-        self.socket.connect(uri)
-
+        #self.socket.connect(uri)
+        self._HOST=uri[0]
+        self._PORT=uri[1]
+        self.client = http.client.HTTPSConnection(self._HOST, self._PORT, context=self.CONTEXT)
+		
     def unbind(self):
         self.socket.close()
 
@@ -223,14 +150,14 @@ class HTTPSocket(MALSocket):
         headers = {
             "Content-Length": len(message),
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
-            "X-MAL-URI-From": message.header.uri_from,
+           # "X-MAL-URI-From": message.header.uri_from,
             "X-MAL-URI-To": message.header.uri_to,
             "X-MAL-Timestamp": _encode_time(message.header.timestamp),
             "X-MAL-QoSlevel": message.header.qos_level.name,
             "X-MAL-Priority": str(message.header.priority),
             "X-MAL-Domain": ".".join([ _encode_ascii(x) for x in message.header.domain ]),
             "X-MAL-Network-Zone": _encode_ascii(message.header.network_zone),
-            "X-MAL-Session": message.header.session.name,
+            "X-MAL-Session": message.header.session,
             "X-MAL-Session-Name": _encode_ascii(message.header.session_name),
             "X-MAL-Interaction-Type": message.header.ip_type.name,
             "X-MAL-Interaction-Stage": message.header.ip_stage.name,
@@ -249,10 +176,15 @@ class HTTPSocket(MALSocket):
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
         body = message.msg_parts
         if self.expect_response:
-            request = _build_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
+            print("passe par là {}".format(_encode_uri(self.uri)))
+            request = self._send_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
+            self._receive_post_response()
+            headers, body=print("hearder {} , body {}".format(headers,body))
         else:
-            request = _build_post_response(target=_encode_uri(self.uri), body=body, headers=headers, status=Status(200))
-        self.socket.send(request)
+            print("passe par ici")
+            request = _send_post_response(target=_encode_uri(self.uri), body=body, headers=headers, status=Status(200))
+#a modfier 
+        #self.socket.send(request)
 
     def recv(self):
         if self.expect_response is None:
@@ -291,4 +223,33 @@ class HTTPSocket(MALSocket):
 
     @property
     def uri(self):
-        return self.socket.getsockname()
+        #return self.socket.getsockname()
+        return (self._HOST,self._PORT)
+
+    def _send_post_request(self, target, headers, body):
+
+	#modif httpsconnection request method header body en sendpostrequest
+        self.client.request('POST', url=target, body=body, headers=headers)
+
+    def _receive_post_response(self):
+	#devenir httpsConnection getresponse  ajout erreur
+        response=self.client.getresponse()
+        headers=response.header
+        body=response.body
+        return headers, body
+
+    def _receive_post_request(self,request):
+        message=self.socket.recv()
+        Header,Body=pickle.loads(message)
+        return headers, body
+
+    def _send_post_response(target, status, headers, body):
+        request_dict={
+        "target":"",
+        "status":"",
+        "headers":"",
+        "body":""
+        }
+        self.socket.send(request_dict)
+
+
