@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<malxml:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:malxml="http://www.ccsds.org/schema/malxml/MAL">
+	<Subscription>
+		<subscriptionId>
+			<Identifier>MySubscription</Identifier>
+		</subscriptionId>
+		<entities>
+			<EntityRequest>
+				<subDomain>
+					<Identifier>
+						<Identifier>Id1</Identifier>
+					</Identifier>
+					<Identifier>
+						<Identifier>Id2</Identifier>
+					</Identifier>
+					<Identifier xsi:nil="true"/>
+				</subDomain>
+				<allAreas>
+					<Boolean>True</Boolean>
+				</allAreas>
+				<allServices>
+					<Boolean>True</Boolean>
+				</allServices>
+				<allOperations>
+					<Boolean>True</Boolean>
+				</allOperations>
+				<onlyOnChange>
+					<Boolean>True</Boolean>
+				</onlyOnChange>
+				<entityKeys>
+					<EntityKey>
+						<firstSubKey>
+							<Identifier>IDK1</Identifier>
+						</firstSubKey>
+						<secondSubKey>
+							<Long>9</Long>
+						</secondSubKey>
+						<thirdSubKey xsi:nil="true"/>
+						<fourthSubKey xsi:nil="true"/>
+					</EntityKey>
+				</entityKeys>
+			</EntityRequest>
+		</entities>
+	</Subscription>
+</malxml:Body>
+

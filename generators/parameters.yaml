@@ -1,0 +1,29 @@
+controldict:
+    Octet: [-128, 127]
+    UOctet: [0, 255]
+    Short: [-32768, 32767]
+    UShort: [0, 65535]
+    Integer: [-2147483648, 21474836487]
+    UInteger: [0, 4294967295]
+    Long: [-9223372036854775808, 9223372036854775807]
+    ULong: [0, 18446744073709551615]
+
+typedict:
+    Blob: bytes
+    Boolean: bool
+    Duration: float
+    Float: float
+    Double: float
+    Identifier: str
+    Octet: int
+    UOctet: int
+    Short: int
+    UShort: int
+    Integer: int
+    UInteger: int
+    Long: int
+    ULong: int
+    String: str
+    Time: float
+    FineTime: float
+    URI: str
