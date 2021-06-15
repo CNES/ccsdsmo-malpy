@@ -137,6 +137,7 @@ class HTTPSocket(MALSocket):
         self._HOST=uri[0]
         self._PORT=uri[1]
         self.client = http.client.HTTPSConnection(self._HOST, self._PORT, context=self.CONTEXT)
+        self.client.set_debuglevel(1)
 		
     def unbind(self):
         self.socket.close()
@@ -150,7 +151,7 @@ class HTTPSocket(MALSocket):
         headers = {
             "Content-Length": len(message),
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
-           # "X-MAL-URI-From": message.header.uri_from,
+            "X-MAL-URI-From": _encode_uri(message.header.uri_from),
             "X-MAL-URI-To": message.header.uri_to,
             "X-MAL-Timestamp": _encode_time(message.header.timestamp),
             "X-MAL-QoSlevel": message.header.qos_level.name,
@@ -178,22 +179,22 @@ class HTTPSocket(MALSocket):
         if self.expect_response:
             print("passe par là {}".format(_encode_uri(self.uri)))
             request = self._send_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
-            self._receive_post_response()
-            headers, body=print("hearder {} , body {}".format(headers,body))
+            headers, body=self._receive_post_response()
+            print("headers {} , body {}".format(headers,body))
         else:
             print("passe par ici")
             request = _send_post_response(target=_encode_uri(self.uri), body=body, headers=headers, status=Status(200))
 #a modfier 
         #self.socket.send(request)
 
-    def recv(self):
+    def recv(self, headers, body):
         if self.expect_response is None:
             self.expect_response = False
-        message = self.socket.recv(self._messagesize)
-        if self.expect_response:
-            headers, body = _read_post_response(message)
-        else:
-            headers, body = _read_post_request(message)
+     #   message = self.socket.recv(self._messagesize)
+     #   if self.expect_response:
+     #       headers, body = _read_post_response(message)
+     #   else:
+     #       headers, body = _read_post_request(message)
 
         malheader = mal.MALHeader()
         malheader.auth_id = b''.fromhex(headers['X-MAL-Authentication-Id'])
@@ -234,8 +235,8 @@ class HTTPSocket(MALSocket):
     def _receive_post_response(self):
 	#devenir httpsConnection getresponse  ajout erreur
         response=self.client.getresponse()
-        headers=response.header
-        body=response.body
+        headers=response.headers
+        body=response.read().decode('utf-8')
         return headers, body
 
     def _receive_post_request(self,request):

@@ -153,6 +153,13 @@ class Handler(object):
 
     def receive_message(self):
         message = self.transport.recv()
+        bytes_recv=len(message)
+        while bytes_recv > 0:
+          message2 = self.transport.recv()
+          bytes_recv=len(message2)
+          message = message+message2
+          print("message {}".format(message))
+
         return self.encoding.decode(message)
 
 
@@ -236,7 +243,7 @@ class ProviderHandler(Handler):
         super().__init__(transport, encoding)
 
     def define_header(self, received_message_header):
-        self.response_header = received_message_header.copy()
+        self.response_header = received_message_header
         uri_from = self.response_header.uri_to
         self.response_header.uri_to = self.response_header.uri_from
         self.response_header.uri_from = uri_from
