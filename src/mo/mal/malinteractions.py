@@ -149,16 +149,16 @@ class Handler(object):
 
     def send_message(self, message):
         message = self.encoding.encode(message)
+        #print("message {}".format(message))
         return self.transport.send(message)
 
     def receive_message(self):
         message = self.transport.recv()
-        bytes_recv=len(message)
-        while bytes_recv > 0:
-          message2 = self.transport.recv()
-          bytes_recv=len(message2)
-          message = message+message2
-          print("message {}".format(message))
+        message2 = self.transport.recv()
+        message = message+message2
+        print("message {}".format(message))
+  
+          
 
         return self.encoding.decode(message)
 
@@ -353,7 +353,9 @@ class RequestProviderHandler(ProviderHandler):
     """
 
     def receive_request(self):
+        print("before self.receive_message()")
         message = self.receive_message()
+        print("before self.receive_message()")
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
         is_error_message = message.header.is_error_message
@@ -387,7 +389,7 @@ class RequestConsumerHandler(ConsumerHandler):
     def request(self, body):
         header = self.create_message_header(MAL_IP_STAGES.REQUEST)
         message = MALMessage(header=header, msg_parts=body)
-        self.send_message(message)
+        return self.send_message(message)
 
     def receive_response(self):
         message = self.receive_message()
