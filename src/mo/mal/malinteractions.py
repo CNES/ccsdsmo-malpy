@@ -154,8 +154,8 @@ class Handler(object):
 
     def receive_message(self):
         message = self.transport.recv()
-        message2 = self.transport.recv()
-        message = message+message2
+        #message2 = self.transport.recv()
+        #message = message+message2
         print("message {}".format(message))
   
           
