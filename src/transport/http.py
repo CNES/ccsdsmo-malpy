@@ -111,7 +111,7 @@ class Status:
 class HTTPSocket(MALSocket):
     _messagesize = 1024
 
-    def __init__(self, socket=None, CONTEXT=None):
+    def __init__(self, socket=None, CONTEXT=None, HOST=None, URI = None):
         self.expect_response = None
         self.CONTEXT=CONTEXT
         if socket:
@@ -119,6 +119,9 @@ class HTTPSocket(MALSocket):
         else:
             self.socket = pythonsocket.socket(pythonsocket.AF_INET,
                                               pythonsocket.SOCK_STREAM)
+        self._HOST=HOST
+        self._PORT=URI
+
 
     def bind(self, uri):
         """ @param uri: (host, port) """
@@ -180,12 +183,11 @@ class HTTPSocket(MALSocket):
             print("passe par là {}".format(_encode_uri(self.uri)))
             request = self._send_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
             headers, body=self._receive_post_response()
-            print("headers {} , body {}".format(headers,body))
+            print("headers [{}] , body [{}]".format(headers,body))
+            return (headers, body)
         else:
             print("passe par ici")
-            request = _send_post_response(target=_encode_uri(self.uri), body=body, headers=headers, status=Status(200))
-#a modfier 
-        #self.socket.send(request)
+            return (_encode_uri(self.uri), body, headers, 200)
 
     def recv(self, headers, body):
         if self.expect_response is None:
