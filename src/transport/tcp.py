@@ -8,7 +8,7 @@ from .abstract_transport import MALSocket
 
 class TCPSocket(MALSocket):
 
-    _messagesize = 1024
+    _messagesize = 4096
 
     def __init__(self, socket=None):
         if socket:
@@ -38,10 +38,11 @@ class TCPSocket(MALSocket):
         self.socket.close()
 
     def send(self, message):
+        print("Send TCP {}".format(message))
         self.socket.send(message)
 
-    def recv(self):
-        return self.socket.recv(self._messagesize)
+    def recv(self, messagesize=_messagesize):
+        return self.socket.recv(messagesize)
 
     @property
     def uri(self):
