@@ -8,7 +8,7 @@ from .abstract_transport import MALSocket
 
 class TCPSocket(MALSocket):
 
-    _messagesize = 4096
+    _messagesize = 1024
 
     def __init__(self, socket=None):
         if socket:
