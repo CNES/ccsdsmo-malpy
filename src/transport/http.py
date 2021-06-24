@@ -2,11 +2,14 @@ import socket as pythonsocket
 import time
 import pickle
 import http.client
+import logging
 
 from email.header import Header, decode_header, make_header
 from io import BytesIO
 from malpydefinitions import MALPY_ENCODING
 from mo import mal
+from struct import *  # pack() unpack()
+
 
 from .abstract_transport import MALSocket
 
@@ -111,8 +114,9 @@ class Status:
 class HTTPSocket(MALSocket):
     _messagesize = 1024
 
-    def __init__(self, socket=None, CONTEXT=None, HOST=None, URI = None):
-        self.expect_response = None
+    def __init__(self, socket=None, CONTEXT=None, HOST=None, URI = None, expect_response = False, private = False):
+        self.expect_response = expect_response
+        self._private = private
         self.CONTEXT=CONTEXT
         if socket:
             self.socket = socket
@@ -132,7 +136,7 @@ class HTTPSocket(MALSocket):
 
     def waitforconnection(self):
         conn, _ = self.socket.accept()
-        return HTTPSocket(conn)
+        return HTTPSocket(conn, expect_response=self.expect_response, private=self._private)
 
     def connect(self, uri):
         """ @param uri: (host, port) """
@@ -149,8 +153,10 @@ class HTTPSocket(MALSocket):
         self.socket.close()
 
     def send(self, message):
-        if self.expect_response is None:
-            self.expect_response = True
+        logger = logging.getLogger(__name__)
+
+        logger.debug("message.header.session {}".format(message.header.session))
+        logger.debug("message.header.qos_level {}".format(message.header.qos_level))
         headers = {
             "Content-Length": len(message),
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
@@ -161,7 +167,7 @@ class HTTPSocket(MALSocket):
             "X-MAL-Priority": str(message.header.priority),
             "X-MAL-Domain": ".".join([ _encode_ascii(x) for x in message.header.domain ]),
             "X-MAL-Network-Zone": _encode_ascii(message.header.network_zone),
-            "X-MAL-Session": message.header.session,
+            "X-MAL-Session": message.header.session.name,
             "X-MAL-Session-Name": _encode_ascii(message.header.session_name),
             "X-MAL-Interaction-Type": message.header.ip_type.name,
             "X-MAL-Interaction-Stage": message.header.ip_stage.name,
@@ -179,24 +185,56 @@ class HTTPSocket(MALSocket):
             headers['Content-Type'] = "application/mal"
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
         body = message.msg_parts
-        if self.expect_response:
-            print("passe par là {}".format(_encode_uri(self.uri)))
-            request = self._send_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
-            headers, body=self._receive_post_response()
-            print("headers [{}] , body [{}]".format(headers,body))
-            return (headers, body)
-        else:
-            print("passe par ici")
-            return (_encode_uri(self.uri), body, headers, 200)
 
-    def recv(self, headers, body):
-        if self.expect_response is None:
-            self.expect_response = False
-     #   message = self.socket.recv(self._messagesize)
-     #   if self.expect_response:
-     #       headers, body = _read_post_response(message)
-     #   else:
-     #       headers, body = _read_post_request(message)
+        if self._private is False :
+                request = self._send_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
+        else:
+
+            logger.debug('Header {} body {}'.format(headers, body))
+            response_dict= {
+                'headers': headers,
+                'body': body
+            }
+
+            data_response=pickle.dumps(response_dict)
+            data_response_lenght = len(data_response)
+            data_response_lenght_packed = pack("!I",data_response_lenght)
+    
+            # Send data lenght
+            logger.info("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
+            self.socket.send(data_response_lenght_packed)
+
+            # Send data
+            logger.info("Send {} bytes '{}'".format(data_response_lenght,data_response))
+            self.socket.send(data_response)
+            logger.debug("Close Connection")
+            #self.socket.close()
+
+    def recv(self):
+        logger = logging.getLogger(__name__)
+
+        logger.info("[**] private '{}'".format(self._private))
+        if self._private is True:
+            # Read first message lenght
+            size_packed = self.socket.recv(4)
+            size = unpack("!I",size_packed)[0]
+            logger.info("[**] Received {} bytes '{}'".format(size,size_packed))
+
+            message = self.socket.recv(int(size))
+            logger.info("[**] Received {} bytes '{}'".format(len(message),message))
+
+            # Get message from http server
+            data = pickle.loads(message)
+            logger.info("[**] data '{}'".format(data))
+            logger.info("[**] Headers {} Body '{}'".format(data['headers'], data['body']))
+
+            headers = data['headers']
+            body = data['body']
+        else:
+            body = ""    
+            headers, body=self._receive_post_response()
+            logger.debug("headers [{}] , body [{}]".format(headers,body))
+ 
 
         malheader = mal.MALHeader()
         malheader.auth_id = b''.fromhex(headers['X-MAL-Authentication-Id'])
@@ -221,6 +259,7 @@ class HTTPSocket(MALSocket):
 
         if self.encoding == MALPY_ENCODING.XML and headers['Content-Type'] != "application/mal-xml":
             raise RuntimeError("Unexpected encoding. Expected 'application/mal-xml', got '{}'".format(headers['Content-Type']))
+
 
         return mal.MALMessage(header=malheader, msg_parts=body)
 

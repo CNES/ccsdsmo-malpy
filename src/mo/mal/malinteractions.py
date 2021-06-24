@@ -149,17 +149,10 @@ class Handler(object):
 
     def send_message(self, message):
         message = self.encoding.encode(message)
-        #print("message {}".format(message))
         return self.transport.send(message)
 
     def receive_message(self):
-        message = self.transport.recv()
-        #message2 = self.transport.recv()
-        #message = message+message2
-        print("message {}".format(message))
-  
-          
-
+        message = self.transport.recv()     
         return self.encoding.decode(message)
 
 
@@ -353,9 +346,7 @@ class RequestProviderHandler(ProviderHandler):
     """
 
     def receive_request(self):
-        print("before self.receive_message()")
         message = self.receive_message()
-        print("before self.receive_message()")
         self.define_header(message.header)
         ip_stage = message.header.ip_stage
         is_error_message = message.header.is_error_message
