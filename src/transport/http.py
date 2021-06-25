@@ -20,8 +20,10 @@ def _encode_uri(uri):
 
 def _decode_uri(uri):
     splitted_uri = uri.split(':')
-    host = splitted_uri[1][2:]  # Remove //
-    port = splitted_uri[2]
+    #host = splitted_uri[1][2:]  # Remove //
+    #port = splitted_uri[2]
+    host = splitted_uri[0]
+    port = splitted_uri[1]
     return (host, port)
 
 
@@ -114,7 +116,7 @@ class Status:
 class HTTPSocket(MALSocket):
     _messagesize = 1024
 
-    def __init__(self, socket=None, CONTEXT=None, HOST=None, URI = None, expect_response = False, private = False):
+    def __init__(self, socket=None, CONTEXT=None, expect_response = False, private = False):
         self.expect_response = expect_response
         self._private = private
         self.CONTEXT=CONTEXT
@@ -122,10 +124,7 @@ class HTTPSocket(MALSocket):
             self.socket = socket
         else:
             self.socket = pythonsocket.socket(pythonsocket.AF_INET,
-                                              pythonsocket.SOCK_STREAM)
-        self._HOST=HOST
-        self._PORT=URI
-
+                                              pythonsocket.SOCK_STREAM)    
 
     def bind(self, uri):
         """ @param uri: (host, port) """
@@ -135,16 +134,16 @@ class HTTPSocket(MALSocket):
         self.socket.listen(unacceptedconnectnb)
 
     def waitforconnection(self):
-        conn, _ = self.socket.accept()
+        logger = logging.getLogger(__name__)
+        conn, addr = self.socket.accept()
+        logger.debug('Header {} body {}'.format(conn, addr))
         return HTTPSocket(conn, expect_response=self.expect_response, private=self._private)
 
     def connect(self, uri):
         """ @param uri: (host, port) """
-        #self.socket.connect(uri)
-        self._HOST=uri[0]
-        self._PORT=uri[1]
-        self.client = http.client.HTTPSConnection(self._HOST, self._PORT, context=self.CONTEXT)
-        self.client.set_debuglevel(1)
+        self._uri=uri
+        self.client = http.client.HTTPSConnection(self._uri[0], self._uri[1], context=self.CONTEXT)
+#        self.client.set_debuglevel(1)
 		
     def unbind(self):
         self.socket.close()
@@ -155,13 +154,11 @@ class HTTPSocket(MALSocket):
     def send(self, message):
         logger = logging.getLogger(__name__)
 
-        logger.debug("message.header.session {}".format(message.header.session))
-        logger.debug("message.header.qos_level {}".format(message.header.qos_level))
         headers = {
             "Content-Length": len(message),
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
             "X-MAL-URI-From": _encode_uri(message.header.uri_from),
-            "X-MAL-URI-To": message.header.uri_to,
+            "X-MAL-URI-To": _encode_uri(message.header.uri_to),
             "X-MAL-Timestamp": _encode_time(message.header.timestamp),
             "X-MAL-QoSlevel": message.header.qos_level.name,
             "X-MAL-Priority": str(message.header.priority),
@@ -187,7 +184,7 @@ class HTTPSocket(MALSocket):
         body = message.msg_parts
 
         if self._private is False :
-                request = self._send_post_request(target=_encode_uri(self.uri), body=body, headers=headers)
+                request = self._send_post_request(target=_encode_uri(self._uri), body=body, headers=headers)
         else:
 
             logger.debug('Header {} body {}'.format(headers, body))
@@ -201,11 +198,11 @@ class HTTPSocket(MALSocket):
             data_response_lenght_packed = pack("!I",data_response_lenght)
     
             # Send data lenght
-            logger.info("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
+            logger.debug("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
             self.socket.send(data_response_lenght_packed)
 
             # Send data
-            logger.info("Send {} bytes '{}'".format(data_response_lenght,data_response))
+            logger.debug("Send {} bytes '{}'".format(data_response_lenght,data_response))
             self.socket.send(data_response)
             logger.debug("Close Connection")
             #self.socket.close()
@@ -213,20 +210,20 @@ class HTTPSocket(MALSocket):
     def recv(self):
         logger = logging.getLogger(__name__)
 
-        logger.info("[**] private '{}'".format(self._private))
+        logger.debug("[**] private '{}'".format(self._private))
         if self._private is True:
             # Read first message lenght
             size_packed = self.socket.recv(4)
             size = unpack("!I",size_packed)[0]
-            logger.info("[**] Received {} bytes '{}'".format(size,size_packed))
+            logger.debug("[**] Received {} bytes '{}'".format(size,size_packed))
 
             message = self.socket.recv(int(size))
-            logger.info("[**] Received {} bytes '{}'".format(len(message),message))
+            logger.debug("[**] Received {} bytes '{}'".format(len(message),message))
 
             # Get message from http server
             data = pickle.loads(message)
-            logger.info("[**] data '{}'".format(data))
-            logger.info("[**] Headers {} Body '{}'".format(data['headers'], data['body']))
+            logger.debug("[**] data '{}'".format(data))
+            logger.debug("[**] Headers {} Body '{}'".format(data['headers'], data['body']))
 
             headers = data['headers']
             body = data['body']
@@ -238,8 +235,8 @@ class HTTPSocket(MALSocket):
 
         malheader = mal.MALHeader()
         malheader.auth_id = b''.fromhex(headers['X-MAL-Authentication-Id'])
-        malheader.uri_from = headers['X-MAL-URI-From']
-        malheader.uri_to = headers['X-MAL-URI-To']
+        malheader.uri_from = _decode_uri(headers['X-MAL-URI-From'])
+        malheader.uri_to = _decode_uri(headers['X-MAL-URI-To'])
         malheader.timestamp = _decode_time(headers['X-MAL-Timestamp'])
         malheader.qos_level = _decode_qos_level(headers['X-MAL-QoSlevel'])
         malheader.priority = int(headers['X-MAL-Priority'])
@@ -266,11 +263,14 @@ class HTTPSocket(MALSocket):
     @property
     def uri(self):
         #return self.socket.getsockname()
-        return (self._HOST,self._PORT)
+        return (self._uri)
 
     def _send_post_request(self, target, headers, body):
+        logger = logging.getLogger(__name__)
 
 	#modif httpsconnection request method header body en sendpostrequest
+        logger.debug('Target {} Header {} body {}'.format(target, headers, body))
+
         self.client.request('POST', url=target, body=body, headers=headers)
 
     def _receive_post_response(self):
