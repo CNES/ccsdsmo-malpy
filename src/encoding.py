@@ -2,6 +2,7 @@ import pickle
 import xml.dom.minidom
 import re
 import sys
+import logging
 
 from malpydefinitions import MALPY_ENCODING
 from mo import mal, com, mc
@@ -146,7 +147,8 @@ class XMLEncoder(Encoder):
             raise RuntimeError("I don't know this object")
 
         def _decode_internal(node, elementName=None):
-            print("IN", node, elementName)
+            logger = logging.getLogger(__name__)
+            logger.debug("IN {} {}".format(node, elementName))
 
             internal = []
 
@@ -173,18 +175,18 @@ class XMLEncoder(Encoder):
                                 internal.append(None)
                             # In all other cases, we recurse
                             else:
-                                print('all other cases', objectClass)
+                                logger.debug('all other cases {}'.format(objectClass))
                                 internal.append(_decode_internal(element))
                         else:
                             raise RuntimeError(element)
                 if len(internal) == 1:
-                    print("OUT", node, elementName)
+                    logger.debug("OUT {} {}".format(node, elementName))
                     return objectClass(internal[0])
                 elif len(internal) == 0:
                     raise RuntimeError("len(internal) == 0", node)
                 else:
-                    print("more than one")
-                    print("OUT", node, elementName)
+                    logger.debug("more than one")
+                    logger.debug("OUT {} {}".format( node, elementName))
                     return objectClass(internal, attribName=elementName)
             # If it's the name of the attribute, it either has MAL Element children
             # or is Null
@@ -198,19 +200,19 @@ class XMLEncoder(Encoder):
                     if node.nodeName == MAL_XML_BODY:
                         for element in node.childNodes:
                             internal.append(_decode_internal(element))
-                        print("OUT", node, elementName)
+                        logger.debug("OUT {} {}".format(node, elementName))
                         return internal
 
                     elementName = node.nodeName
 
                     # First case: it's Null and we reached a leaf
                     if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
-                        print("OUT", node, elementName)
+                        logger.debug("OUT {} {}".format( node, elementName))
                         return None
                     # Otherwise it's a MALElement to parse
                     else:
                         if len(node.childNodes) == 1:
-                            print("OUT", node, elementName)
+                            logger.debug("OUT {} {}".format( node, elementName))
                             return _decode_internal(node.childNodes[0], elementName)
                         else:
                             # it's a list
@@ -219,7 +221,7 @@ class XMLEncoder(Encoder):
                             malobject = str_to_class(maltype)
                             for element in node.childNodes:
                                 internal.append(_decode_internal(element))
-                            print("OUT", node, elementName)
+                            logger.debug("OUT {} {}".format( node, elementName))
                             return malobject(internal)
 
         if body == b"":
