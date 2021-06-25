@@ -175,11 +175,11 @@ class ConsumerHandler(Handler):
         cls._transaction_id_counter += 1
         return cls._transaction_id_counter
 
-    def __init__(self, transport, encoding, provider_uri,
+    def __init__(self, transport, encoding, consumer_uri,
                  session=SessionType.LIVE, session_name="", domain=[], network_zone=None,
                  priority=0, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
         super().__init__(transport, encoding)
-        self.provider_uri = provider_uri
+        self.consumer_uri = consumer_uri
         self.session = session
         self.session_name = session_name
         self.domain = domain
@@ -203,8 +203,8 @@ class ConsumerHandler(Handler):
         header.session = self.session
         header.transaction_id = self.transaction_id
         header.priority = self.priority
-        header.uri_from = self.transport.uri
-        header.uri_to = self.provider_uri
+        header.uri_from = self.consumer_uri
+        header.uri_to = self.transport._uri
         header.timestamp = time.time()
         header.network_zone = self.network_zone
         header.session_name = self.session_name
