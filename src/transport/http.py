@@ -27,14 +27,32 @@ def _decode_uri(uri):
     port = splitted_uri[1]
     
     return (host, port)
-    ############## Code a reprendre ###############
+
+# Split uri in <schem>://<host>:<port>/<path>
+def _split_uri(uri):
     logger = logging.getLogger(__name__)
 
-    urlparsed = urllib.parse.urlparse(uri)
-    host = urlparsed.hostname
-    port = urlparsed.port
-    path = urlparsed.path
-    logger.debug('urlparsed {} host {} port {} path {}'.format(urlparsed, host, port, path))
+    host = None
+    port = None
+    path = None
+
+    splitted_uri = uri.split(':')
+    if splitted_uri[0][:4].lower() == "http":
+        host = splitted_uri[1][2:]
+        rest_uri = uri.split(':',2)[2]
+    else:
+        host =splitted_uri[0]
+        rest_uri = uri.split(':',1)[1]
+
+    splitted_rest_uri = rest_uri.split('/',1)
+    port = splitted_rest_uri[0]
+    if len(splitted_rest_uri) > 1:
+        path = splitted_rest_uri[1]
+
+    logger.debug('urlparsed {} host {} port {} path {}'.format(uri, host, port, path))
+
+    return (host,port,path)
+
 
 
 def _encode_time(t):
@@ -126,17 +144,14 @@ class Status:
 class HTTPSocket(MALSocket):
     _messagesize = 1024
 
-    def __init__(self, socket=None, CONTEXT=None, expect_response = False, private = False):
-        self.expect_response = expect_response
+    def __init__(self, socket=None, CONTEXT=None,  private=False, host=None, port=None):
         self._private = private
         self.CONTEXT=CONTEXT
-        if socket:
-            self.socket = socket
-        else:
-            self.socket = pythonsocket.socket(pythonsocket.AF_INET,
-                                              pythonsocket.SOCK_STREAM)    
+        self.socket = socket
         self._lastCommandIsSend = False
         self.client = None
+        self.host=host
+        self.port=port
 
     def bind(self, uri):
         """ @param uri: (host, port) """
@@ -149,7 +164,7 @@ class HTTPSocket(MALSocket):
         logger = logging.getLogger(__name__)
         conn, addr = self.socket.accept()
         logger.debug('Header {} body {}'.format(conn, addr))
-        return HTTPSocket(conn, expect_response=self.expect_response, private=self._private, CONTEXT=self.CONTEXT)
+        return HTTPSocket(conn, private=self._private, CONTEXT=self.CONTEXT)
 
     def connect(self, uri):
         """ @param uri: (host, port) """
@@ -168,8 +183,8 @@ class HTTPSocket(MALSocket):
         headers = {
             "Content-Length": len(message),
             "X-MAL-Authentication-Id": message.header.auth_id.hex(),
-            "X-MAL-URI-From": _encode_uri(message.header.uri_from),
-            "X-MAL-URI-To": _encode_uri(message.header.uri_to),
+            "X-MAL-URI-From": message.header.uri_from,
+            "X-MAL-URI-To": message.header.uri_to,
             "X-MAL-Timestamp": _encode_time(message.header.timestamp),
             "X-MAL-QoSlevel": message.header.qos_level.name,
             "X-MAL-Priority": str(message.header.priority),
@@ -195,7 +210,7 @@ class HTTPSocket(MALSocket):
         body = message.msg_parts
 
         if self._private is False :
-            self._send_http_request(target=_encode_uri(message.header.uri_to), body=body, headers=headers)
+            self._send_http_request(target=message.header.uri_to, body=body, headers=headers)
         else:
 
             self._send_pickle_response(headers, body)
@@ -228,8 +243,8 @@ class HTTPSocket(MALSocket):
 
         malheader = mal.MALHeader()
         malheader.auth_id = b''.fromhex(headers['X-MAL-Authentication-Id'])
-        malheader.uri_from = _decode_uri(headers['X-MAL-URI-From'])
-        malheader.uri_to = _decode_uri(headers['X-MAL-URI-To'])
+        malheader.uri_from = headers['X-MAL-URI-From']
+        malheader.uri_to = headers['X-MAL-URI-To']
         malheader.timestamp = _decode_time(headers['X-MAL-Timestamp'])
         malheader.qos_level = _decode_qos_level(headers['X-MAL-QoSlevel'])
         malheader.priority = int(headers['X-MAL-Priority'])
@@ -270,8 +285,8 @@ class HTTPSocket(MALSocket):
         logger.debug('Target [{}] Header {} body {}'.format(target, headers, body))
 
         if not self.client:
-            self.connect(_decode_uri(target))
-            self.client = http.client.HTTPSConnection(self._uri[0], self._uri[1], context=self.CONTEXT)
+            host,port,path = _split_uri(target)
+            self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
             self.client.set_debuglevel(1)
 
 
@@ -286,6 +301,17 @@ class HTTPSocket(MALSocket):
     def _receive_pickle_request(self):
         logger = logging.getLogger(__name__)
 
+        if self.socket is None:
+            socket = pythonsocket.socket(pythonsocket.AF_INET,
+                                              pythonsocket.SOCK_STREAM)    
+            socket.bind((self.host, self.port))
+            socket.listen(10)
+            logger.info("[*] Server listening on {} {}".format(self.host, self.port))
+            conn, addr = socket.accept()
+            logger.debug('socket accept  {} {}'.format(conn, addr))
+            self.socket = conn
+
+ 
         # Read first message lenght
         size_packed = self.socket.recv(4)
         size = unpack("!I",size_packed)[0]
