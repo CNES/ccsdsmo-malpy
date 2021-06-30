@@ -2,6 +2,7 @@ import socket as pythonsocket
 import time
 import pickle
 import http.client
+import urllib.parse
 import logging
 
 from email.header import Header, decode_header, make_header
@@ -24,7 +25,16 @@ def _decode_uri(uri):
     #port = splitted_uri[2]
     host = splitted_uri[0]
     port = splitted_uri[1]
+    
     return (host, port)
+    ############## Code a reprendre ###############
+    logger = logging.getLogger(__name__)
+
+    urlparsed = urllib.parse.urlparse(uri)
+    host = urlparsed.hostname
+    port = urlparsed.port
+    path = urlparsed.path
+    logger.debug('urlparsed {} host {} port {} path {}'.format(urlparsed, host, port, path))
 
 
 def _encode_time(t):
@@ -125,6 +135,8 @@ class HTTPSocket(MALSocket):
         else:
             self.socket = pythonsocket.socket(pythonsocket.AF_INET,
                                               pythonsocket.SOCK_STREAM)    
+        self._lastCommandIsSend = False
+        self.client = None
 
     def bind(self, uri):
         """ @param uri: (host, port) """
@@ -137,13 +149,11 @@ class HTTPSocket(MALSocket):
         logger = logging.getLogger(__name__)
         conn, addr = self.socket.accept()
         logger.debug('Header {} body {}'.format(conn, addr))
-        return HTTPSocket(conn, expect_response=self.expect_response, private=self._private)
+        return HTTPSocket(conn, expect_response=self.expect_response, private=self._private, CONTEXT=self.CONTEXT)
 
     def connect(self, uri):
         """ @param uri: (host, port) """
         self._uri=uri
-        self.client = http.client.HTTPSConnection(self._uri[0], self._uri[1], context=self.CONTEXT)
-#        self.client.set_debuglevel(1)
 		
     def unbind(self):
         self.socket.close()
@@ -153,6 +163,7 @@ class HTTPSocket(MALSocket):
 
     def send(self, message):
         logger = logging.getLogger(__name__)
+        logger.debug("[**] private '{}' LastCommandIsSend {}".format(self._private, self._lastCommandIsSend))
 
         headers = {
             "Content-Length": len(message),
@@ -184,53 +195,35 @@ class HTTPSocket(MALSocket):
         body = message.msg_parts
 
         if self._private is False :
-                request = self._send_post_request(target=_encode_uri(self._uri), body=body, headers=headers)
+            self._send_http_request(target=_encode_uri(message.header.uri_to), body=body, headers=headers)
         else:
 
-            logger.debug('Header {} body {}'.format(headers, body))
-            response_dict= {
-                'headers': headers,
-                'body': body
-            }
-
-            data_response=pickle.dumps(response_dict)
-            data_response_lenght = len(data_response)
-            data_response_lenght_packed = pack("!I",data_response_lenght)
-    
-            # Send data lenght
-            logger.debug("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
-            self.socket.send(data_response_lenght_packed)
-
-            # Send data
-            logger.debug("Send {} bytes '{}'".format(data_response_lenght,data_response))
-            self.socket.send(data_response)
+            self._send_pickle_response(headers, body)
             logger.debug("Close Connection")
             #self.socket.close()
+
+
+        if self._private is False and self._lastCommandIsSend is False:
+            self._private = True
+
+        if self._private is True and self._lastCommandIsSend is False:
+            self._private = False
+
+        self._lastCommandIsSend = True
+        logger.debug("[**] private '{}' LastCommandIsSend {}".format(self._private, self._lastCommandIsSend))
+
 
     def recv(self):
         logger = logging.getLogger(__name__)
 
-        logger.debug("[**] private '{}'".format(self._private))
+        logger.debug("[**] private '{}' LastCommandIsSend {}".format(self._private, self._lastCommandIsSend))
+
         if self._private is True:
-            # Read first message lenght
-            size_packed = self.socket.recv(4)
-            size = unpack("!I",size_packed)[0]
-            logger.debug("[**] Received {} bytes '{}'".format(size,size_packed))
-
-            message = self.socket.recv(int(size))
-            logger.debug("[**] Received {} bytes '{}'".format(len(message),message))
-
-            # Get message from http server
-            data = pickle.loads(message)
-            logger.debug("[**] data '{}'".format(data))
-            logger.debug("[**] Headers {} Body '{}'".format(data['headers'], data['body']))
-
-            headers = data['headers']
-            body = data['body']
+            headers, body = self._receive_pickle_request()
         else:
-            body = ""    
-            headers, body=self._receive_post_response()
-            logger.debug("headers [{}] , body [{}]".format(headers,body))
+            headers, body=self._receive_http_response()
+
+        logger.debug("headers [{}] , body [{}]".format(headers,body))
  
 
         malheader = mal.MALHeader()
@@ -257,41 +250,81 @@ class HTTPSocket(MALSocket):
         if self.encoding == MALPY_ENCODING.XML and headers['Content-Type'] != "application/mal-xml":
             raise RuntimeError("Unexpected encoding. Expected 'application/mal-xml', got '{}'".format(headers['Content-Type']))
 
+        if self._private is False and self._lastCommandIsSend is True:
+            self._private = True
+
+        self._lastCommandIsSend = False
+        logger.debug("[**] private '{}' LastCommandIsSend {}".format(self._private, self._lastCommandIsSend))
+     
 
         return mal.MALMessage(header=malheader, msg_parts=body)
 
     @property
     def uri(self):
-        #return self.socket.getsockname()
         return (self._uri)
 
-    def _send_post_request(self, target, headers, body):
+    def _send_http_request(self, target, headers, body):
         logger = logging.getLogger(__name__)
 
 	#modif httpsconnection request method header body en sendpostrequest
-        logger.debug('Target {} Header {} body {}'.format(target, headers, body))
+        logger.debug('Target [{}] Header {} body {}'.format(target, headers, body))
+
+        if not self.client:
+            self.connect(_decode_uri(target))
+            self.client = http.client.HTTPSConnection(self._uri[0], self._uri[1], context=self.CONTEXT)
+            self.client.set_debuglevel(1)
+
 
         self.client.request('POST', url=target, body=body, headers=headers)
 
-    def _receive_post_response(self):
-	#devenir httpsConnection getresponse  ajout erreur
+    def _receive_http_response(self):
         response=self.client.getresponse()
         headers=response.headers
         body=response.read().decode('utf-8')
         return headers, body
 
-    def _receive_post_request(self,request):
-        message=self.socket.recv()
-        Header,Body=pickle.loads(message)
+    def _receive_pickle_request(self):
+        logger = logging.getLogger(__name__)
+
+        # Read first message lenght
+        size_packed = self.socket.recv(4)
+        size = unpack("!I",size_packed)[0]
+        logger.debug("[**] Received {} bytes '{}'".format(size,size_packed))
+
+        message = self.socket.recv(int(size))
+        logger.debug("[**] Received {} bytes '{}'".format(len(message),message))
+
+        # Get message from http server
+        data = pickle.loads(message)
+        logger.debug("[**] data '{}'".format(data))
+        logger.debug("[**] Headers {} Body '{}'".format(data['headers'], data['body']))
+
+        headers = data['headers']
+        body = data['body']
+
         return headers, body
 
-    def _send_post_response(target, status, headers, body):
-        request_dict={
-        "target":"",
-        "status":"",
-        "headers":"",
-        "body":""
+    def _send_pickle_response(self, headers, body):
+        logger = logging.getLogger(__name__)
+
+        logger.debug('Header {} body {}'.format(headers, body))
+        response_dict= {
+            'headers': headers,
+            'body': body
         }
-        self.socket.send(request_dict)
+
+        data_response=pickle.dumps(response_dict)
+        data_response_lenght = len(data_response)
+        data_response_lenght_packed = pack("!I",data_response_lenght)
+
+        # Send data lenght
+        logger.debug("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
+        self.socket.send(data_response_lenght_packed)
+
+        # Send data
+        logger.debug("Send {} bytes '{}'".format(data_response_lenght,data_response))
+        self.socket.send(data_response)
+        logger.debug("Close Connection")
+        #self.socket.close()
 
 
