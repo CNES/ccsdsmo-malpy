@@ -175,7 +175,7 @@ class ConsumerHandler(Handler):
         cls._transaction_id_counter += 1
         return cls._transaction_id_counter
 
-    def __init__(self, transport, encoding, consumer_uri, provider_uri=None,
+    def __init__(self, transport, encoding, provider_uri="", consumer_uri="", 
                  session=SessionType.LIVE, session_name="", domain=[], network_zone=None,
                  priority=0, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
         super().__init__(transport, encoding)
