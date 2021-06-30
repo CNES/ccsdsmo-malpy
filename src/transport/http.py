@@ -144,14 +144,14 @@ class Status:
 class HTTPSocket(MALSocket):
     _messagesize = 1024
 
-    def __init__(self, socket=None, CONTEXT=None,  private=False, host=None, port=None):
+    def __init__(self, socket=None, CONTEXT=None,  private=False, private_host=None, private_port=None):
         self._private = private
         self.CONTEXT=CONTEXT
         self.socket = socket
         self._lastCommandIsSend = False
         self.client = None
-        self.host=host
-        self.port=port
+        self.private_host=private_host
+        self.private_port=private_port
 
     def bind(self, uri):
         """ @param uri: (host, port) """
@@ -302,12 +302,12 @@ class HTTPSocket(MALSocket):
         logger = logging.getLogger(__name__)
 
         if self.socket is None:
-            socket = pythonsocket.socket(pythonsocket.AF_INET,
+            server_socket = pythonsocket.socket(pythonsocket.AF_INET,
                                               pythonsocket.SOCK_STREAM)    
-            socket.bind((self.host, self.port))
-            socket.listen(10)
-            logger.info("[*] Server listening on {} {}".format(self.host, self.port))
-            conn, addr = socket.accept()
+            server_socket.bind((self.private_host, self.private_port))
+            server_socket.listen(10)
+            logger.info("[*] Server listening on {} {}".format(self.private_host, self.private_port))
+            conn, addr = server_socket.accept()
             logger.debug('socket accept  {} {}'.format(conn, addr))
             self.socket = conn
 
