@@ -284,12 +284,14 @@ class HTTPSocket(MALSocket):
 	#modif httpsconnection request method header body en sendpostrequest
         logger.debug('Target [{}] Header {} body {}'.format(target, headers, body))
 
-        if not self.client:
-            host,port,path = _split_uri(target)
-            self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
-            self.client.set_debuglevel(1)
-
-
+        # if not self.client:
+        #     logger.debug('Create Client')
+        #     host,port,path = _split_uri(target)
+        #     self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
+        #     self.client.set_debuglevel(1)
+        host,port,path = _split_uri(target)
+        self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
+        logger.debug('Send POST request url {} headers {} body {}'.format(target, body, headers))
         self.client.request('POST', url=target, body=body, headers=headers)
 
     def _receive_http_response(self):
