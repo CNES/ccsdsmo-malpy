@@ -143,6 +143,7 @@ class Status:
 
 class HTTPSocket(MALSocket):
     _messagesize = 1024
+    struct_format = '!I'
 
     def __init__(self, socket=None, CONTEXT=None,  private=False, private_host=None, private_port=None):
         self._private = private
@@ -315,8 +316,8 @@ class HTTPSocket(MALSocket):
 
  
         # Read first message lenght
-        size_packed = self.socket.recv(4)
-        size = unpack("!I",size_packed)[0]
+        size_packed = self.socket.recv(calcsize(self.struct_format))
+        size = unpack(self.struct_format,size_packed)[0]
         logger.debug("[**] Received {} bytes '{}'".format(size,size_packed))
 
         message = self.socket.recv(int(size))
@@ -343,7 +344,7 @@ class HTTPSocket(MALSocket):
 
         data_response=pickle.dumps(response_dict)
         data_response_lenght = len(data_response)
-        data_response_lenght_packed = pack("!I",data_response_lenght)
+        data_response_lenght_packed = pack(self.struct_format,data_response_lenght)
 
         # Send data lenght
         logger.debug("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
