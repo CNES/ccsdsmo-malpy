@@ -148,7 +148,11 @@ class HTTPSocket(MALSocket):
     def __init__(self, socket=None, CONTEXT=None,  private=False, private_host=None, private_port=None):
         self._private = private
         self.CONTEXT=CONTEXT
-        self.socket = socket
+        if private and socket is None:
+            self.socket = pythonsocket.socket(pythonsocket.AF_INET,
+                                              pythonsocket.SOCK_STREAM)
+        else:
+            self.socket = socket
         self._lastCommandIsSend = False
         self.client = None
         self.private_host=private_host
