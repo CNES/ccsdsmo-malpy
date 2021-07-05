@@ -289,15 +289,24 @@ class HTTPSocket(MALSocket):
 	#modif httpsconnection request method header body en sendpostrequest
         logger.debug('Target [{}] Header {} body {}'.format(target, headers, body))
 
-        # if not self.client:
-        #     logger.debug('Create Client')
-        #     host,port,path = _split_uri(target)
-        #     self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
-        #     self.client.set_debuglevel(1)
         host,port,path = _split_uri(target)
-        self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
+        # If client doesn't exist
+        if not self.client:
+             logger.debug('Create Client')
+             self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
+             self.client.set_debuglevel(1)
+        
         logger.debug('Send POST request url {} headers {} body {}'.format(target, body, headers))
         self.client.request('POST', url=target, body=body, headers=headers)
+
+        # Dans certains cas, il faut faire un getreponse()
+        if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.SEND) ) or \
+           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.INVOKE) and headers['X-MAL-Interaction-Stage'] == 'INVOKE_RESPONSE')  or  \
+           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.PROGRESS) and \
+               (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_RESPONSE' ) or (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_UPDATE' ) ):
+            logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
+            response=self.client.getresponse()
+
 
     def _receive_http_response(self):
         response=self.client.getresponse()
