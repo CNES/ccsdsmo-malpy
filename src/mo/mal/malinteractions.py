@@ -237,7 +237,7 @@ class ProviderHandler(Handler):
         super().__init__(transport, encoding)
 
     def define_header(self, received_message_header):
-        self.response_header = received_message_header
+        self.response_header = received_message_header.copy()
         uri_from = self.response_header.uri_to
         self.response_header.uri_to = self.response_header.uri_from
         self.response_header.uri_from = uri_from
