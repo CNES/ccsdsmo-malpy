@@ -270,7 +270,9 @@ class HTTPSocket(MALSocket):
         if self.encoding == MALPY_ENCODING.XML and headers['Content-Type'] != "application/mal-xml":
             raise RuntimeError("Unexpected encoding. Expected 'application/mal-xml', got '{}'".format(headers['Content-Type']))
 
-        if self._private is False and self._lastCommandIsSend is True:
+        if self._private is False and \
+           self._lastCommandIsSend is True and \
+           (headers['X-MAL-Interaction-Stage'] != 'PUBSUB_PUBLISH_REGISTER_ACK' and headers['X-MAL-Interaction-Stage'] != 'PUBSUB_PUBLISH_DEREGISTER_ACK'):
             self._private = True
 
         self._lastCommandIsSend = False
@@ -303,7 +305,9 @@ class HTTPSocket(MALSocket):
         if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.SEND) ) or \
            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.INVOKE) and headers['X-MAL-Interaction-Stage'] == 'INVOKE_RESPONSE')  or  \
            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.PROGRESS) and \
-               (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_RESPONSE' ) or (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_UPDATE' ) ):
+               (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_RESPONSE' ) or (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_UPDATE' ) ) or \
+            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.PUBSUB) and \
+               (headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH' ) or (headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH_ERROR' ) ):
             logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
             response=self.client.getresponse()
 

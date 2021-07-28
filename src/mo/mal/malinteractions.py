@@ -233,8 +233,12 @@ class ProviderHandler(Handler):
     SERVICE = None
     OPERATION = None
 
-    def __init__(self, transport, encoding):
+    IP_TYPE = None
+
+    def __init__(self, transport, encoding,  broker_uri=""):
         super().__init__(transport, encoding)
+        self.broker_uri = broker_uri
+        self.response_header = None
 
     def define_header(self, received_message_header):
         self.response_header = received_message_header.copy()
@@ -243,9 +247,31 @@ class ProviderHandler(Handler):
         self.response_header.uri_from = uri_from
 
     def create_message_header(self, ip_stage, is_error_message=False):
-        header = self.response_header.copy()
+        if not self.response_header:
+            header = MALHeader()
+            header.ip_type = self.IP_TYPE
+            header.ip_stage = ip_stage
+            header.area = self.AREA
+            header.service = self.SERVICE
+            header.operation = self.OPERATION
+            header.area_version = self.AREA_VERSION
+            header.is_error_message = None
+            header.qos_level = QoSLevel.BESTEFFORT
+            header.session = SessionType.LIVE
+            header.transaction_id = 0
+            header.priority = 0
+            header.uri_from = ""
+            header.uri_to = ""
+            header.timestamp = time.time()
+            header.network_zone = None
+            header.session_name = ""
+            header.domain = []
+            header.auth_id = b""
+        else:
+           header = self.response_header.copy()
         header.ip_stage = ip_stage
         header.is_error_message = is_error_message
+        header.uri_to = self.broker_uri
         return header
 
 
@@ -593,6 +619,8 @@ class ProgressConsumerHandler(ConsumerHandler):
 
 class PubSubProviderHandler(ProviderHandler):
 
+    IP_TYPE = InteractionType.PUBSUB
+
     def receive_registration_message(self):
         message = self.receive_message()
         self.define_header(message.header)
@@ -782,6 +810,8 @@ class PubSubBrokerHandler(ProviderHandler):
 
 
 class PubSubConsumerHandler(ConsumerHandler):
+
+    IP_TYPE = InteractionType.PUBSUB
 
     def register(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PUBSUB_REGISTER)
