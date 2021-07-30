@@ -333,7 +333,9 @@ class HTTPSocket(MALSocket):
 
  
         # Read first message lenght
+        logger.debug("[**] Recv() ask  {} bytes".format(calcsize(self.struct_format)))
         size_packed = self.socket.recv(calcsize(self.struct_format))
+        logger.debug("[**] Received {} bytes".format(size_packed))
         size = unpack(self.struct_format,size_packed)[0]
         logger.debug("[**] Received {} bytes '{}'".format(size,size_packed))
 

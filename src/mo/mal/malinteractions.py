@@ -235,7 +235,7 @@ class ProviderHandler(Handler):
 
     IP_TYPE = None
 
-    def __init__(self, transport, encoding,  broker_uri=""):
+    def __init__(self, transport, encoding,  broker_uri=None):
         super().__init__(transport, encoding)
         self.broker_uri = broker_uri
         self.response_header = None
@@ -271,7 +271,8 @@ class ProviderHandler(Handler):
            header = self.response_header.copy()
         header.ip_stage = ip_stage
         header.is_error_message = is_error_message
-        header.uri_to = self.broker_uri
+        if self.broker_uri:
+            header.uri_to = self.broker_uri
         return header
 
 
