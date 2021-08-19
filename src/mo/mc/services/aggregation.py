@@ -9,8 +9,8 @@ Filtering is where an aggregation is only generated when the change in the value
 As there may be a large amount of time between reports of an aggregation when filtering is applied, the filtering concept also has a maximum reporting interval. If a report of the aggregation has not passed the filter in the maximum reporting interval a report is generated regardless. This allows there to be regular reports of an aggregation sent regardless of filtering.
 It should be noted that applying a filter with a maximum reporting interval to an ad-hoc aggregation will cause the aggregation to generate reports in a periodic way if the maximum reporting interval is left to expire. This is expected behaviour.
 There are a number of intervals defined in the structures of the service, the diagram in Figure 3-12 illustrates the use of these:
- insert timing diagram
-The diagram shows a single report of an aggregation being generated which contains two parameter sets. Each set of parameter values in the aggregation report contains two optional durations, delta time and interval time.
+ insert timing diagram 
+The diagram shows a single report of an aggregation being generated which contains two parameter sets. Each set of parameter values in the aggregation report contains two optional durations, delta time and interval time. 
 <ul>
  <li>The timestamp of the first value of the first set (T1) is defined as the timestamp of the aggregation report plus the delta time of the first set.</li>
  <li>The timestamp of the second value of the first set (T2) is defined as the timestamp of the first parameter (T1) plus the interval time of the set.</li>
@@ -105,13 +105,18 @@ class MALShortForm(IntEnum):
     AGGREGATIONVALUEDETAILS = 11
 
 
-class AggregationCategory(IntEnum):
+class AggregationCategoryEnum(IntEnum):
     """AggregationCategory is an enumeration definition holding the categories of aggregations."""
-
-    shortForm = MALShortForm.AGGREGATIONCATEGORY
 
     GENERAL = 1  # General aggregation.
     DIAGNOSTIC = 2  # Diagnostic aggregation.
+
+
+class AggregationCategory(mal.AbstractEnum):
+    """AggregationCategory is an enumeration definition holding the categories of aggregations."""
+
+    shortForm = MALShortForm.AGGREGATIONCATEGORY
+    value_type = AggregationCategoryEnum
 
 
 class AggregationCategoryList(mal.ElementList):
@@ -134,13 +139,18 @@ class AggregationCategoryList(mal.ElementList):
                  self._value.append(AggregationCategory(v))
 
 
-class ThresholdType(IntEnum):
+class ThresholdTypeEnum(IntEnum):
     """ThresholdType is an enumeration definition holding the types of filtering thresholds."""
-
-    shortForm = MALShortForm.THRESHOLDTYPE
 
     PERCENTAGE = 1  # Threshold value is a percentage.
     DELTA = 2  # Threshold value is a delta.
+
+
+class ThresholdType(mal.AbstractEnum):
+    """ThresholdType is an enumeration definition holding the types of filtering thresholds."""
+
+    shortForm = MALShortForm.THRESHOLDTYPE
+    value_type = ThresholdTypeEnum
 
 
 class ThresholdTypeList(mal.ElementList):
@@ -163,14 +173,19 @@ class ThresholdTypeList(mal.ElementList):
                  self._value.append(ThresholdType(v))
 
 
-class GenerationMode(IntEnum):
+class GenerationModeEnum(IntEnum):
     """GenerationMode is an enumeration definition holding the reasons for the aggregation to be generated."""
-
-    shortForm = MALShortForm.GENERATIONMODE
 
     ADHOC = 1  # The aggregation value was generated because of an ad-hoc implementation dependent reason.
     PERIODIC = 2  # The aggregation value was generated because of a periodic report.
     FILTERED_TIMEOUT = 3  # The item is filtered but it exceeded its timeout value.
+
+
+class GenerationMode(mal.AbstractEnum):
+    """GenerationMode is an enumeration definition holding the reasons for the aggregation to be generated."""
+
+    shortForm = MALShortForm.GENERATIONMODE
+    value_type = GenerationModeEnum
 
 
 class GenerationModeList(mal.ElementList):

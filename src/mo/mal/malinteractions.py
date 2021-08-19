@@ -1,6 +1,6 @@
 import time
 from enum import IntEnum
-from .maltypes import QoSLevel, SessionType, InteractionType, number
+from .maltypes import QoSLevelEnum, SessionTypeEnum, InteractionTypeEnum, number
 
 
 class MAL_IP_STAGES(IntEnum):
@@ -176,8 +176,8 @@ class ConsumerHandler(Handler):
         return cls._transaction_id_counter
 
     def __init__(self, transport, encoding, provider_uri,
-                 session=SessionType.LIVE, session_name="", domain=[], network_zone=None,
-                 priority=0, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
+                 session=SessionTypeEnum.LIVE, session_name="", domain=[], network_zone=None,
+                 priority=0, auth_id=b"", qos_level=QoSLevelEnum.BESTEFFORT):
         super().__init__(transport, encoding)
         self.provider_uri = provider_uri
         self.session = session
@@ -272,7 +272,7 @@ class SendConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.SEND
+    IP_TYPE = InteractionTypeEnum.SEND
 
     def send(self, body):
         header = self.create_message_header(MAL_IP_STAGES.SEND)
@@ -317,7 +317,7 @@ class SubmitConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.SUBMIT
+    IP_TYPE = InteractionTypeEnum.SUBMIT
 
     def submit(self, body):
         header = self.create_message_header(MAL_IP_STAGES.SUBMIT)
@@ -375,7 +375,7 @@ class RequestConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.REQUEST
+    IP_TYPE = InteractionTypeEnum.REQUEST
 
     def request(self, body):
         header = self.create_message_header(MAL_IP_STAGES.REQUEST)
@@ -443,7 +443,7 @@ class InvokeConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.INVOKE
+    IP_TYPE = InteractionTypeEnum.INVOKE
 
     def invoke(self, body):
         header = self.create_message_header(MAL_IP_STAGES.INVOKE)
@@ -534,7 +534,7 @@ class ProgressConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.PROGRESS
+    IP_TYPE = InteractionTypeEnum.PROGRESS
 
     def progress(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PROGRESS)

@@ -146,16 +146,21 @@ class MALShortForm(IntEnum):
     CHECKTYPEDINSTANCE = 13
 
 
-class CheckState(IntEnum):
+class CheckStateEnum(IntEnum):
     """The CheckState enumeration holds the possible basic states of a check. The meaning of the NOT_OK value is check specific and detailed in the relevant check type definition."""
-
-    shortForm = MALShortForm.CHECKSTATE
 
     DISABLED = 1  # The check is disabled.
     UNCHECKED = 2  # The check is enabled but has not passed the selection condition expression.
     INVALID = 3  # Check is enabled, has passed the selection condition, but the entity being checked is not in a valid state and therefore has not been checked.
     OK = 4  # The check is OK.
     NOT_OK = 5  # The check is not OK.
+
+
+class CheckState(mal.AbstractEnum):
+    """The CheckState enumeration holds the possible basic states of a check. The meaning of the NOT_OK value is check specific and detailed in the relevant check type definition."""
+
+    shortForm = MALShortForm.CHECKSTATE
+    value_type = CheckStateEnum
 
 
 class CheckStateList(mal.ElementList):
