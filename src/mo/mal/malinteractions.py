@@ -715,6 +715,8 @@ class PubSubProviderHandler(ProviderHandler):
 
 class PubSubBrokerHandler(ProviderHandler):
 
+    IP_TYPE = InteractionType.PUBSUB
+
     def receive_registration_message(self):
         message = self.receive_message()
         self.define_header(message.header)
@@ -782,7 +784,8 @@ class PubSubBrokerHandler(ProviderHandler):
 
     def receive_publish_deregister(self):
         message = self.receive_message()
-        ip_stage = message.header.ip_stageis_error_message = message.header.is_error_message
+        ip_stage = message.header.ip_stage
+        is_error_message = message.header.is_error_message
         if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER:
             return message
         else:
