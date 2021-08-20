@@ -73,14 +73,19 @@ class MALShortForm(IntEnum):
     ACTIONCREATIONREQUEST = 3
 
 
-class ActionCategory(IntEnum):
+class ActionCategoryEnum(IntEnum):
     """Contains the default Action category values. It is implementation specific what the meaning of the values are in a particular context."""
-
-    shortForm = MALShortForm.ACTIONCATEGORY
 
     DEFAULT = 1  # Default category
     HIPRIORITY = 2  # Category for high priority actions
     CRITICAL = 3  # Category for critical actions
+
+
+class ActionCategory(mal.AbstractEnum):
+    """Contains the default Action category values. It is implementation specific what the meaning of the values are in a particular context."""
+
+    shortForm = MALShortForm.ACTIONCATEGORY
+    value_type = ActionCategoryEnum
 
 
 class ActionCategoryList(mal.ElementList):

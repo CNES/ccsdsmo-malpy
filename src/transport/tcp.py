@@ -38,11 +38,10 @@ class TCPSocket(MALSocket):
         self.socket.close()
 
     def send(self, message):
-        print("Send TCP {}".format(message))
         self.socket.send(message)
 
-    def recv(self, messagesize=_messagesize):
-        return self.socket.recv(messagesize)
+    def recv(self):
+        return self.socket.recv(self._messagesize)
 
     @property
     def uri(self):

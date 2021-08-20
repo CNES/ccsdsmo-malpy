@@ -96,10 +96,8 @@ class MALShortForm(IntEnum):
     PARAMETERVALUEDETAILS = 7
 
 
-class ValidityState(IntEnum):
+class ValidityStateEnum(IntEnum):
     """Convenience enumeration that holds the validity states and their numeric values."""
-
-    shortForm = MALShortForm.VALIDITYSTATE
 
     VALID = 0  # Valid.
     EXPIRED = 1  # The parameter has a timeout associated which has expired
@@ -107,6 +105,13 @@ class ValidityState(IntEnum):
     INVALID_CONVERSION = 3  # The validity expression either has evaluated to TRUE or there is no validity defined, but the conversion of the parameter value has failed (for example an unexpected value for a discrete conversion)
     UNVERIFIED = 4  # The validity of the validity expression has been evaluated to FALSE and therefore cannot be used to verify the current value
     INVALID = 5  # The validity expression has been evaluated to FALSE
+
+
+class ValidityState(mal.AbstractEnum):
+    """Convenience enumeration that holds the validity states and their numeric values."""
+
+    shortForm = MALShortForm.VALIDITYSTATE
+    value_type = ValidityStateEnum
 
 
 class ValidityStateList(mal.ElementList):

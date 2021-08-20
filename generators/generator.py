@@ -300,7 +300,7 @@ class MALTypeXML(object):
     def __init__(self, node=None):
         self.name = None
         self.area = None
-        self.isList = None
+        self.isList = False
         self.service = None
         if node is not None:
             self.parse(node)
@@ -454,8 +454,10 @@ class MALBuffer(object):
                                             elementtype.name
                                             )
 
-    def _element_parentclass(self, d):
-        if d.extends is None:
+    def _element_parentclass(self, d, force_parent=None):
+        if force_parent is not None:
+            return self._element_completename(force_parent)
+        elif d.__getattribute__('extends') is None or d.extends is None:
             return 'ABC'
         else:
             return self._element_completename(d.extends)
@@ -506,18 +508,9 @@ class MALBuffer(object):
 
     def write_enumeration_class(self, d):
         self.write(
-    "class {}({}):\n".format(d.name, "IntEnum") +
+    "class {}Enum({}):\n".format(d.name, "IntEnum") +
     "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment)
         )
-        self.write("\n")
-        if d.shortFormPart:
-            self.write(
-    "    shortForm = {}.{}\n".format("MALShortForm", d.name.upper())
-            )
-        else:
-            self.write(
-    "    shortform = None\n"
-                )
         self.write('\n')
         for item in d.items:
             self.write(
@@ -528,6 +521,18 @@ class MALBuffer(object):
                 self.write('\n')
         self.write("\n")
         self.write("\n")
+        
+        enumType = MALTypeXML()
+        enumType.area = "MAL"
+        enumType.name = "AbstractEnum"
+        self.write(
+    "class {}({}):\n".format(d.name, self._element_completename(enumType)) +
+    "    \"\"\"{classdoc}\"\"\"\n".format(classdoc=d.comment) +
+    "\n" +
+    "    shortForm = {namespace}.{name}\n".format(namespace="MALShortForm",name=d.name.upper()) +
+    "    value_type = {}\n".format(d.name + 'Enum') +
+    "\n\n"
+        )
 
     def write_element_class(self, d, blocks=[]):
         parentclass = self._element_parentclass(d)
@@ -543,7 +548,7 @@ class MALBuffer(object):
             )
         else:
             self.write(
-    "    shortForm = None\n".format(shortform=d.name.upper())
+    "    shortForm = None\n"
             )
 
         if d.name in self.generator.typedict:
@@ -585,7 +590,6 @@ class MALBuffer(object):
     "            return self._value\n"
         ]
         self.write_element_class(d, blockelement)
-
 
     def write_abstractelementlist_class(self):
         self.write(
@@ -635,6 +639,29 @@ class MALBuffer(object):
         ]
         self.write_element_class(d, blockattribute)
 
+    def write_abstract_enum_class(self):
+        self.write(
+    "class AbstractEnum(Attribute):\n"
+    "\n"
+    "    value_type = None\n"
+    "\n"
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
+    "        if type(value) == type(''):\n"
+    "            for v in list(self.value_type):\n"
+    "                 if v.name == value:\n"
+    "                     value = v\n"
+    "        elif type(value) == type(1):\n" 
+    "            value = self.value_type(value)\n"
+    "        elif type(value) == type(self).value_type:\n"
+    "            pass  # Everything is fine\n"
+    "        elif type(value) == type(self):\n"
+    "            value = value.value\n"
+    "        else:\n"
+    "            raise TypeError(\"Expected {}, got {}.\".format(type(self).value_type, type(value)))\n"
+    "        super().__init__(value, canBeNull, attribName)\n"
+    "\n\n"
+        )
+   
     def write_abstractcomposite_class(self, d):
         blockcomposite = [
     "    _fieldNumber = 0\n"
@@ -778,14 +805,10 @@ class MALBuffer(object):
                 self.write_abstractelement_class(data_types['Element']['Element'])
                 self.write_abstractelementlist_class()
 
-        if 'Enumeration' in data_types:
-            for dname, d in data_types['Enumeration'].items():
-                self.write_enumeration_class(d)
-                self.write_elementlist_class(d)
-
         if 'Element' in data_types:
             if 'Attribute' in data_types['Element']:
                 self.write_attribute_class(data_types['Element']['Attribute'])
+                self.write_abstract_enum_class()
             if 'Composite' in data_types['Element']:
                 self.write_abstractcomposite_class(data_types['Element']['Composite'])
 
@@ -793,6 +816,11 @@ class MALBuffer(object):
                 if dname == 'Element' or dname == 'Attribute' or dname == 'Composite':
                     continue
                 self.write_element_class(d)
+                self.write_elementlist_class(d)
+
+        if 'Enumeration' in data_types:
+            for dname, d in data_types['Enumeration'].items():
+                self.write_enumeration_class(d)
                 self.write_elementlist_class(d)
 
         if 'Composite' in data_types:

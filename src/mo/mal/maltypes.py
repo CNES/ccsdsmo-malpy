@@ -85,131 +85,6 @@ class ElementList(Element):
         return self.__class__(value)
 
 
-class InteractionType(IntEnum):
-    """InteractionType is an enumeration holding the possible interaction pattern types."""
-
-    shortForm = MALShortForm.INTERACTIONTYPE
-
-    SEND = 1  # Used for Send interactions.
-    SUBMIT = 2  # Used for Submit interactions.
-    REQUEST = 3  # Used for Request interactions.
-    INVOKE = 4  # Used for Invoke interactions.
-    PROGRESS = 5  # Used for Progress interactions.
-    PUBSUB = 6  # Used for Publish/Subscribe interactions.
-
-
-class InteractionTypeList(ElementList):
-    shortForm = -MALShortForm.INTERACTIONTYPE
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._value = []
-        if type(value) == type(self):
-            if value.value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._value = value.copy().value
-        else:
-            listvalue = value if type(value) == list else [value]
-            for v in listvalue:
-                 self._value.append(InteractionType(v))
-
-
-class SessionType(IntEnum):
-    """SessionType is an enumeration holding the session types."""
-
-    shortForm = MALShortForm.SESSIONTYPE
-
-    LIVE = 1  # Used for Live sessions.
-    SIMULATION = 2  # Used for Simulation sessions.
-    REPLAY = 3  # Used for Replay sessions.
-
-
-class SessionTypeList(ElementList):
-    shortForm = -MALShortForm.SESSIONTYPE
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._value = []
-        if type(value) == type(self):
-            if value.value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._value = value.copy().value
-        else:
-            listvalue = value if type(value) == list else [value]
-            for v in listvalue:
-                 self._value.append(SessionType(v))
-
-
-class QoSLevel(IntEnum):
-    """QoSLevel is an enumeration holding the possible QoS levels."""
-
-    shortForm = MALShortForm.QOSLEVEL
-
-    BESTEFFORT = 1  # Used for Best Effort QoS Level.
-    ASSURED = 2  # Used for Assured QoS Level.
-    QUEUED = 3  # Used for Queued QoS Level.
-    TIMELY = 4  # Used for Timely QoS Level.
-
-
-class QoSLevelList(ElementList):
-    shortForm = -MALShortForm.QOSLEVEL
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._value = []
-        if type(value) == type(self):
-            if value.value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._value = value.copy().value
-        else:
-            listvalue = value if type(value) == list else [value]
-            for v in listvalue:
-                 self._value.append(QoSLevel(v))
-
-
-class UpdateType(IntEnum):
-    """UpdateType is an enumeration holding the possible Update types."""
-
-    shortForm = MALShortForm.UPDATETYPE
-
-    CREATION = 1  # Update is notification of the creation of the item.
-    UPDATE = 2  # Update is just a periodic update of the item and has not changed its value.
-    MODIFICATION = 3  # Update is for a changed value or modification of the item.
-    DELETION = 4  # Update is notification of the removal of the item.
-
-
-class UpdateTypeList(ElementList):
-    shortForm = -MALShortForm.UPDATETYPE
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._value = []
-        if type(value) == type(self):
-            if value.value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._value = value.copy().value
-        else:
-            listvalue = value if type(value) == list else [value]
-            for v in listvalue:
-                 self._value.append(UpdateType(v))
-
-
 class Attribute(Element):
     """Attribute is the base type of all attributes of the MAL data model. Attributes are contained within Composites and are used to build complex structures that make the data model."""
 
@@ -234,6 +109,26 @@ class Attribute(Element):
 
     def copy(self):
         return self.__class__(self.value, self._canBeNull)
+
+
+class AbstractEnum(Attribute):
+
+    value_type = None
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        if type(value) == type(''):
+            for v in list(self.value_type):
+                 if v.name == value:
+                     value = v
+        elif type(value) == type(1):
+            value = self.value_type(value)
+        elif type(value) == type(self).value_type:
+            pass  # Everything is fine
+        elif type(value) == type(self):
+            value = value.value
+        else:
+            raise TypeError("Expected {}, got {}.".format(type(self).value_type, type(value)))
+        super().__init__(value, canBeNull, attribName)
 
 
 class Composite(Element):
@@ -783,6 +678,151 @@ class URIList(ElementList):
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
                  self._value.append(URI(v))
+
+
+class InteractionTypeEnum(IntEnum):
+    """InteractionType is an enumeration holding the possible interaction pattern types."""
+
+    SEND = 1  # Used for Send interactions.
+    SUBMIT = 2  # Used for Submit interactions.
+    REQUEST = 3  # Used for Request interactions.
+    INVOKE = 4  # Used for Invoke interactions.
+    PROGRESS = 5  # Used for Progress interactions.
+    PUBSUB = 6  # Used for Publish/Subscribe interactions.
+
+
+class InteractionType(AbstractEnum):
+    """InteractionType is an enumeration holding the possible interaction pattern types."""
+
+    shortForm = MALShortForm.INTERACTIONTYPE
+    value_type = InteractionTypeEnum
+
+
+class InteractionTypeList(ElementList):
+    shortForm = -MALShortForm.INTERACTIONTYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(InteractionType(v))
+
+
+class SessionTypeEnum(IntEnum):
+    """SessionType is an enumeration holding the session types."""
+
+    LIVE = 1  # Used for Live sessions.
+    SIMULATION = 2  # Used for Simulation sessions.
+    REPLAY = 3  # Used for Replay sessions.
+
+
+class SessionType(AbstractEnum):
+    """SessionType is an enumeration holding the session types."""
+
+    shortForm = MALShortForm.SESSIONTYPE
+    value_type = SessionTypeEnum
+
+
+class SessionTypeList(ElementList):
+    shortForm = -MALShortForm.SESSIONTYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(SessionType(v))
+
+
+class QoSLevelEnum(IntEnum):
+    """QoSLevel is an enumeration holding the possible QoS levels."""
+
+    BESTEFFORT = 1  # Used for Best Effort QoS Level.
+    ASSURED = 2  # Used for Assured QoS Level.
+    QUEUED = 3  # Used for Queued QoS Level.
+    TIMELY = 4  # Used for Timely QoS Level.
+
+
+class QoSLevel(AbstractEnum):
+    """QoSLevel is an enumeration holding the possible QoS levels."""
+
+    shortForm = MALShortForm.QOSLEVEL
+    value_type = QoSLevelEnum
+
+
+class QoSLevelList(ElementList):
+    shortForm = -MALShortForm.QOSLEVEL
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(QoSLevel(v))
+
+
+class UpdateTypeEnum(IntEnum):
+    """UpdateType is an enumeration holding the possible Update types."""
+
+    CREATION = 1  # Update is notification of the creation of the item.
+    UPDATE = 2  # Update is just a periodic update of the item and has not changed its value.
+    MODIFICATION = 3  # Update is for a changed value or modification of the item.
+    DELETION = 4  # Update is notification of the removal of the item.
+
+
+class UpdateType(AbstractEnum):
+    """UpdateType is an enumeration holding the possible Update types."""
+
+    shortForm = MALShortForm.UPDATETYPE
+    value_type = UpdateTypeEnum
+
+
+class UpdateTypeList(ElementList):
+    shortForm = -MALShortForm.UPDATETYPE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._value = []
+        if type(value) == type(self):
+            if value.value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._value = value.copy().value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._value.append(UpdateType(v))
 
 
 class Subscription(Composite):

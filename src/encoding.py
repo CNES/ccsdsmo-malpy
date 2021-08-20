@@ -2,12 +2,36 @@ import pickle
 import xml.dom.minidom
 import re
 import sys
-import logging
+from enum import IntEnum
 
 from malpydefinitions import MALPY_ENCODING
 from mo import mal, com, mc
 from mo.com.services import *
 from mo.mc.services import *
+
+LOG_LEVEL = "INFO"
+
+class Debug():
+    depth = 0
+    def IN(self, *args):
+        self.DEBUG('>', *args)
+        self.depth += 1
+
+    def OUT(self, *args):
+        self.depth -= 1
+        self.DEBUG('<', *args)
+        
+    def DEBUG(self, *args):
+        if LOG_LEVEL == "DEBUG":
+            print(self.depth*'-', *args)
+debug = Debug()
+def DEBUG(*args):
+    debug.DEBUG(*args)
+def DEBUG_IN(*args):
+    debug.IN(*args)
+def DEBUG_OUT(*args):
+    debug.OUT(*args)
+
 
 MAL_MODULES = [
     'mo.mal', 'mo.com', 'mo.mc',
@@ -98,7 +122,13 @@ class XMLEncoder(Encoder):
                 # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
                 # It's a leaf, we don't recurse deeper.
                 attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
-                attributenode.appendChild(domdoc.createTextNode(str(element.value)))
+                # Special case for IntEnum (the encoding message is a string that we convert to enums)
+                if issubclass(type(element.value), IntEnum):
+                    value = element.value.name
+                # Normal case
+                else:
+                    value = str(element.value)
+                attributenode.appendChild(domdoc.createTextNode(value))
 
 
         dom = xml.dom.getDOMImplementation()
@@ -107,8 +137,8 @@ class XMLEncoder(Encoder):
         d = dom.createDocument(MAL_XML_NAMESPACE_URL, MAL_XML_BODY, None)
         rootElement = d.firstChild
 
-        rootElement.setAttributeNS(XML_NAMESPACE, XMLNS_XSI, XML_XSI_NAMESPACE_URL);
-        rootElement.setAttributeNS(XML_NAMESPACE, MAL_XML, MAL_XML_NAMESPACE_URL);
+        rootElement.setAttributeNS(XML_NAMESPACE, XMLNS_XSI, XML_XSI_NAMESPACE_URL)
+        rootElement.setAttributeNS(XML_NAMESPACE, MAL_XML, MAL_XML_NAMESPACE_URL)
 
         # Recursively go through the object to encode it (a composite is a list of list)
         if type(body) is not list:
@@ -147,8 +177,7 @@ class XMLEncoder(Encoder):
             raise RuntimeError("I don't know this object")
 
         def _decode_internal(node, elementName=None):
-            logger = logging.getLogger(__name__)
-            logger.debug("IN {} {}".format(node, elementName))
+            DEBUG_IN("IN", node, elementName)
 
             internal = []
 
@@ -156,38 +185,49 @@ class XMLEncoder(Encoder):
             # If it's a MAL class we recurse in its children and build the MALElement
             if node.nodeName in maltypes:
                 objectClass = str_to_class(node.nodeName)
-
+                
                 # First case: it's Null and we reached a leaf
                 if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
+                    DEBUG_OUT('Leaf > xsi:nil', 'value=None')
                     return objectClass(None, attribName=elementName)
 
                 # Otherwise it's a MALElement to parse
                 else:
-
                     for element in node.childNodes:
                         # If it's text node, we reached a leaf
                         if element.nodeType is element.TEXT_NODE:
-                            castedValue = objectClass.value_type(element.nodeValue)
+                            DEBUG('* Leaf > TextNode', 'value={}'.format(element.nodeValue))
+                            # Special case for IntEnum (the encoding message is a string that we convert to enums)
+                            if issubclass(objectClass.value_type, IntEnum):
+                                for v in list(objectClass.value_type):
+                                    if v.name == element.nodeValue:
+                                        castedValue = v
+                                        break
+                            # normal cases
+                            else:
+                                castedValue = objectClass.value_type(element.nodeValue)
                             internal.append(castedValue)
                         elif element.nodeType is element.ELEMENT_NODE:
-                            # If it's a NULL element, we reached a leave
+                            # If it's a NULL element, we reached a leaf again
                             if element.hasAttribute('xsi:nil') and element.getAttribute('xsi:nil') == "true":
+                                DEBUG('* Leaf > xsi:nil', 'value=None')
                                 internal.append(None)
                             # In all other cases, we recurse
                             else:
-                                logger.debug('all other cases {}'.format(objectClass))
+                                DEBUG('* Recurse on', element.nodeName)
                                 internal.append(_decode_internal(element))
                         else:
                             raise RuntimeError(element)
                 if len(internal) == 1:
-                    logger.debug("OUT {} {}".format(node, elementName))
-                    return objectClass(internal[0])
+                    parsed_object = objectClass(internal[0])
+                    DEBUG_OUT('return single Object', node, elementName, parsed_object)
+                    return parsed_object
                 elif len(internal) == 0:
                     raise RuntimeError("len(internal) == 0", node)
                 else:
-                    logger.debug("more than one")
-                    logger.debug("OUT {} {}".format( node, elementName))
-                    return objectClass(internal, attribName=elementName)
+                    parsed_object = objectClass(internal, attribName=elementName)
+                    DEBUG_OUT('return list or composite', parsed_object, elementName)
+                    return parsed_object
             # If it's the name of the attribute, it either has MAL Element children
             # or is Null
             else:
@@ -197,36 +237,38 @@ class XMLEncoder(Encoder):
                         raise RuntimeError("Below a name-tag should be a MAL Element")
 
                     # TODO: A sortir de la méthode
+                    # Recursion starts here
                     if node.nodeName == MAL_XML_BODY:
                         for element in node.childNodes:
                             internal.append(_decode_internal(element))
-                        logger.debug("OUT {} {}".format(node, elementName))
+                        DEBUG_OUT("The message is completely decoded.")
                         return internal
 
                     elementName = node.nodeName
 
-                    # First case: it's Null and we reached a leaf
+                    # It's Null and we reached a leaf
                     if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
-                        logger.debug("OUT {} {}".format( node, elementName))
+                        DEBUG_OUT('Return Leaf > xsi:nil', 'value=None')
                         return None
                     # Otherwise it's a MALElement to parse
                     else:
                         if len(node.childNodes) == 1:
-                            logger.debug("OUT {} {}".format( node, elementName))
-                            return _decode_internal(node.childNodes[0], elementName)
+                            DEBUG("Recurse on {}".format(elementName))
+                            decoded_object = _decode_internal(node.childNodes[0], elementName)
+                            DEBUG_OUT("Return content", decoded_object)
+                            return decoded_object
                         else:
-                            # it's a list
+                            # it's a list or a composite, we don't know their type before the end of the recursion
                             internal = []
-                            maltype = node.childNodes[0].nodeName + "List"
-                            malobject = str_to_class(maltype)
                             for element in node.childNodes:
                                 internal.append(_decode_internal(element))
-                            logger.debug("OUT {} {}".format( node, elementName))
-                            return malobject(internal)
+                            DEBUG_OUT("Return composite or list", "value={}".format(elementName))
+                            return internal
 
         if body == b"":
             return None
         d = xml.dom.minidom.parseString(body)
         rootElement = d.firstChild
         _cleanupEmptyChildNodes(rootElement)
+	
         return _decode_internal(rootElement)

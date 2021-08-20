@@ -71,10 +71,8 @@ class MALShortForm(IntEnum):
     COMPOSITEFILTERSET = 4
 
 
-class ExpressionOperator(IntEnum):
+class ExpressionOperatorEnum(IntEnum):
     """The ExpressionOperator enumeration holds a set of possible expression operators."""
-
-    shortForm = MALShortForm.EXPRESSIONOPERATOR
 
     EQUAL = 1  # Checks for equality.
     DIFFER = 2  # Checks for difference (not equal).
@@ -84,6 +82,13 @@ class ExpressionOperator(IntEnum):
     LESS_OR_EQUAL = 6  # Checks for less than or equal to.
     CONTAINS = 7  # Case sensitive containment test (String types only)
     ICONTAINS = 8  # Case insensitive containment test (String types only).
+
+
+class ExpressionOperator(mal.AbstractEnum):
+    """The ExpressionOperator enumeration holds a set of possible expression operators."""
+
+    shortForm = MALShortForm.EXPRESSIONOPERATOR
+    value_type = ExpressionOperatorEnum
 
 
 class ExpressionOperatorList(mal.ElementList):

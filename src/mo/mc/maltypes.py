@@ -25,16 +25,21 @@ class MALShortForm(IntEnum):
     OBJECTINSTANCEPAIR = 7
 
 
-class Severity(IntEnum):
+class SeverityEnum(IntEnum):
     """The severity enumeration holds the possible values for a severity. The numerical value represents the increasing severity, therefore CRITICAL is more severe than ALARM. Normally, for checks, only the Warning and Critical ranges are used: the colour yellow is associated with Warning, and the colour red is associated with Critical."""
-
-    shortForm = MALShortForm.SEVERITY
 
     INFORMATIONAL = 1  # Indicates a nominal situation with no consequences.
     WARNING = 2  # Indicates unexpected behaviour without directly threatening consequences.
     ALARM = 3  # Indicates behaviour of serious concern requiring the attention of an operator, but not necessarily a malfunction.
     SEVERE = 4  # Indicates that the monitored item has malfunctioned. Requires operator attention.
     CRITICAL = 5  # Indicates behaviour with mission threatening consequences. Requires operator attention.
+
+
+class Severity(mal.AbstractEnum):
+    """The severity enumeration holds the possible values for a severity. The numerical value represents the increasing severity, therefore CRITICAL is more severe than ALARM. Normally, for checks, only the Warning and Critical ranges are used: the colour yellow is associated with Warning, and the colour red is associated with Critical."""
+
+    shortForm = MALShortForm.SEVERITY
+    value_type = SeverityEnum
 
 
 class SeverityList(mal.ElementList):
