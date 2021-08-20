@@ -1,6 +1,6 @@
 import time
 from enum import IntEnum
-from .maltypes import QoSLevel, SessionType, InteractionType, number
+from .maltypes import QoSLevelEnum, SessionTypeEnum, InteractionTypeEnum, number
 
 
 class MAL_IP_STAGES(IntEnum):
@@ -152,7 +152,7 @@ class Handler(object):
         return self.transport.send(message)
 
     def receive_message(self):
-        message = self.transport.recv()     
+        message = self.transport.recv()
         return self.encoding.decode(message)
 
 
@@ -176,8 +176,8 @@ class ConsumerHandler(Handler):
         return cls._transaction_id_counter
 
     def __init__(self, transport, encoding, provider_uri="", consumer_uri="", 
-                 session=SessionType.LIVE, session_name="", domain=[], network_zone=None,
-                 priority=0, auth_id=b"", qos_level=QoSLevel.BESTEFFORT):
+                 session=SessionTypeEnum.LIVE, session_name="", domain=[], network_zone=None,
+                 priority=0, auth_id=b"", qos_level=QoSLevelEnum.BESTEFFORT):
         super().__init__(transport, encoding)
         self.consumer_uri = consumer_uri
         self.provider_uri = provider_uri
@@ -256,8 +256,8 @@ class ProviderHandler(Handler):
             header.operation = self.OPERATION
             header.area_version = self.AREA_VERSION
             header.is_error_message = None
-            header.qos_level = QoSLevel.BESTEFFORT
-            header.session = SessionType.LIVE
+            header.qos_level = QoSLevelEnum.BESTEFFORT
+            header.session = SessionTypeEnum.LIVE
             header.transaction_id = 0
             header.priority = 0
             header.uri_from = ""
@@ -300,7 +300,7 @@ class SendConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.SEND
+    IP_TYPE = InteractionTypeEnum.SEND
 
     def send(self, body):
         header = self.create_message_header(MAL_IP_STAGES.SEND)
@@ -345,7 +345,7 @@ class SubmitConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.SUBMIT
+    IP_TYPE = InteractionTypeEnum.SUBMIT
 
     def submit(self, body):
         header = self.create_message_header(MAL_IP_STAGES.SUBMIT)
@@ -403,7 +403,7 @@ class RequestConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.REQUEST
+    IP_TYPE = InteractionTypeEnum.REQUEST
 
     def request(self, body):
         header = self.create_message_header(MAL_IP_STAGES.REQUEST)
@@ -471,7 +471,7 @@ class InvokeConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.INVOKE
+    IP_TYPE = InteractionTypeEnum.INVOKE
 
     def invoke(self, body):
         header = self.create_message_header(MAL_IP_STAGES.INVOKE)
@@ -562,7 +562,7 @@ class ProgressConsumerHandler(ConsumerHandler):
     interaction pattern
     """
 
-    IP_TYPE = InteractionType.PROGRESS
+    IP_TYPE = InteractionTypeEnum.PROGRESS
 
     def progress(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PROGRESS)
@@ -620,7 +620,7 @@ class ProgressConsumerHandler(ConsumerHandler):
 
 class PubSubProviderHandler(ProviderHandler):
 
-    IP_TYPE = InteractionType.PUBSUB
+    IP_TYPE = InteractionTypeEnum.PUBSUB
 
     def receive_registration_message(self):
         message = self.receive_message()
@@ -715,7 +715,7 @@ class PubSubProviderHandler(ProviderHandler):
 
 class PubSubBrokerHandler(ProviderHandler):
 
-    IP_TYPE = InteractionType.PUBSUB
+    IP_TYPE = InteractionTypeEnum.PUBSUB
 
     def receive_registration_message(self):
         message = self.receive_message()
@@ -815,7 +815,7 @@ class PubSubBrokerHandler(ProviderHandler):
 
 class PubSubConsumerHandler(ConsumerHandler):
 
-    IP_TYPE = InteractionType.PUBSUB
+    IP_TYPE = InteractionTypeEnum.PUBSUB
 
     def register(self, body):
         header = self.create_message_header(MAL_IP_STAGES.PUBSUB_REGISTER)

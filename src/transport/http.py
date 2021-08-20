@@ -54,7 +54,6 @@ def _split_uri(uri):
     return (host,port,path)
 
 
-
 def _encode_time(t):
     s = time.strftime("%Y-%jT%H:%M:%S", time.localtime(t))
     # Time is in seconds.
@@ -70,50 +69,50 @@ def _decode_time(s):
 
 def _encode_qos_level(qos_level):
     d = {
-        mal.QoSLevel.BESTEFFORT: "BESTEFFORT",
-        mal.QoSLevel.ASSURED: "ASSURED",
-        mal.QoSLevel.QUEUED: "QUEUED",
-        mal.QoSLevel.TIMELY: "TIMELY"
+        mal.QoSLevelEnum.BESTEFFORT: "BESTEFFORT",
+        mal.QoSLevelEnum.ASSURED: "ASSURED",
+        mal.QoSLevelEnum.QUEUED: "QUEUED",
+        mal.QoSLevelEnum.TIMELY: "TIMELY"
     }
     return d[qos_level]
 
 
 def _decode_qos_level(qos_level):
     d = {
-        "BESTEFFORT": mal.QoSLevel.BESTEFFORT,
-        "ASSURED": mal.QoSLevel.ASSURED,
-        "QUEUED": mal.QoSLevel.QUEUED,
-        "TIMELY": mal.QoSLevel.TIMELY
+        "BESTEFFORT": mal.QoSLevelEnum.BESTEFFORT,
+        "ASSURED": mal.QoSLevelEnum.ASSURED,
+        "QUEUED": mal.QoSLevelEnum.QUEUED,
+        "TIMELY": mal.QoSLevelEnum.TIMELY
     }
     return d[qos_level]
 
 
 def _encode_session(session):
     d = {
-        mal.SessionType.LIVE: "LIVE",
-        mal.SessionType.SIMULATION: "SIMULATION",
-        mal.SessionType.REPLAY: "REPLAY"
+        mal.SessionTypeEnum.LIVE: "LIVE",
+        mal.SessionTypeEnum.SIMULATION: "SIMULATION",
+        mal.SessionTypeEnum.REPLAY: "REPLAY"
     }
     return d[session]
 
 
 def _decode_session(session):
     d = {
-        "LIVE": mal.SessionType.LIVE,
-        "SIMULATION": mal.SessionType.SIMULATION,
-        "REPLAY": mal.SessionType.REPLAY
+        "LIVE": mal.SessionTypeEnum.LIVE,
+        "SIMULATION": mal.SessionTypeEnum.SIMULATION,
+        "REPLAY": mal.SessionTypeEnum.REPLAY
     }
     return d[session]
 
 
 def _encode_ip_type(ip_type):
     d = {
-        mal.InteractionType.SEND: "SEND",
-        mal.InteractionType.SUBMIT: "SUBMIT",
-        mal.InteractionType.REQUEST: "REQUEST",
-        mal.InteractionType.INVOKE: "INVOKE",
-        mal.InteractionType.PROGRESS: "PROGRESS",
-        mal.InteractionType.PUBSUB: "PUBSUB"
+        mal.InteractionTypeEnum.SEND: "SEND",
+        mal.InteractionTypeEnum.SUBMIT: "SUBMIT",
+        mal.InteractionTypeEnum.REQUEST: "REQUEST",
+        mal.InteractionTypeEnum.INVOKE: "INVOKE",
+        mal.InteractionTypeEnum.PROGRESS: "PROGRESS",
+        mal.InteractionTypeEnum.PUBSUB: "PUBSUB"
     }
     return d[ip_type]
 
@@ -259,7 +258,7 @@ class HTTPSocket(MALSocket):
         malheader.network_zone = _decode_ascii(headers['X-MAL-Network-Zone'])
         malheader.session = _decode_session(headers['X-MAL-Session'])
         malheader.session_name = _decode_ascii(headers['X-MAL-Session-Name'])
-        malheader.ip_type = _decode_enum(headers['X-MAL-Interaction-Type'], mal.InteractionType)
+        malheader.ip_type = _decode_enum(headers['X-MAL-Interaction-Type'], mal.InteractionTypeEnum)
         malheader.ip_stage = _decode_enum(headers['X-MAL-Interaction-Stage'], mal.MAL_IP_STAGES)
         malheader.transaction_id = int(headers['X-MAL-Transaction-Id'])
         malheader.area = int(headers['X-MAL-Service-Area'])
@@ -316,11 +315,11 @@ class HTTPSocket(MALSocket):
         self.client.request('POST', url=target, body=body, headers=headers)
 
         # Dans certains cas, il faut faire un getreponse()
-        if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.SEND) ) or \
-           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.INVOKE) and headers['X-MAL-Interaction-Stage'] == 'INVOKE_RESPONSE')  or  \
-           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.PROGRESS) and \
+        if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.SEND) ) or \
+           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.INVOKE) and headers['X-MAL-Interaction-Stage'] == 'INVOKE_RESPONSE')  or  \
+           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PROGRESS) and \
                (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_RESPONSE' ) or (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_UPDATE' ) ) or \
-            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionType.PUBSUB) and \
+            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PUBSUB) and \
                (headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH' ) or (headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH_ERROR' ) ):
             logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
             response=self.client.getresponse()
