@@ -4,6 +4,7 @@ import pickle
 import http.client
 import urllib.parse
 import logging
+import json
 
 from email.header import Header, decode_header, make_header
 from io import BytesIO
@@ -193,13 +194,12 @@ class HTTPSocket(MALSocket):
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
         body = message.msg_parts
 
+        logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
+
         if self._private is False :
             self._send_http_request(target=message.header.uri_to, body=body, headers=headers)
         else:
-
             self._send_pickle_response(headers, body)
-            logger.debug("Close Connection")
-            #self.socket.close()
 
 
         if self._private is False and self._lastCommandIsSend is False:
@@ -219,11 +219,11 @@ class HTTPSocket(MALSocket):
 
         if self._private is True:
             headers, body = self._receive_pickle_request()
+            logger.info("headers : {}\nbody : {}".format(headers,body.decode('utf-8')))
         else:
             headers, body=self._receive_http_response()
-
-        logger.debug("headers [{}] , body [{}]".format(headers,body))
- 
+            logger.info("headers : {}\nbody : {}".format(headers,body))
+#        logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
         malheader = self._header_http_to_mal(headers)
 
@@ -302,17 +302,20 @@ class HTTPSocket(MALSocket):
         logger = logging.getLogger(__name__)
 
 	#modif httpsconnection request method header body en sendpostrequest
-        logger.debug('Target [{}] Header {} body {}'.format(target, headers, body))
+        #logger.debug('Target [{}] Header {} body {}'.format(target, headers, body.decode('utf-8')))
 
         host,port,path = _split_uri(target)
         # If client doesn't exist
         if not self.client:
              logger.debug('Create Client')
              self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
-             self.client.set_debuglevel(1)
+             self.client.set_debuglevel(0)
         
-        logger.debug('Send POST request url {} headers {} body {}'.format(target, body, headers))
-        self.client.request('POST', url=target, body=body, headers=headers)
+        try:
+            logger.debug('Send POST \nrequest url : {} \nheaders : {} \nbody : {}'.format(target, json.dumps(headers,indent=4), body.decode('utf-8)')))
+            self.client.request('POST', url=target, body=body, headers=headers)
+        except Exception as e:
+            logger.warning("Exception {} URL {}".format(e, target))
 
         # Dans certains cas, il faut faire un getreponse()
         if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.SEND) ) or \
@@ -348,7 +351,27 @@ class HTTPSocket(MALSocket):
         # Read first message lenght
         logger.debug("[**] Recv() ask  {} bytes".format(calcsize(self.struct_format)))
         size_packed = self.socket.recv(calcsize(self.struct_format))
-        logger.debug("[**] Received {} bytes".format(size_packed))
+
+        # Perhaps pipe broken
+        if size_packed == b'':
+            # Rebuild a new server_socket
+            logger.warning("Perhaps pipe broken. Create new server socket")
+            server_socket = pythonsocket.socket(pythonsocket.AF_INET,
+                                              pythonsocket.SOCK_STREAM)    
+            server_socket.bind((self.private_host, self.private_port))
+            server_socket.listen(10)
+            logger.info("[*] Server listening on {} {}".format(self.private_host, self.private_port))
+            conn, addr = server_socket.accept()
+            logger.info('socket accept  {} {}'.format(conn, addr))
+            self.socket = conn
+
+            logger.info("[**] Recv() ask  {} bytes".format(calcsize(self.struct_format)))
+            size_packed = self.socket.recv(calcsize(self.struct_format))
+
+
+
+
+        logger.info("[**] Received {} bytes".format(size_packed))
         size = unpack(self.struct_format,size_packed)[0]
         logger.debug("[**] Received {} bytes '{}'".format(size,size_packed))
 
@@ -357,8 +380,8 @@ class HTTPSocket(MALSocket):
 
         # Get message from http server
         data = pickle.loads(message)
-        logger.debug("[**] data '{}'".format(data))
-        logger.debug("[**] Headers {} Body '{}'".format(data['headers'], data['body']))
+        #logger.debug("[**] data '{}'".format(data))
+        logger.debug("[**] Headers {} Body '{}'".format(data['headers'], data['body'].decode('utf-8')))
 
         headers = data['headers']
         body = data['body']
@@ -374,20 +397,20 @@ class HTTPSocket(MALSocket):
             'body': body
         }
 
-        data_response=pickle.dumps(response_dict)
-        data_response_lenght = len(data_response)
-        data_response_lenght_packed = pack(self.struct_format,data_response_lenght)
+        try:
+            data_response=pickle.dumps(response_dict)
+            data_response_lenght = len(data_response)
+            data_response_lenght_packed = pack(self.struct_format,data_response_lenght)
 
-        # Send data lenght
-        logger.debug("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
-        self.socket.send(data_response_lenght_packed)
+            # Send data lenght
+            logger.debug("Send {} bytes '{}'".format(len(data_response_lenght_packed),data_response_lenght_packed))
+            self.socket.send(data_response_lenght_packed)
 
-        # Send data
-        logger.debug("Send {} bytes '{}'".format(data_response_lenght,data_response))
-        self.socket.send(data_response)
-        logger.debug("Close Connection")
-        #self.socket.close()
-
+            # Send data
+            logger.debug("Send {} bytes '{}'".format(data_response_lenght,data_response))
+            self.socket.send(data_response)
+        except Exception as e:
+            logger.warning("Exception {} ".format(e))
 
 
 
@@ -402,7 +425,7 @@ class HTTPSocketPubSub(HTTPSocket):
         # Read HTTP body an headers
         body = self.socket.body
         headers = self.socket.headers
-        logger.debug("headers [{}] , body [{}]".format(headers,body))
+        logger.info("headers [{}] , body [{}]".format(headers,body.decode('utf-8')))
  
         # Set MAL header from HTTP header
         malheader = self._header_http_to_mal(headers)
@@ -425,14 +448,14 @@ class HTTPSocketPubSub(HTTPSocket):
 
         # Set HTTP headers from MAL message
         headers = self._header_mal_to_http(message)
-        logger.debug("headers {}".format(headers))
+        body = message.msg_parts
+        logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
         if self.encoding == MALPY_ENCODING.XML:
             headers['Content-Type'] = "application/mal-xml"
         else:
             headers['Content-Type'] = "application/mal"
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
-        body = message.msg_parts
 
         # For stage NOTIFY, the request is a HTTP POST request
         if headers['X-MAL-Interaction-Stage'] == 'PUBSUB_NOTIFY' :
@@ -440,8 +463,6 @@ class HTTPSocketPubSub(HTTPSocket):
         else:
             # For other cases it's a 200 http response
             self.socket.send_response(200, 'OK')
-
-            logger.debug("message {}".format(message))
 
             # Write headers in HTTP response
             for key, value in headers.items():
