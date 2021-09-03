@@ -285,7 +285,7 @@ class ParameterValue(mal.Composite):
 
     @rawValue.setter
     def rawValue(self, rawValue):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        self._value[mal.Composite._fieldNumber + 1] = mal.Integer(rawValue, canBeNull=True, attribName='rawValue')
         self._isNull = False
 
     @property
@@ -294,7 +294,7 @@ class ParameterValue(mal.Composite):
 
     @convertedValue.setter
     def convertedValue(self, convertedValue):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Attribute(convertedValue, canBeNull=True, attribName='convertedValue')
+        self._value[mal.Composite._fieldNumber + 2] = mal.Float(convertedValue, canBeNull=True, attribName='convertedValue')
         self._isNull = False
 
 
