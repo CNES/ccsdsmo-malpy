@@ -234,12 +234,29 @@ class ProviderHandler(Handler):
     OPERATION = None
 
     IP_TYPE = None
+    _transaction_id_counter = 0
 
-    def __init__(self, transport, encoding,  broker_uri=None, provider_uri=""):
+    @classmethod
+    def get_new_transaction_id(cls):
+        cls._transaction_id_counter += 1
+        return cls._transaction_id_counter
+
+    def __init__(self, transport, encoding,  broker_uri=None, provider_uri="", 
+                 session=SessionTypeEnum.LIVE, session_name="", domain=[], network_zone=None,
+                 priority=0, auth_id=b"", qos_level=QoSLevelEnum.BESTEFFORT):
         super().__init__(transport, encoding)
         self.broker_uri = broker_uri
         self.provider_uri = provider_uri
         self.response_header = None
+        self.session = session
+        self.session_name = session_name
+        self.domain = domain
+        self.network_zone = network_zone
+        self.priority = priority
+        self.auth_id = auth_id
+        self.qos_level = qos_level
+        self.interaction_terminated = False
+        self.transaction_id = self.get_new_transaction_id()
 
     def define_header(self, received_message_header):
         self.response_header = received_message_header.copy()
@@ -265,7 +282,7 @@ class ProviderHandler(Handler):
             header.timestamp = time.time()
             header.network_zone = None
             header.session_name = ""
-            header.domain = []
+            header.domain = self.domain
             header.auth_id = b""
         else:
            header = self.response_header.copy()
@@ -278,9 +295,9 @@ class ProviderHandler(Handler):
         elif self.broker_uri:
             # if  parameter uri_to is defined and broker_uri is defined
             header.uri_to = self.broker_uri
-        else:
-            # Nothing is defined, uri_to is empty
-            header.uri_to = ""
+        # else:
+        #     # Nothing is defined, keep uri_to value
+ 
         return header
 
 
