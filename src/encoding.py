@@ -101,6 +101,9 @@ class XMLEncoder(Encoder):
         def _encode_internal(element, parent):
             domdoc = parent.ownerDocument
 
+            if element is None:
+                return
+                
             # The node name is attribName if it exists, otherwise its type
             # ex: <longElement> ?? </longElement> or <Identifier> ?? </Identifier>
             nodename = element.attribName or type(element).__name__
