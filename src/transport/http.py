@@ -196,6 +196,10 @@ class HTTPSocket(MALSocket):
 
         logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
+        # For deregister stage, request is not private
+        if headers['X-MAL-Interaction-Stage'] == 'PUBSUB_DEREGISTER':
+           self._private = False
+
         if self._private is False :
             self._send_http_request(target=message.header.uri_to, body=body, headers=headers)
         else:
@@ -311,11 +315,11 @@ class HTTPSocket(MALSocket):
              self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
              self.client.set_debuglevel(0)
         
-        try:
-            logger.debug('Send POST \nrequest url : {} \nheaders : {} \nbody : {}'.format(target, json.dumps(headers,indent=4), body.decode('utf-8)')))
-            self.client.request('POST', url=target, body=body, headers=headers)
-        except Exception as e:
-            logger.warning("Exception {} URL {}".format(e, target))
+        #try:
+        logger.debug('Send POST \nrequest url : {} \nheaders : {} \nbody : {}'.format(target, json.dumps(headers,indent=4), body.decode('utf-8)')))
+        self.client.request('POST', url=target, body=body, headers=headers)
+        #except Exception as e:
+        #    logger.warning("Exception {} URL {}".format(e, target))
 
         # Dans certains cas, il faut faire un getreponse()
         if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.SEND) ) or \
