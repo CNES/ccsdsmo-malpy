@@ -779,6 +779,19 @@ class PubSubBrokerHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
+    def receive_deregister(self):
+        message = self.receive_message()
+        self.define_header(message.header)
+        ip_stage = message.header.ip_stage
+        is_error_message = message.header.is_error_message
+        if not is_error_message and ip_stage == MAL_IP_STAGES.PUBSUB_DEREGISTER:
+            return message
+        else:
+            raise InvalidIPStageError("In %s. Expected PUBSUB_DEREGISTER. Got %s" %
+                                      (self.__class__.__name__, ip_stage))
+
+
+
     def notify(self, body, uri_to):
         header = self.create_message_header(MAL_IP_STAGES.PUBSUB_NOTIFY, uri_to=uri_to)
         message = MALMessage(header=header, msg_parts=body)
