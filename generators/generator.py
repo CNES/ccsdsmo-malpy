@@ -742,6 +742,9 @@ class MALBuffer(object):
             if field.maltype.isList:
                 fieldtype += 'List'
 
+            if fieldtype == 'mal.Attribute' or fieldtype == 'Attribute':
+                fieldtype = "type({})".format(field.name)
+
             self.write("\n")
             self.write(
     "    @property\n" +

@@ -202,7 +202,7 @@ class AttributeValue(mal.Composite):
 
     @value.setter
     def value(self, value):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Attribute(value, canBeNull=False, attribName='value')
+        self._value[mal.Composite._fieldNumber + 0] = type(value)(value, canBeNull=False, attribName='value')
         self._isNull = False
 
 
@@ -346,7 +346,7 @@ class ParameterExpression(mal.Composite):
 
     @value.setter
     def value(self, value):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Attribute(value, canBeNull=True, attribName='value')
+        self._value[mal.Composite._fieldNumber + 3] = type(value)(value, canBeNull=True, attribName='value')
         self._isNull = False
 
 
