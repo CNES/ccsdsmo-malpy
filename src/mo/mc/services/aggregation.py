@@ -667,7 +667,7 @@ class ThresholdFilter(mal.Composite):
 
     @thresholdValue.setter
     def thresholdValue(self, thresholdValue):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Attribute(thresholdValue, canBeNull=False, attribName='thresholdValue')
+        self._value[mal.Composite._fieldNumber + 1] = type(thresholdValue)(thresholdValue, canBeNull=False, attribName='thresholdValue')
         self._isNull = False
 
     @property

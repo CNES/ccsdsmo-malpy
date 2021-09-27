@@ -1244,7 +1244,7 @@ class Pair(Composite):
 
     @first.setter
     def first(self, first):
-        self._value[Composite._fieldNumber + 0] = Attribute(first, canBeNull=True, attribName='first')
+        self._value[Composite._fieldNumber + 0] = type(first)(first, canBeNull=True, attribName='first')
         self._isNull = False
 
     @property
@@ -1253,7 +1253,7 @@ class Pair(Composite):
 
     @second.setter
     def second(self, second):
-        self._value[Composite._fieldNumber + 1] = Attribute(second, canBeNull=True, attribName='second')
+        self._value[Composite._fieldNumber + 1] = type(second)(second, canBeNull=True, attribName='second')
         self._isNull = False
 
 
@@ -1315,7 +1315,7 @@ class NamedValue(Composite):
 
     @value.setter
     def value(self, value):
-        self._value[Composite._fieldNumber + 1] = Attribute(value, canBeNull=True, attribName='value')
+        self._value[Composite._fieldNumber + 1] = type(value)(value, canBeNull=True, attribName='value')
         self._isNull = False
 
 

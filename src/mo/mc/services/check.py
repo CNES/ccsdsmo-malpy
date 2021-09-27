@@ -445,7 +445,7 @@ class CheckResult(mal.Composite):
 
     @checkedValue.setter
     def checkedValue(self, checkedValue):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Attribute(checkedValue, canBeNull=True, attribName='checkedValue')
+        self._value[mal.Composite._fieldNumber + 3] = type(checkedValue)(checkedValue, canBeNull=True, attribName='checkedValue')
         self._isNull = False
 
 
@@ -1000,7 +1000,7 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
     @lowerThreshold.setter
     def lowerThreshold(self, lowerThreshold):
-        self._value[CheckDefinitionDetails._fieldNumber + 3] = mal.Attribute(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        self._value[CheckDefinitionDetails._fieldNumber + 3] = type(lowerThreshold)(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
         self._isNull = False
 
     @property
@@ -1009,7 +1009,7 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
     @upperThreshold.setter
     def upperThreshold(self, upperThreshold):
-        self._value[CheckDefinitionDetails._fieldNumber + 4] = mal.Attribute(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        self._value[CheckDefinitionDetails._fieldNumber + 4] = type(upperThreshold)(upperThreshold, canBeNull=True, attribName='upperThreshold')
         self._isNull = False
 
 
@@ -1072,7 +1072,7 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
     @lowerLimit.setter
     def lowerLimit(self, lowerLimit):
-        self._value[CheckDefinitionDetails._fieldNumber + 1] = mal.Attribute(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        self._value[CheckDefinitionDetails._fieldNumber + 1] = type(lowerLimit)(lowerLimit, canBeNull=True, attribName='lowerLimit')
         self._isNull = False
 
     @property
@@ -1081,7 +1081,7 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
     @upperLimit.setter
     def upperLimit(self, upperLimit):
-        self._value[CheckDefinitionDetails._fieldNumber + 2] = mal.Attribute(upperLimit, canBeNull=True, attribName='upperLimit')
+        self._value[CheckDefinitionDetails._fieldNumber + 2] = type(upperLimit)(upperLimit, canBeNull=True, attribName='upperLimit')
         self._isNull = False
 
 
