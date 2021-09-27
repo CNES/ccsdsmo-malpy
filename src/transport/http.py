@@ -313,7 +313,7 @@ class HTTPSocket(MALSocket):
         if not self.client:
              logger.debug('Create Client')
              self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
-             self.client.set_debuglevel(1)
+             self.client.set_debuglevel(0)
         
         #try:
         logger.debug('Send POST \nrequest url : {} \nheaders : {} \nbody : {}'.format(target, json.dumps(headers,indent=4), body.decode('utf-8)')))
