@@ -125,14 +125,16 @@ class XMLEncoder(Encoder):
                 # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
                 # It's a leaf, we don't recurse deeper.
                 attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
-                # Special case for IntEnum (the encoding message is a string that we convert to enums)
+                # Special case for IntEnum (the encoded message is a string that we convert to enums)
                 if issubclass(type(element.value), IntEnum):
                     value = element.value.name
+                # Special case for Blob (the value is b'toto' and we want 'toto')
+                elif type(element) is mal.maltypes.Blob:
+                    value = element.value.decode('utf8')
                 # Normal case
                 else:
                     value = str(element.value)
                 attributenode.appendChild(domdoc.createTextNode(value))
-
 
         dom = xml.dom.getDOMImplementation()
 
@@ -208,7 +210,12 @@ class XMLEncoder(Encoder):
                                         break
                             # normal cases
                             else:
-                                castedValue = objectClass.value_type(element.nodeValue)
+                                # Handle 'blob' special case
+                                if objectClass.value_type == bytes and type(element.nodeValue) == str:
+                                    value = element.nodeValue.encode('utf8')
+                                else:
+                                    value = element.nodeValue
+                                castedValue = objectClass.value_type(value)
                             internal.append(castedValue)
                         elif element.nodeType is element.ELEMENT_NODE:
                             # If it's a NULL element, we reached a leaf again

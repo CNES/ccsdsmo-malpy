@@ -348,7 +348,7 @@ class StatisticValue(mal.Composite):
 
     @value.setter
     def value(self, value):
-        self._value[mal.Composite._fieldNumber + 4] = mal.Attribute(value, canBeNull=True, attribName='value')
+        self._value[mal.Composite._fieldNumber + 4] = type(value)(value, canBeNull=True, attribName='value')
         self._isNull = False
 
     @property
