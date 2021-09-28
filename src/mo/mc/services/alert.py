@@ -68,17 +68,17 @@ class AlertDefinitionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*4
+        self._internal_value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.description = value[mal.Composite._fieldNumber + 0]
             self.severity = value[mal.Composite._fieldNumber + 1]
@@ -87,38 +87,38 @@ class AlertDefinitionDetails(mal.Composite):
 
     @property
     def description(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
         self._isNull = False
 
     @property
     def severity(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @severity.setter
     def severity(self, severity):
-        self._value[mal.Composite._fieldNumber + 1] = mc.Severity(severity, canBeNull=False, attribName='severity')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mc.Severity(severity, canBeNull=False, attribName='severity')
         self._isNull = False
 
     @property
     def generationEnabled(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @generationEnabled.setter
     def generationEnabled(self, generationEnabled):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
         self._isNull = False
 
     @property
     def arguments(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @arguments.setter
     def arguments(self, arguments):
-        self._value[mal.Composite._fieldNumber + 3] = mc.ArgumentDefinitionDetailsList(arguments, canBeNull=False, attribName='arguments')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mc.ArgumentDefinitionDetailsList(arguments, canBeNull=False, attribName='arguments')
         self._isNull = False
 
 
@@ -127,19 +127,19 @@ class AlertDefinitionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(AlertDefinitionDetails(v))
+                 self._internal_value.append(AlertDefinitionDetails(v))
 
 
 class AlertEventDetails(mal.Composite):
@@ -150,37 +150,37 @@ class AlertEventDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.argumentValues = value[mal.Composite._fieldNumber + 0]
             self.argumentIds = value[mal.Composite._fieldNumber + 1]
 
     @property
     def argumentValues(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @argumentValues.setter
     def argumentValues(self, argumentValues):
-        self._value[mal.Composite._fieldNumber + 0] = mc.AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mc.AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
         self._isNull = False
 
     @property
     def argumentIds(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @argumentIds.setter
     def argumentIds(self, argumentIds):
-        self._value[mal.Composite._fieldNumber + 1] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
         self._isNull = False
 
 
@@ -189,19 +189,19 @@ class AlertEventDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(AlertEventDetails(v))
+                 self._internal_value.append(AlertEventDetails(v))
 
 
 class AlertCreationRequest(mal.Composite):
@@ -212,37 +212,37 @@ class AlertCreationRequest(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.name = value[mal.Composite._fieldNumber + 0]
             self.alertDefDetails = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
         self._isNull = False
 
     @property
     def alertDefDetails(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @alertDefDetails.setter
     def alertDefDetails(self, alertDefDetails):
-        self._value[mal.Composite._fieldNumber + 1] = AlertDefinitionDetails(alertDefDetails, canBeNull=False, attribName='alertDefDetails')
+        self._internal_value[mal.Composite._fieldNumber + 1] = AlertDefinitionDetails(alertDefDetails, canBeNull=False, attribName='alertDefDetails')
         self._isNull = False
 
 
@@ -251,18 +251,18 @@ class AlertCreationRequestList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(AlertCreationRequest(v))
+                 self._internal_value.append(AlertCreationRequest(v))
 
 

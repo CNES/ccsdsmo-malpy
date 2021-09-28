@@ -1,4 +1,4 @@
-#! /bin/python
+#! /bin/python3
 
 import sys
 sys.path.append('../../src/')
@@ -70,5 +70,5 @@ print(deul)
 coded  = e.encode_body([parameter])
 print(coded.decode('utf8'))
 decoded = e.decode_body(coded)
-print(decoded[0].value[1].value)
+print(decoded[0].internal_value[1].internal_value)
 print(e.encode_body(decoded).decode('utf8'))

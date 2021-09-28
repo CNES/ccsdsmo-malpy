@@ -63,21 +63,20 @@ class MALHeader(object):
     # TODO: This object is a great candidate for a Cython cpdef struct
     # which will allow fast copies and attribute affectations.
 
-    __slots__ = ['version_number', 'ip_type', 'ip_stage',
-                 'area', 'service', 'operation', 'area_version',
+    __slots__ = ['area_version', 'ip_type', 'ip_stage',
+                 'area', 'service', 'operation',
                  'is_error_message', 'qos_level', 'session',
                  'transaction_id', 'priority', 'uri_from',
                  'uri_to', 'timestamp', 'network_zone',
                  'session_name', 'domain', 'auth_id']
 
     def __init__(self):
-        self.version_number = None
+        self.area_version = None
         self.ip_type = None
         self.ip_stage = None
         self.area = None
         self.service = None
         self.operation = None
-        self.area_version = None
         self.is_error_message = None
         self.qos_level = None
         self.session = None
@@ -93,13 +92,12 @@ class MALHeader(object):
 
     def copy(self):
         instance = self.__class__()
-        instance.version_number = self.version_number
+        instance.area_version = self.area_version
         instance.ip_type = self.ip_type
         instance.ip_stage = self.ip_stage
         instance.area = self.area
         instance.service = self.service
         instance.operation = self.operation
-        instance.area_version = self.area_version
         instance.is_error_message = self.is_error_message
         instance.qos_level = self.qos_level
         instance.session = self.session

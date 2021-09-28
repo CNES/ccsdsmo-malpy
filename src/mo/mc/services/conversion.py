@@ -28,27 +28,27 @@ class DiscreteConversionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*1
+        self._internal_value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.mapping = value[mal.Composite._fieldNumber + 0]
 
     @property
     def mapping(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @mapping.setter
     def mapping(self, mapping):
-        self._value[mal.Composite._fieldNumber + 0] = mal.PairList(mapping, canBeNull=False, attribName='mapping')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.PairList(mapping, canBeNull=False, attribName='mapping')
         self._isNull = False
 
 
@@ -57,19 +57,19 @@ class DiscreteConversionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(DiscreteConversionDetails(v))
+                 self._internal_value.append(DiscreteConversionDetails(v))
 
 
 class LineConversionDetails(mal.Composite):
@@ -80,37 +80,37 @@ class LineConversionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.extrapolate = value[mal.Composite._fieldNumber + 0]
             self.points = value[mal.Composite._fieldNumber + 1]
 
     @property
     def extrapolate(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @extrapolate.setter
     def extrapolate(self, extrapolate):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(extrapolate, canBeNull=False, attribName='extrapolate')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(extrapolate, canBeNull=False, attribName='extrapolate')
         self._isNull = False
 
     @property
     def points(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @points.setter
     def points(self, points):
-        self._value[mal.Composite._fieldNumber + 1] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.PairList(points, canBeNull=False, attribName='points')
         self._isNull = False
 
 
@@ -119,19 +119,19 @@ class LineConversionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(LineConversionDetails(v))
+                 self._internal_value.append(LineConversionDetails(v))
 
 
 class PolyConversionDetails(mal.Composite):
@@ -142,27 +142,27 @@ class PolyConversionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*1
+        self._internal_value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.points = value[mal.Composite._fieldNumber + 0]
 
     @property
     def points(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @points.setter
     def points(self, points):
-        self._value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
         self._isNull = False
 
 
@@ -171,19 +171,19 @@ class PolyConversionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(PolyConversionDetails(v))
+                 self._internal_value.append(PolyConversionDetails(v))
 
 
 class RangeConversionDetails(mal.Composite):
@@ -194,27 +194,27 @@ class RangeConversionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*1
+        self._internal_value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.points = value[mal.Composite._fieldNumber + 0]
 
     @property
     def points(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @points.setter
     def points(self, points):
-        self._value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
         self._isNull = False
 
 
@@ -223,18 +223,18 @@ class RangeConversionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(RangeConversionDetails(v))
+                 self._internal_value.append(RangeConversionDetails(v))
 
 
