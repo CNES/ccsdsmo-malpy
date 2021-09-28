@@ -15,6 +15,7 @@ from struct import *  # pack() unpack()
 
 from .abstract_transport import MALSocket
 
+VERSION_NUMBER = 1  # Version number of the transport
 
 def _encode_uri(uri):
     return '{}:{}'.format(uri[0], uri[1])
@@ -251,6 +252,9 @@ class HTTPSocket(MALSocket):
 
     def _header_http_to_mal(self, headers):
 
+        if int(headers['X-MAL-Version-Number']) != VERSION_NUMBER:
+            raise RuntimeError("The incoming version number was {}, expected was {}".format(headers['X-MAL-Version-Number'], VERSION_NUMBER))
+
         malheader = mal.MALHeader()
         malheader.auth_id = b''.fromhex(headers['X-MAL-Authentication-Id'])
         malheader.uri_from = headers['X-MAL-URI-From']
@@ -270,7 +274,6 @@ class HTTPSocket(MALSocket):
         malheader.operation = int(headers['X-MAL-Operation'])
         malheader.area_version = int(headers['X-MAL-Area-Version'])
         malheader.is_error_message = (headers["X-MAL-Is-Error-Message"] == "True")
-        malheader.version_number = headers['X-MAL-Version-Number']
 
         return malheader
 
@@ -296,7 +299,7 @@ class HTTPSocket(MALSocket):
             "X-MAL-Operation": str(message.header.operation),
             "X-MAL-Area-Version": str(message.header.area_version),
             "X-MAL-Is-Error-Message": "True" if message.header.is_error_message else "False",
-            "X-MAL-Version-Number": str(message.header.version_number)
+            "X-MAL-Version-Number": str(VERSION_NUMBER)
         }
 
         return headers
@@ -334,6 +337,8 @@ class HTTPSocket(MALSocket):
 
     def _receive_http_response(self):
         response=self.client.getresponse()
+        if response.status != 200:
+            raise RuntimeError("Got en error: {} - {}".format(response.status, response.reason))
         headers=response.headers
         body=response.read().decode('utf-8')
         return headers, body
