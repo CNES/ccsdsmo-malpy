@@ -2,30 +2,40 @@ import time
 from enum import IntEnum
 from .maltypes import QoSLevelEnum, SessionTypeEnum, InteractionTypeEnum, number
 
+class MAL_IP_STAGES:
+    # Send
+    SEND = 1
 
-class MAL_IP_STAGES(IntEnum):
-    SEND = 0
+    # Submit
     SUBMIT = 1
     SUBMIT_ACK = 2
-    REQUEST = 3
-    REQUEST_RESPONSE = 4
-    INVOKE = 5
-    INVOKE_ACK = 6
-    INVOKE_RESPONSE = 7
-    PROGRESS = 8
-    PROGRESS_ACK = 9
-    PROGRESS_UPDATE = 10
-    PROGRESS_RESPONSE = 11
-    PUBSUB_REGISTER = 12
-    PUBSUB_REGISTER_ACK = 13
-    PUBSUB_PUBLISH_REGISTER = 14
-    PUBSUB_PUBLISH_REGISTER_ACK = 15
-    PUBSUB_PUBLISH = 16
-    PUBSUB_NOTIFY = 17
-    PUBSUB_DEREGISTER = 18
-    PUBSUB_DEREGISTER_ACK = 19
-    PUBSUB_PUBLISH_DEREGISTER = 20
-    PUBSUB_PUBLISH_DEREGISTER_ACK = 21
+
+    # Request
+    REQUEST = 1
+    REQUEST_RESPONSE = 2
+
+    # Invoke
+    INVOKE = 1
+    INVOKE_ACK = 2
+    INVOKE_RESPONSE = 3
+
+    # Progress
+    PROGRESS = 1
+    PROGRESS_ACK = 2
+    PROGRESS_UPDATE = 3
+    PROGRESS_RESPONSE = 4
+
+    # PubSub
+    PUBSUB_REGISTER = 1
+    PUBSUB_REGISTER_ACK = 2
+    PUBSUB_PUBLISH_REGISTER = 3
+    PUBSUB_PUBLISH_REGISTER_ACK = 4
+    PUBSUB_PUBLISH = 5
+    PUBSUB_NOTIFY = 6
+    PUBSUB_DEREGISTER = 7
+    PUBSUB_DEREGISTER_ACK = 8
+    PUBSUB_PUBLISH_DEREGISTER = 9
+    PUBSUB_PUBLISH_DEREGISTER_ACK = 10
 
 
 class MAL_IP_ERRORS(IntEnum):
@@ -305,6 +315,8 @@ class SendProviderHandler(ProviderHandler):
     interaction pattern
     """
 
+    IP_TYPE = InteractionTypeEnum.SEND
+
     def receive_send(self):
         message = self.receive_message()
         ip_stage = message.header.ip_stage
@@ -337,6 +349,8 @@ class SubmitProviderHandler(ProviderHandler):
     A provider handler for operations belonging to the SEND
     interaction pattern
     """
+
+    IP_TYPE = InteractionTypeEnum.SUBMIT
 
     def receive_submit(self):
         message = self.receive_message()
@@ -396,6 +410,8 @@ class RequestProviderHandler(ProviderHandler):
     interaction pattern
     """
 
+    IP_TYPE = InteractionTypeEnum.REQUEST
+
     def receive_request(self):
         message = self.receive_message()
         self.define_header(message.header)
@@ -453,6 +469,8 @@ class InvokeProviderHandler(ProviderHandler):
     A provider handler for operations belonging to the SEND
     interaction pattern
     """
+
+    IP_TYPE = InteractionTypeEnum.INVOKE
 
     def receive_invoke(self):
         message = self.receive_message()
@@ -534,6 +552,8 @@ class ProgressProviderHandler(ProviderHandler):
     A provider handler for operations belonging to the SEND
     interaction pattern
     """
+
+    IP_TYPE = InteractionTypeEnum.PROGRESS
 
     def receive_progress(self):
         message = self.receive_message()
