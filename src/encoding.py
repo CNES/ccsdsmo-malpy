@@ -21,7 +21,7 @@ class Debug():
     def OUT(self, *args):
         self.depth -= 1
         self.DEBUG('<', *args)
-        
+
     def DEBUG(self, *args):
         if LOG_LEVEL == "DEBUG":
             print(self.depth*'-', *args)
@@ -102,52 +102,59 @@ class XMLEncoder(Encoder):
         def _encode_internal(element, parent):
             domdoc = parent.ownerDocument
 
+            if element is None:
+                return
+
             # The node name is attribName if it exists, otherwise its type
             # ex: <longElement> ?? </longElement> or <Identifier> ?? </Identifier>
             nodename = element.attribName or type(element).__name__
             subnode = parent.appendChild(domdoc.createElement(nodename))
 
             # Deal with the Null type:
-            if element.value is None:
+            if element.internal_value is None:
                 # ex: <longElement xsi:nul="True" /> or <Identifier xsi:nul="True" />
                 # It's a leaf, we don't recurse deeper.
                 subnode.setAttribute('xsi:nil', 'true')
             # if it's a list, it means this is a composite or a list of thing
-            elif type(element.value) is list:
+            elif type(element.internal_value) is list:
                 # so we recurse over each item and append them below the objects
-                # ex: the ?? is defined with se same algorithm
-                for subelement in element.value:
+                # ex: the ?? is defined with the same algorithm
+                for subelement in element.internal_value:
                     _encode_internal(subelement, subnode)
             # else it's an attribute we add a subnode
             else:
-                # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
-                # It's a leaf, we don't recurse deeper.
-                attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
-                # Special case for IntEnum (the encoded message is a string that we convert to enums)
-                if issubclass(type(element.value), IntEnum):
-                    value = element.value.name
-                # Special case for Blob (the value is b'toto' and we want 'toto')
-                elif type(element) is mal.maltypes.Blob:
-                    value = element.value.hex()
-                # Special case for Time (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sss)
-                elif type(element) is mal.maltypes.Time:
-                    value = datetime.datetime.fromtimestamp(element.value).isoformat()
-                    if '.' in value:  # it means we have microsecond
-                        value = value[:-3]  # we reduce to millisecond
-                    else:
-                        value += ".000"
-                # Special case for FineTime (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sssssssss)
-                elif type(element) is mal.maltypes.FineTime:
-                    # get YYYY-MM-DDThh:mm:ss.ssssss
-                    value = datetime.datetime.fromtimestamp(element.value).isoformat()
-                    if '.' in value:  # it means we have microsecond
-                        value += 000   # we add zeroes to nanoseconds
-                    else:
-                        value += ".000000000"
-                # Normal case
+                if issubclass(type(element), mal.Composite):
+                    # it's a composite, so we recurse
+                    _encode_internal(element.internal_value, subnode)
                 else:
-                    value = str(element.value)
-                attributenode.appendChild(domdoc.createTextNode(value))
+                    # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
+                    # It's a leaf, we don't recurse deeper.
+                    attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
+                    # Special case for IntEnum (the encoded message is a string that we convert to enums)
+                    if issubclass(type(element.internal_value), IntEnum):
+                        value = element.internal_value.name
+                    # Special case for Blob (the value is b'toto' and we want 'toto')
+                    elif type(element) is mal.maltypes.Blob:
+                        value = element.internal_value.hex()
+                    # Special case for Time (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sss)
+                    elif type(element) is mal.maltypes.Time:
+                        value = datetime.datetime.fromtimestamp(element.internal_value).isoformat()
+                        if '.' in value:  # it means we have microsecond
+                            value = value[:-3]  # we reduce to millisecond
+                        else:
+                            value += ".000"
+                    # Special case for FineTime (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sssssssss)
+                    elif type(element) is mal.maltypes.FineTime:
+                        # get YYYY-MM-DDThh:mm:ss.ssssss
+                        value = datetime.datetime.fromtimestamp(element.internal_value).isoformat()
+                        if '.' in value:  # it means we have microsecond
+                            value += 000   # we add zeroes to nanoseconds
+                        else:
+                            value += ".000000000"
+                    # Normal case
+                    else:
+                        value = str(element.internal_value)
+                    attributenode.appendChild(domdoc.createTextNode(value))
 
         dom = xml.dom.getDOMImplementation()
 
@@ -203,7 +210,7 @@ class XMLEncoder(Encoder):
             # If it's a MAL class we recurse in its children and build the MALElement
             if node.nodeName in maltypes:
                 objectClass = str_to_class(node.nodeName)
-                
+
                 # First case: it's Null and we reached a leaf
                 if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
                     DEBUG_OUT('Leaf > xsi:nil', 'value=None')
@@ -300,5 +307,83 @@ class XMLEncoder(Encoder):
         d = xml.dom.minidom.parseString(body)
         rootElement = d.firstChild
         _cleanupEmptyChildNodes(rootElement)
-        
+
         return _decode_internal(rootElement)
+
+
+
+class JSONEncoder(Encoder):
+    encoding = MALPY_ENCODING.XML
+
+    def encode(self, message):
+        encoded_body = self.encode_body(message.msg_parts)
+        encoded_message = mal.MALMessage(header=message.header,
+                                         msg_parts=encoded_body)
+        return encoded_message
+
+    def decode(self, message):
+        decoded_body = self.decode_body(message.msg_parts)
+        decoded_message = mal.MALMessage(header=message.header,
+                                         msg_parts=decoded_body)
+        return decoded_message
+
+    def encode_body(self, body):
+
+        def _encode_internal(element,isInList):
+            doc=''
+            # The node name is attribName if it exists, otherwise its type
+            nodename = element.attribName or type(element).__name__
+
+            # Deal with the Null type:
+            if element.internal_value is None:
+                # It's a leaf, we don't recurse deeper.
+               doc = doc +  "\"{}\" : ".format(nodename) + "null,"
+               if isInList:
+                  doc = '{' + doc[0:-1] + '},' # Remove last caractere (comma) of doc String befor add }
+
+            # if it's a list, it means this is a composite or a list of thing
+            elif type(element.internal_value) is list:
+                # so we recurse over each item and append them below the objects
+                # ex: the ?? is defined with se same algorithm
+                if nodename.find('List') > 0:
+                    doc = doc + "\"{}\" : [".format(nodename)
+                    for subelement in element.internal_value:
+                        doc = doc + _encode_internal(subelement, True)
+                    doc = doc[0:-1] + '],' # Remove last caractere (comma) of doc String befor add }
+                else:
+                    if isInList:
+                        doc = doc + ' {'
+                    else:
+                        doc = doc + "\"{}\" : ".format(nodename) +' {'
+                    for subelement in element.internal_value:
+                        doc = doc + _encode_internal(subelement, False)
+                    doc = doc[0:-1] + '},' # Remove last caractere (comma) of doc String befor add }
+
+            # else it's an attribute we add a subnode
+            else:
+                # It's a leaf, we don't recurse deeper.
+                # Special case for IntEnum (the encoding message is a string that we convert to enums)
+                if issubclass(type(element.internal_value), IntEnum):
+                    value = element.internal_value.name
+                # Normal case
+                else:
+                    value = str(element.internal_value)
+                doc = doc +  "\"{}\" : ".format(nodename) + "\"{}\",".format(value)
+
+                if isInList:
+                    doc = '{' + doc[0:-1] + '}' # Remove last caractere (comma) of doc String befor add }
+
+            return doc
+
+        rootElement=''
+
+        # Recursively go through the object to encode it (a composite is a list of list)
+        if type(body) is not list:
+            body = [body]
+
+        rootElement = rootElement + '{'
+        for element in body:
+            rootElement = rootElement + _encode_internal(element, False)
+        rootElement = rootElement[0:-1] + '}' # Remove last caractere (comma) of doc String befor add }
+
+        return rootElement

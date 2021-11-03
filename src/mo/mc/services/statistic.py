@@ -123,37 +123,37 @@ class StatisticFunctionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.name = value[mal.Composite._fieldNumber + 0]
             self.description = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
         self._isNull = False
 
     @property
     def description(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @description.setter
     def description(self, description):
-        self._value[mal.Composite._fieldNumber + 1] = mal.String(description, canBeNull=False, attribName='description')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.String(description, canBeNull=False, attribName='description')
         self._isNull = False
 
 
@@ -162,19 +162,19 @@ class StatisticFunctionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(StatisticFunctionDetails(v))
+                 self._internal_value.append(StatisticFunctionDetails(v))
 
 
 class StatisticLinkDetails(mal.Composite):
@@ -185,17 +185,17 @@ class StatisticLinkDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*6
+        self._internal_value += [None]*6
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.samplingInterval = value[mal.Composite._fieldNumber + 0]
             self.reportingInterval = value[mal.Composite._fieldNumber + 1]
@@ -206,56 +206,56 @@ class StatisticLinkDetails(mal.Composite):
 
     @property
     def samplingInterval(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @samplingInterval.setter
     def samplingInterval(self, samplingInterval):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Duration(samplingInterval, canBeNull=False, attribName='samplingInterval')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Duration(samplingInterval, canBeNull=False, attribName='samplingInterval')
         self._isNull = False
 
     @property
     def reportingInterval(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @reportingInterval.setter
     def reportingInterval(self, reportingInterval):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Duration(reportingInterval, canBeNull=False, attribName='reportingInterval')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Duration(reportingInterval, canBeNull=False, attribName='reportingInterval')
         self._isNull = False
 
     @property
     def collectionInterval(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @collectionInterval.setter
     def collectionInterval(self, collectionInterval):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Duration(collectionInterval, canBeNull=False, attribName='collectionInterval')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Duration(collectionInterval, canBeNull=False, attribName='collectionInterval')
         self._isNull = False
 
     @property
     def resetEveryCollection(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @resetEveryCollection.setter
     def resetEveryCollection(self, resetEveryCollection):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(resetEveryCollection, canBeNull=False, attribName='resetEveryCollection')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Boolean(resetEveryCollection, canBeNull=False, attribName='resetEveryCollection')
         self._isNull = False
 
     @property
     def reportingEnabled(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @reportingEnabled.setter
     def reportingEnabled(self, reportingEnabled):
-        self._value[mal.Composite._fieldNumber + 4] = mal.Boolean(reportingEnabled, canBeNull=False, attribName='reportingEnabled')
+        self._internal_value[mal.Composite._fieldNumber + 4] = mal.Boolean(reportingEnabled, canBeNull=False, attribName='reportingEnabled')
         self._isNull = False
 
     @property
     def useConverted(self):
-        return self._value[mal.Composite._fieldNumber + 5]
+        return self._internal_value[mal.Composite._fieldNumber + 5]
 
     @useConverted.setter
     def useConverted(self, useConverted):
-        self._value[mal.Composite._fieldNumber + 5] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._internal_value[mal.Composite._fieldNumber + 5] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
         self._isNull = False
 
 
@@ -264,19 +264,19 @@ class StatisticLinkDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(StatisticLinkDetails(v))
+                 self._internal_value.append(StatisticLinkDetails(v))
 
 
 class StatisticValue(mal.Composite):
@@ -287,17 +287,17 @@ class StatisticValue(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*6
+        self._internal_value += [None]*6
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.paramDefInstId = value[mal.Composite._fieldNumber + 0]
             self.startTime = value[mal.Composite._fieldNumber + 1]
@@ -308,56 +308,59 @@ class StatisticValue(mal.Composite):
 
     @property
     def paramDefInstId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @paramDefInstId.setter
     def paramDefInstId(self, paramDefInstId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(paramDefInstId, canBeNull=False, attribName='paramDefInstId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(paramDefInstId, canBeNull=False, attribName='paramDefInstId')
         self._isNull = False
 
     @property
     def startTime(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @startTime.setter
     def startTime(self, startTime):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Time(startTime, canBeNull=True, attribName='startTime')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Time(startTime, canBeNull=True, attribName='startTime')
         self._isNull = False
 
     @property
     def endTime(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @endTime.setter
     def endTime(self, endTime):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Time(endTime, canBeNull=True, attribName='endTime')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Time(endTime, canBeNull=True, attribName='endTime')
         self._isNull = False
 
     @property
     def valueTime(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @valueTime.setter
     def valueTime(self, valueTime):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Time(valueTime, canBeNull=True, attribName='valueTime')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Time(valueTime, canBeNull=True, attribName='valueTime')
         self._isNull = False
 
     @property
     def value(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @value.setter
     def value(self, value):
-        self._value[mal.Composite._fieldNumber + 4] = type(value)(value, canBeNull=True, attribName='value')
+        if value is None:
+            self._internal_value[mal.Composite._fieldNumber + 4] = mal.Attribute(value, canBeNull=True, attribName='value')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 4] = type(value)(value, canBeNull=True, attribName='value')
         self._isNull = False
 
     @property
     def sampleCount(self):
-        return self._value[mal.Composite._fieldNumber + 5]
+        return self._internal_value[mal.Composite._fieldNumber + 5]
 
     @sampleCount.setter
     def sampleCount(self, sampleCount):
-        self._value[mal.Composite._fieldNumber + 5] = mal.UInteger(sampleCount, canBeNull=False, attribName='sampleCount')
+        self._internal_value[mal.Composite._fieldNumber + 5] = mal.UInteger(sampleCount, canBeNull=False, attribName='sampleCount')
         self._isNull = False
 
 
@@ -366,19 +369,19 @@ class StatisticValueList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(StatisticValue(v))
+                 self._internal_value.append(StatisticValue(v))
 
 
 class StatisticCreationRequest(mal.Composite):
@@ -389,17 +392,17 @@ class StatisticCreationRequest(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*3
+        self._internal_value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.statFuncInstId = value[mal.Composite._fieldNumber + 0]
             self.parameterId = value[mal.Composite._fieldNumber + 1]
@@ -407,29 +410,29 @@ class StatisticCreationRequest(mal.Composite):
 
     @property
     def statFuncInstId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @statFuncInstId.setter
     def statFuncInstId(self, statFuncInstId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(statFuncInstId, canBeNull=False, attribName='statFuncInstId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(statFuncInstId, canBeNull=False, attribName='statFuncInstId')
         self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[mal.Composite._fieldNumber + 1] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+        self._internal_value[mal.Composite._fieldNumber + 1] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
         self._isNull = False
 
     @property
     def linkDetails(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @linkDetails.setter
     def linkDetails(self, linkDetails):
-        self._value[mal.Composite._fieldNumber + 2] = StatisticLinkDetails(linkDetails, canBeNull=False, attribName='linkDetails')
+        self._internal_value[mal.Composite._fieldNumber + 2] = StatisticLinkDetails(linkDetails, canBeNull=False, attribName='linkDetails')
         self._isNull = False
 
 
@@ -438,19 +441,19 @@ class StatisticCreationRequestList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(StatisticCreationRequest(v))
+                 self._internal_value.append(StatisticCreationRequest(v))
 
 
 class StatisticLinkSummary(mal.Composite):
@@ -461,17 +464,17 @@ class StatisticLinkSummary(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*5
+        self._internal_value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.funcId = value[mal.Composite._fieldNumber + 0]
             self.linkId = value[mal.Composite._fieldNumber + 1]
@@ -481,47 +484,47 @@ class StatisticLinkSummary(mal.Composite):
 
     @property
     def funcId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @funcId.setter
     def funcId(self, funcId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(funcId, canBeNull=False, attribName='funcId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(funcId, canBeNull=False, attribName='funcId')
         self._isNull = False
 
     @property
     def linkId(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @linkId.setter
     def linkId(self, linkId):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
         self._isNull = False
 
     @property
     def linkDefId(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @linkDefId.setter
     def linkDefId(self, linkDefId):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Long(linkDefId, canBeNull=False, attribName='linkDefId')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Long(linkDefId, canBeNull=False, attribName='linkDefId')
         self._isNull = False
 
     @property
     def reportingEnabled(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @reportingEnabled.setter
     def reportingEnabled(self, reportingEnabled):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(reportingEnabled, canBeNull=False, attribName='reportingEnabled')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Boolean(reportingEnabled, canBeNull=False, attribName='reportingEnabled')
         self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[mal.Composite._fieldNumber + 4] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+        self._internal_value[mal.Composite._fieldNumber + 4] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
         self._isNull = False
 
 
@@ -530,19 +533,19 @@ class StatisticLinkSummaryList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(StatisticLinkSummary(v))
+                 self._internal_value.append(StatisticLinkSummary(v))
 
 
 class StatisticEvaluationReport(mal.Composite):
@@ -553,37 +556,37 @@ class StatisticEvaluationReport(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.linkId = value[mal.Composite._fieldNumber + 0]
             self.value = value[mal.Composite._fieldNumber + 1]
 
     @property
     def linkId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @linkId.setter
     def linkId(self, linkId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
         self._isNull = False
 
     @property
     def value(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @value.setter
     def value(self, value):
-        self._value[mal.Composite._fieldNumber + 1] = StatisticValue(value, canBeNull=False, attribName='value')
+        self._internal_value[mal.Composite._fieldNumber + 1] = StatisticValue(value, canBeNull=False, attribName='value')
         self._isNull = False
 
 
@@ -592,18 +595,18 @@ class StatisticEvaluationReportList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(StatisticEvaluationReport(v))
+                 self._internal_value.append(StatisticEvaluationReport(v))
 
 

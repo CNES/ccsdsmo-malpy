@@ -28,17 +28,17 @@ class ObjectType(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*4
+        self._internal_value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.area = value[mal.Composite._fieldNumber + 0]
             self.service = value[mal.Composite._fieldNumber + 1]
@@ -47,38 +47,38 @@ class ObjectType(mal.Composite):
 
     @property
     def area(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @area.setter
     def area(self, area):
-        self._value[mal.Composite._fieldNumber + 0] = mal.UShort(area, canBeNull=False, attribName='area')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.UShort(area, canBeNull=False, attribName='area')
         self._isNull = False
 
     @property
     def service(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @service.setter
     def service(self, service):
-        self._value[mal.Composite._fieldNumber + 1] = mal.UShort(service, canBeNull=False, attribName='service')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.UShort(service, canBeNull=False, attribName='service')
         self._isNull = False
 
     @property
     def version(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @version.setter
     def version(self, version):
-        self._value[mal.Composite._fieldNumber + 2] = mal.UOctet(version, canBeNull=False, attribName='version')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.UOctet(version, canBeNull=False, attribName='version')
         self._isNull = False
 
     @property
     def number(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @number.setter
     def number(self, number):
-        self._value[mal.Composite._fieldNumber + 3] = mal.UShort(number, canBeNull=False, attribName='number')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.UShort(number, canBeNull=False, attribName='number')
         self._isNull = False
 
 
@@ -87,19 +87,19 @@ class ObjectTypeList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ObjectType(v))
+                 self._internal_value.append(ObjectType(v))
 
 
 class ObjectKey(mal.Composite):
@@ -110,37 +110,37 @@ class ObjectKey(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.domain = value[mal.Composite._fieldNumber + 0]
             self.instId = value[mal.Composite._fieldNumber + 1]
 
     @property
     def domain(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @domain.setter
     def domain(self, domain):
-        self._value[mal.Composite._fieldNumber + 0] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
         self._isNull = False
 
     @property
     def instId(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @instId.setter
     def instId(self, instId):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Long(instId, canBeNull=False, attribName='instId')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Long(instId, canBeNull=False, attribName='instId')
         self._isNull = False
 
 
@@ -149,19 +149,19 @@ class ObjectKeyList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ObjectKey(v))
+                 self._internal_value.append(ObjectKey(v))
 
 
 class ObjectId(mal.Composite):
@@ -172,37 +172,37 @@ class ObjectId(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.type = value[mal.Composite._fieldNumber + 0]
             self.key = value[mal.Composite._fieldNumber + 1]
 
     @property
     def type(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @type.setter
     def type(self, type):
-        self._value[mal.Composite._fieldNumber + 0] = ObjectType(type, canBeNull=False, attribName='type')
+        self._internal_value[mal.Composite._fieldNumber + 0] = ObjectType(type, canBeNull=False, attribName='type')
         self._isNull = False
 
     @property
     def key(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @key.setter
     def key(self, key):
-        self._value[mal.Composite._fieldNumber + 1] = ObjectKey(key, canBeNull=False, attribName='key')
+        self._internal_value[mal.Composite._fieldNumber + 1] = ObjectKey(key, canBeNull=False, attribName='key')
         self._isNull = False
 
 
@@ -211,19 +211,19 @@ class ObjectIdList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ObjectId(v))
+                 self._internal_value.append(ObjectId(v))
 
 
 class ObjectDetails(mal.Composite):
@@ -234,37 +234,37 @@ class ObjectDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.related = value[mal.Composite._fieldNumber + 0]
             self.source = value[mal.Composite._fieldNumber + 1]
 
     @property
     def related(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @related.setter
     def related(self, related):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(related, canBeNull=True, attribName='related')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(related, canBeNull=True, attribName='related')
         self._isNull = False
 
     @property
     def source(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @source.setter
     def source(self, source):
-        self._value[mal.Composite._fieldNumber + 1] = ObjectId(source, canBeNull=True, attribName='source')
+        self._internal_value[mal.Composite._fieldNumber + 1] = ObjectId(source, canBeNull=True, attribName='source')
         self._isNull = False
 
 
@@ -273,19 +273,19 @@ class ObjectDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ObjectDetails(v))
+                 self._internal_value.append(ObjectDetails(v))
 
 
 class InstanceBooleanPair(mal.Composite):
@@ -296,37 +296,37 @@ class InstanceBooleanPair(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.id = value[mal.Composite._fieldNumber + 0]
             self.value = value[mal.Composite._fieldNumber + 1]
 
     @property
     def id(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @id.setter
     def id(self, id):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(id, canBeNull=False, attribName='id')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(id, canBeNull=False, attribName='id')
         self._isNull = False
 
     @property
     def value(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @value.setter
     def value(self, value):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(value, canBeNull=False, attribName='value')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Boolean(value, canBeNull=False, attribName='value')
         self._isNull = False
 
 
@@ -335,19 +335,19 @@ class InstanceBooleanPairList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(InstanceBooleanPair(v))
+                 self._internal_value.append(InstanceBooleanPair(v))
 
 
 class Errors(IntEnum):

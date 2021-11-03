@@ -1,4 +1,4 @@
-#! /bin/python
+#! /bin/python3
 
 import os
 import xml.etree.ElementTree as ET
@@ -521,7 +521,7 @@ class MALBuffer(object):
                 self.write('\n')
         self.write("\n")
         self.write("\n")
-        
+
         enumType = MALTypeXML()
         enumType.area = "MAL"
         enumType.name = "AbstractEnum"
@@ -583,11 +583,11 @@ class MALBuffer(object):
     "            raise ValueError('This {} cannot be None.'.format(type(self).__name__))\n"
         ,
     "    @property\n"
-    "    def value(self):\n"
+    "    def internal_value(self):\n"
     "        if self._isNull:\n"
     "            return None\n"
     "        else:\n"
-    "            return self._value\n"
+    "            return self._internal_value\n"
         ]
         self.write_element_class(d, blockelement)
 
@@ -600,15 +600,15 @@ class MALBuffer(object):
     "        super().__init__(value, canBeNull, attribName)\n"+
     "\n" +
     "    @property\n" +
-    "    def value(self):\n" +
-    "       return self._value\n" +
+    "    def internal_value(self):\n" +
+    "       return self._internal_value\n" +
     "\n" +
     "    def copy(self):\n" +
     "        if self._isNull:\n" +
     "            value = None\n" +
     "        else:\n" +
     "            value = []\n"
-    "            for v in self.value:\n"
+    "            for v in self.internal_value:\n"
     "                value.append(v.copy())\n"
     "        return self.__class__(value)\n"
         )
@@ -624,18 +624,18 @@ class MALBuffer(object):
     "        if value is None and self._canBeNull:\n"
     "            self._isNull = True\n"
     "        elif type(value) == type(self):\n"
-    "            self._value = value.copy().value\n"
+    "            self._internal_value = value.copy().internal_value\n"
     "        elif type(value) == type(self).value_type:\n"
-    "            self._value = value\n"
+    "            self._internal_value = value\n"
     "        elif type(self) == type(Attribute(None)) and value.shortForm in range(1,19):\n" +
-    "            self._value = value.copy().value\n" +
+    "            self._internal_value = value.copy().internal_value\n" +
     "            self.shortForm = value.shortForm\n" +
     "            self.value_type = value.value_type\n" +
     "        else:\n"
     "            raise TypeError(\"Expected {}, got {}.\".format(type(self).value_type, type(value)))\n"
         ,
     "    def copy(self):\n"
-    "        return self.__class__(self.value, self._canBeNull)\n"
+    "        return self.__class__(self.internal_value, self._canBeNull)\n"
         ]
         self.write_element_class(d, blockattribute)
 
@@ -650,32 +650,32 @@ class MALBuffer(object):
     "            for v in list(self.value_type):\n"
     "                 if v.name == value:\n"
     "                     value = v\n"
-    "        elif type(value) == type(1):\n" 
+    "        elif type(value) == type(1):\n"
     "            value = self.value_type(value)\n"
     "        elif type(value) == type(self).value_type:\n"
     "            pass  # Everything is fine\n"
     "        elif type(value) == type(self):\n"
-    "            value = value.value\n"
+    "            value = value.internal_value\n"
     "        else:\n"
     "            raise TypeError(\"Expected {}, got {}.\".format(type(self).value_type, type(value)))\n"
     "        super().__init__(value, canBeNull, attribName)\n"
     "\n\n"
         )
-   
+
     def write_abstractcomposite_class(self, d):
         blockcomposite = [
     "    _fieldNumber = 0\n"
         ,
     "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
     "        super().__init__(value, canBeNull, attribName)\n"
-    "        self._value = []\n"
+    "        self._internal_value = []\n"
         ,
     "    def copy(self):\n"
     "        if self._isNull:\n"
     "            value = None\n"
     "        else:\n"
     "            value = []\n"
-    "            for v in self.value:\n"
+    "            for v in self.internal_value:\n"
     "                value.append(v.copy())\n"
     "        return self.__class__(value, self._canBeNull)\n"
         ]
@@ -710,17 +710,17 @@ class MALBuffer(object):
         self.write(
     "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
-    "        self._value += [None]*{}\n".format(len(d.fields)) +
+    "        self._internal_value += [None]*{}\n".format(len(d.fields)) +
     "        if value is None and self._canBeNull:\n" +
     "            self._isNull = True\n" +
     "        elif type(value) == type(self):\n" +
-    "            if value.value is None:\n" +
+    "            if value.internal_value is None:\n" +
     "                if self._canBeNull:\n" +
     "                    self._isNull = True\n" +
     "                else:\n"
     "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
     "            else:\n" +
-    "                self._value = value.copy().value\n" +
+    "                self._internal_value = value.copy().internal_value\n" +
     "        else:\n"
         )
         if len(d.fields) == 0:
@@ -738,24 +738,38 @@ class MALBuffer(object):
         for i, field in enumerate(d.fields):
             index = "{}._fieldNumber + {}".format(parentclass, i)
             fieldtype = self._element_completename(field.maltype)
+            fieldtype_known = True
 
             if field.maltype.isList:
                 fieldtype += 'List'
 
             if fieldtype == 'mal.Attribute' or fieldtype == 'Attribute':
-                fieldtype = "type({})".format(field.name)
+                fieldtype_runtime = "type({})".format(field.name)
+                fieldtype_known = False
 
             self.write("\n")
             self.write(
     "    @property\n" +
     "    def {}(self):\n".format(field.name) +
-    "        return self._value[{}]\n".format(index) +
+    "        return self._internal_value[{}]\n".format(index) +
     "\n" +
     "    @{}.setter\n".format(field.name) +
-    "    def {0}(self, {0}):\n".format(field.name) +
-    "        self._value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull) +
+    "    def {0}(self, {0}):\n".format(field.name)
+            )
+            if fieldtype_known:
+                self.write(
+    "        self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull)
+                )
+            else:
+                self.write(
+    "        if {0} is None:\n".format(field.name) +
+    "            self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull) +
+    "        else:\n" +
+    "            self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype_runtime, field.name, field.canBeNull)
+                )
+            self.write(
     "        self._isNull = False\n"
-        )
+            )
 
         self.write("\n")
         self.write("\n")
@@ -781,19 +795,19 @@ class MALBuffer(object):
     "\n" +
     "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
     "        super().__init__(value, canBeNull, attribName)\n" +
-    "        self._value = []\n" +
+    "        self._internal_value = []\n" +
     "        if type(value) == type(self):\n" +
-    "            if value.value is None:\n" +
+    "            if value.internal_value is None:\n" +
     "                if self._canBeNull:\n" +
     "                    self._isNull = True\n" +
     "                else:\n"
     "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n" +
     "            else:\n" +
-    "                self._value = value.copy().value\n" +
+    "                self._internal_value = value.copy().internal_value\n" +
     "        else:\n" +
     "            listvalue = value if type(value) == list else [value]\n" +
     "            for v in listvalue:\n" +
-    "                 self._value.append({}(v))\n".format(d.name)
+    "                 self._internal_value.append({}(v))\n".format(d.name)
                 )
 
         self.write("\n")

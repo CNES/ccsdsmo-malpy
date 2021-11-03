@@ -27,17 +27,17 @@ class GroupDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*4
+        self._internal_value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.description = value[mal.Composite._fieldNumber + 0]
             self.objectType = value[mal.Composite._fieldNumber + 1]
@@ -46,38 +46,38 @@ class GroupDetails(mal.Composite):
 
     @property
     def description(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
         self._isNull = False
 
     @property
     def objectType(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @objectType.setter
     def objectType(self, objectType):
-        self._value[mal.Composite._fieldNumber + 1] = com.ObjectType(objectType, canBeNull=False, attribName='objectType')
+        self._internal_value[mal.Composite._fieldNumber + 1] = com.ObjectType(objectType, canBeNull=False, attribName='objectType')
         self._isNull = False
 
     @property
     def domain(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @domain.setter
     def domain(self, domain):
-        self._value[mal.Composite._fieldNumber + 2] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.IdentifierList(domain, canBeNull=False, attribName='domain')
         self._isNull = False
 
     @property
     def instanceIds(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @instanceIds.setter
     def instanceIds(self, instanceIds):
-        self._value[mal.Composite._fieldNumber + 3] = mal.LongList(instanceIds, canBeNull=False, attribName='instanceIds')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.LongList(instanceIds, canBeNull=False, attribName='instanceIds')
         self._isNull = False
 
 
@@ -86,18 +86,18 @@ class GroupDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(GroupDetails(v))
+                 self._internal_value.append(GroupDetails(v))
 
 

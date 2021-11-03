@@ -168,19 +168,19 @@ class CheckStateList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckState(v))
+                 self._internal_value.append(CheckState(v))
 
 
 class CheckDefinitionDetails(mal.Composite):
@@ -191,17 +191,17 @@ class CheckDefinitionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*7
+        self._internal_value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.description = value[mal.Composite._fieldNumber + 0]
             self.checkSeverity = value[mal.Composite._fieldNumber + 1]
@@ -213,65 +213,65 @@ class CheckDefinitionDetails(mal.Composite):
 
     @property
     def description(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
         self._isNull = False
 
     @property
     def checkSeverity(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @checkSeverity.setter
     def checkSeverity(self, checkSeverity):
-        self._value[mal.Composite._fieldNumber + 1] = mc.Severity(checkSeverity, canBeNull=False, attribName='checkSeverity')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mc.Severity(checkSeverity, canBeNull=False, attribName='checkSeverity')
         self._isNull = False
 
     @property
     def maxReportingInterval(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @maxReportingInterval.setter
     def maxReportingInterval(self, maxReportingInterval):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Duration(maxReportingInterval, canBeNull=False, attribName='maxReportingInterval')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Duration(maxReportingInterval, canBeNull=False, attribName='maxReportingInterval')
         self._isNull = False
 
     @property
     def nominalCount(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @nominalCount.setter
     def nominalCount(self, nominalCount):
-        self._value[mal.Composite._fieldNumber + 3] = mal.UInteger(nominalCount, canBeNull=False, attribName='nominalCount')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.UInteger(nominalCount, canBeNull=False, attribName='nominalCount')
         self._isNull = False
 
     @property
     def nominalTime(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @nominalTime.setter
     def nominalTime(self, nominalTime):
-        self._value[mal.Composite._fieldNumber + 4] = mal.Duration(nominalTime, canBeNull=False, attribName='nominalTime')
+        self._internal_value[mal.Composite._fieldNumber + 4] = mal.Duration(nominalTime, canBeNull=False, attribName='nominalTime')
         self._isNull = False
 
     @property
     def violationCount(self):
-        return self._value[mal.Composite._fieldNumber + 5]
+        return self._internal_value[mal.Composite._fieldNumber + 5]
 
     @violationCount.setter
     def violationCount(self, violationCount):
-        self._value[mal.Composite._fieldNumber + 5] = mal.UInteger(violationCount, canBeNull=False, attribName='violationCount')
+        self._internal_value[mal.Composite._fieldNumber + 5] = mal.UInteger(violationCount, canBeNull=False, attribName='violationCount')
         self._isNull = False
 
     @property
     def violationTime(self):
-        return self._value[mal.Composite._fieldNumber + 6]
+        return self._internal_value[mal.Composite._fieldNumber + 6]
 
     @violationTime.setter
     def violationTime(self, violationTime):
-        self._value[mal.Composite._fieldNumber + 6] = mal.Duration(violationTime, canBeNull=False, attribName='violationTime')
+        self._internal_value[mal.Composite._fieldNumber + 6] = mal.Duration(violationTime, canBeNull=False, attribName='violationTime')
         self._isNull = False
 
 
@@ -280,19 +280,19 @@ class CheckDefinitionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckDefinitionDetails(v))
+                 self._internal_value.append(CheckDefinitionDetails(v))
 
 
 class CheckLinkDetails(mal.Composite):
@@ -303,17 +303,17 @@ class CheckLinkDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*5
+        self._internal_value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.checkEnabled = value[mal.Composite._fieldNumber + 0]
             self.checkOnChange = value[mal.Composite._fieldNumber + 1]
@@ -323,47 +323,47 @@ class CheckLinkDetails(mal.Composite):
 
     @property
     def checkEnabled(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @checkEnabled.setter
     def checkEnabled(self, checkEnabled):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
         self._isNull = False
 
     @property
     def checkOnChange(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @checkOnChange.setter
     def checkOnChange(self, checkOnChange):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(checkOnChange, canBeNull=False, attribName='checkOnChange')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Boolean(checkOnChange, canBeNull=False, attribName='checkOnChange')
         self._isNull = False
 
     @property
     def useConverted(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @useConverted.setter
     def useConverted(self, useConverted):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
         self._isNull = False
 
     @property
     def checkInterval(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @checkInterval.setter
     def checkInterval(self, checkInterval):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Duration(checkInterval, canBeNull=False, attribName='checkInterval')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Duration(checkInterval, canBeNull=False, attribName='checkInterval')
         self._isNull = False
 
     @property
     def condition(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @condition.setter
     def condition(self, condition):
-        self._value[mal.Composite._fieldNumber + 4] = mc.ParameterExpression(condition, canBeNull=True, attribName='condition')
+        self._internal_value[mal.Composite._fieldNumber + 4] = mc.ParameterExpression(condition, canBeNull=True, attribName='condition')
         self._isNull = False
 
 
@@ -372,19 +372,19 @@ class CheckLinkDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckLinkDetails(v))
+                 self._internal_value.append(CheckLinkDetails(v))
 
 
 class CheckResult(mal.Composite):
@@ -395,17 +395,17 @@ class CheckResult(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*4
+        self._internal_value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.previousCheckState = value[mal.Composite._fieldNumber + 0]
             self.currentCheckState = value[mal.Composite._fieldNumber + 1]
@@ -414,38 +414,41 @@ class CheckResult(mal.Composite):
 
     @property
     def previousCheckState(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @previousCheckState.setter
     def previousCheckState(self, previousCheckState):
-        self._value[mal.Composite._fieldNumber + 0] = CheckState(previousCheckState, canBeNull=False, attribName='previousCheckState')
+        self._internal_value[mal.Composite._fieldNumber + 0] = CheckState(previousCheckState, canBeNull=False, attribName='previousCheckState')
         self._isNull = False
 
     @property
     def currentCheckState(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @currentCheckState.setter
     def currentCheckState(self, currentCheckState):
-        self._value[mal.Composite._fieldNumber + 1] = CheckState(currentCheckState, canBeNull=False, attribName='currentCheckState')
+        self._internal_value[mal.Composite._fieldNumber + 1] = CheckState(currentCheckState, canBeNull=False, attribName='currentCheckState')
         self._isNull = False
 
     @property
     def paramDefInstId(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @paramDefInstId.setter
     def paramDefInstId(self, paramDefInstId):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Long(paramDefInstId, canBeNull=True, attribName='paramDefInstId')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Long(paramDefInstId, canBeNull=True, attribName='paramDefInstId')
         self._isNull = False
 
     @property
     def checkedValue(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @checkedValue.setter
     def checkedValue(self, checkedValue):
-        self._value[mal.Composite._fieldNumber + 3] = type(checkedValue)(checkedValue, canBeNull=True, attribName='checkedValue')
+        if checkedValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 3] = mal.Attribute(checkedValue, canBeNull=True, attribName='checkedValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 3] = type(checkedValue)(checkedValue, canBeNull=True, attribName='checkedValue')
         self._isNull = False
 
 
@@ -454,19 +457,19 @@ class CheckResultList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckResult(v))
+                 self._internal_value.append(CheckResult(v))
 
 
 class CheckLinkSummary(mal.Composite):
@@ -477,17 +480,17 @@ class CheckLinkSummary(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*5
+        self._internal_value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.checkId = value[mal.Composite._fieldNumber + 0]
             self.linkId = value[mal.Composite._fieldNumber + 1]
@@ -497,47 +500,47 @@ class CheckLinkSummary(mal.Composite):
 
     @property
     def checkId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @checkId.setter
     def checkId(self, checkId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(checkId, canBeNull=False, attribName='checkId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(checkId, canBeNull=False, attribName='checkId')
         self._isNull = False
 
     @property
     def linkId(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @linkId.setter
     def linkId(self, linkId):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Long(linkId, canBeNull=False, attribName='linkId')
         self._isNull = False
 
     @property
     def linkDefinitionId(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @linkDefinitionId.setter
     def linkDefinitionId(self, linkDefinitionId):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Long(linkDefinitionId, canBeNull=False, attribName='linkDefinitionId')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Long(linkDefinitionId, canBeNull=False, attribName='linkDefinitionId')
         self._isNull = False
 
     @property
     def checkEnabled(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @checkEnabled.setter
     def checkEnabled(self, checkEnabled):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
         self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[mal.Composite._fieldNumber + 4] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._internal_value[mal.Composite._fieldNumber + 4] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
         self._isNull = False
 
 
@@ -546,19 +549,19 @@ class CheckLinkSummaryList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckLinkSummary(v))
+                 self._internal_value.append(CheckLinkSummary(v))
 
 
 class CheckResultSummary(mal.Composite):
@@ -569,17 +572,17 @@ class CheckResultSummary(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*5
+        self._internal_value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.linkId = value[mal.Composite._fieldNumber + 0]
             self.checkEnabled = value[mal.Composite._fieldNumber + 1]
@@ -589,47 +592,47 @@ class CheckResultSummary(mal.Composite):
 
     @property
     def linkId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @linkId.setter
     def linkId(self, linkId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(linkId, canBeNull=False, attribName='linkId')
         self._isNull = False
 
     @property
     def checkEnabled(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @checkEnabled.setter
     def checkEnabled(self, checkEnabled):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Boolean(checkEnabled, canBeNull=False, attribName='checkEnabled')
         self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[mal.Composite._fieldNumber + 2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._internal_value[mal.Composite._fieldNumber + 2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
         self._isNull = False
 
     @property
     def evaluationTime(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @evaluationTime.setter
     def evaluationTime(self, evaluationTime):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Time(evaluationTime, canBeNull=False, attribName='evaluationTime')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Time(evaluationTime, canBeNull=False, attribName='evaluationTime')
         self._isNull = False
 
     @property
     def result(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @result.setter
     def result(self, result):
-        self._value[mal.Composite._fieldNumber + 4] = CheckResult(result, canBeNull=False, attribName='result')
+        self._internal_value[mal.Composite._fieldNumber + 4] = CheckResult(result, canBeNull=False, attribName='result')
         self._isNull = False
 
 
@@ -638,19 +641,19 @@ class CheckResultSummaryList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckResultSummary(v))
+                 self._internal_value.append(CheckResultSummary(v))
 
 
 class CheckResultFilter(mal.Composite):
@@ -661,17 +664,17 @@ class CheckResultFilter(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*5
+        self._internal_value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.checkFilterViaGroups = value[mal.Composite._fieldNumber + 0]
             self.checkFilter = value[mal.Composite._fieldNumber + 1]
@@ -681,47 +684,47 @@ class CheckResultFilter(mal.Composite):
 
     @property
     def checkFilterViaGroups(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @checkFilterViaGroups.setter
     def checkFilterViaGroups(self, checkFilterViaGroups):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(checkFilterViaGroups, canBeNull=False, attribName='checkFilterViaGroups')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(checkFilterViaGroups, canBeNull=False, attribName='checkFilterViaGroups')
         self._isNull = False
 
     @property
     def checkFilter(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @checkFilter.setter
     def checkFilter(self, checkFilter):
-        self._value[mal.Composite._fieldNumber + 1] = mal.LongList(checkFilter, canBeNull=False, attribName='checkFilter')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.LongList(checkFilter, canBeNull=False, attribName='checkFilter')
         self._isNull = False
 
     @property
     def parameterFilterViaGroups(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @parameterFilterViaGroups.setter
     def parameterFilterViaGroups(self, parameterFilterViaGroups):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(parameterFilterViaGroups, canBeNull=False, attribName='parameterFilterViaGroups')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Boolean(parameterFilterViaGroups, canBeNull=False, attribName='parameterFilterViaGroups')
         self._isNull = False
 
     @property
     def parameterFilter(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @parameterFilter.setter
     def parameterFilter(self, parameterFilter):
-        self._value[mal.Composite._fieldNumber + 3] = mal.LongList(parameterFilter, canBeNull=False, attribName='parameterFilter')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.LongList(parameterFilter, canBeNull=False, attribName='parameterFilter')
         self._isNull = False
 
     @property
     def stateFilter(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @stateFilter.setter
     def stateFilter(self, stateFilter):
-        self._value[mal.Composite._fieldNumber + 4] = CheckStateList(stateFilter, canBeNull=False, attribName='stateFilter')
+        self._internal_value[mal.Composite._fieldNumber + 4] = CheckStateList(stateFilter, canBeNull=False, attribName='stateFilter')
         self._isNull = False
 
 
@@ -730,19 +733,19 @@ class CheckResultFilterList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckResultFilter(v))
+                 self._internal_value.append(CheckResultFilter(v))
 
 
 class ReferenceValue(mal.Composite):
@@ -753,17 +756,17 @@ class ReferenceValue(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*3
+        self._internal_value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.validCount = value[mal.Composite._fieldNumber + 0]
             self.deltaTime = value[mal.Composite._fieldNumber + 1]
@@ -771,29 +774,29 @@ class ReferenceValue(mal.Composite):
 
     @property
     def validCount(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @validCount.setter
     def validCount(self, validCount):
-        self._value[mal.Composite._fieldNumber + 0] = mal.UShort(validCount, canBeNull=False, attribName='validCount')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.UShort(validCount, canBeNull=False, attribName='validCount')
         self._isNull = False
 
     @property
     def deltaTime(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @deltaTime.setter
     def deltaTime(self, deltaTime):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Duration(deltaTime, canBeNull=False, attribName='deltaTime')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Duration(deltaTime, canBeNull=False, attribName='deltaTime')
         self._isNull = False
 
     @property
     def parameterId(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @parameterId.setter
     def parameterId(self, parameterId):
-        self._value[mal.Composite._fieldNumber + 2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
+        self._internal_value[mal.Composite._fieldNumber + 2] = com.ObjectKey(parameterId, canBeNull=True, attribName='parameterId')
         self._isNull = False
 
 
@@ -802,19 +805,19 @@ class ReferenceValueList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ReferenceValue(v))
+                 self._internal_value.append(ReferenceValue(v))
 
 
 class ConstantCheckDefinition(CheckDefinitionDetails):
@@ -825,37 +828,37 @@ class ConstantCheckDefinition(CheckDefinitionDetails):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.operator = value[CheckDefinitionDetails._fieldNumber + 0]
             self.values = value[CheckDefinitionDetails._fieldNumber + 1]
 
     @property
     def operator(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 0]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 0]
 
     @operator.setter
     def operator(self, operator):
-        self._value[CheckDefinitionDetails._fieldNumber + 0] = com.services.archive.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 0] = com.services.archive.ExpressionOperator(operator, canBeNull=False, attribName='operator')
         self._isNull = False
 
     @property
     def values(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 1]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 1]
 
     @values.setter
     def values(self, values):
-        self._value[CheckDefinitionDetails._fieldNumber + 1] = mc.AttributeValueList(values, canBeNull=False, attribName='values')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = mc.AttributeValueList(values, canBeNull=False, attribName='values')
         self._isNull = False
 
 
@@ -864,19 +867,19 @@ class ConstantCheckDefinitionList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ConstantCheckDefinition(v))
+                 self._internal_value.append(ConstantCheckDefinition(v))
 
 
 class ReferenceCheckDefinition(CheckDefinitionDetails):
@@ -887,37 +890,37 @@ class ReferenceCheckDefinition(CheckDefinitionDetails):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.operator = value[CheckDefinitionDetails._fieldNumber + 0]
             self.checkReference = value[CheckDefinitionDetails._fieldNumber + 1]
 
     @property
     def operator(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 0]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 0]
 
     @operator.setter
     def operator(self, operator):
-        self._value[CheckDefinitionDetails._fieldNumber + 0] = com.services.archive.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 0] = com.services.archive.ExpressionOperator(operator, canBeNull=False, attribName='operator')
         self._isNull = False
 
     @property
     def checkReference(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 1]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 1]
 
     @checkReference.setter
     def checkReference(self, checkReference):
-        self._value[CheckDefinitionDetails._fieldNumber + 1] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
         self._isNull = False
 
 
@@ -926,19 +929,19 @@ class ReferenceCheckDefinitionList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ReferenceCheckDefinition(v))
+                 self._internal_value.append(ReferenceCheckDefinition(v))
 
 
 class DeltaCheckDefinition(CheckDefinitionDetails):
@@ -949,17 +952,17 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*5
+        self._internal_value += [None]*5
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.checkReference = value[CheckDefinitionDetails._fieldNumber + 0]
             self.violateInRange = value[CheckDefinitionDetails._fieldNumber + 1]
@@ -969,47 +972,53 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
     @property
     def checkReference(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 0]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 0]
 
     @checkReference.setter
     def checkReference(self, checkReference):
-        self._value[CheckDefinitionDetails._fieldNumber + 0] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 0] = ReferenceValue(checkReference, canBeNull=False, attribName='checkReference')
         self._isNull = False
 
     @property
     def violateInRange(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 1]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 1]
 
     @violateInRange.setter
     def violateInRange(self, violateInRange):
-        self._value[CheckDefinitionDetails._fieldNumber + 1] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
         self._isNull = False
 
     @property
     def valueDelta(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 2]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 2]
 
     @valueDelta.setter
     def valueDelta(self, valueDelta):
-        self._value[CheckDefinitionDetails._fieldNumber + 2] = mal.Boolean(valueDelta, canBeNull=False, attribName='valueDelta')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 2] = mal.Boolean(valueDelta, canBeNull=False, attribName='valueDelta')
         self._isNull = False
 
     @property
     def lowerThreshold(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 3]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 3]
 
     @lowerThreshold.setter
     def lowerThreshold(self, lowerThreshold):
-        self._value[CheckDefinitionDetails._fieldNumber + 3] = type(lowerThreshold)(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        if lowerThreshold is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 3] = mal.Attribute(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 3] = type(lowerThreshold)(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
         self._isNull = False
 
     @property
     def upperThreshold(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 4]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 4]
 
     @upperThreshold.setter
     def upperThreshold(self, upperThreshold):
-        self._value[CheckDefinitionDetails._fieldNumber + 4] = type(upperThreshold)(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        if upperThreshold is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 4] = mal.Attribute(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 4] = type(upperThreshold)(upperThreshold, canBeNull=True, attribName='upperThreshold')
         self._isNull = False
 
 
@@ -1018,19 +1027,19 @@ class DeltaCheckDefinitionList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(DeltaCheckDefinition(v))
+                 self._internal_value.append(DeltaCheckDefinition(v))
 
 
 class LimitCheckDefinition(CheckDefinitionDetails):
@@ -1041,17 +1050,17 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*3
+        self._internal_value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.violateInRange = value[CheckDefinitionDetails._fieldNumber + 0]
             self.lowerLimit = value[CheckDefinitionDetails._fieldNumber + 1]
@@ -1059,29 +1068,35 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
     @property
     def violateInRange(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 0]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 0]
 
     @violateInRange.setter
     def violateInRange(self, violateInRange):
-        self._value[CheckDefinitionDetails._fieldNumber + 0] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 0] = mal.Boolean(violateInRange, canBeNull=False, attribName='violateInRange')
         self._isNull = False
 
     @property
     def lowerLimit(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 1]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 1]
 
     @lowerLimit.setter
     def lowerLimit(self, lowerLimit):
-        self._value[CheckDefinitionDetails._fieldNumber + 1] = type(lowerLimit)(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        if lowerLimit is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = mal.Attribute(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = type(lowerLimit)(lowerLimit, canBeNull=True, attribName='lowerLimit')
         self._isNull = False
 
     @property
     def upperLimit(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 2]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 2]
 
     @upperLimit.setter
     def upperLimit(self, upperLimit):
-        self._value[CheckDefinitionDetails._fieldNumber + 2] = type(upperLimit)(upperLimit, canBeNull=True, attribName='upperLimit')
+        if upperLimit is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 2] = mal.Attribute(upperLimit, canBeNull=True, attribName='upperLimit')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 2] = type(upperLimit)(upperLimit, canBeNull=True, attribName='upperLimit')
         self._isNull = False
 
 
@@ -1090,19 +1105,19 @@ class LimitCheckDefinitionList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(LimitCheckDefinition(v))
+                 self._internal_value.append(LimitCheckDefinition(v))
 
 
 class CompoundCheckDefinition(CheckDefinitionDetails):
@@ -1113,37 +1128,37 @@ class CompoundCheckDefinition(CheckDefinitionDetails):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.minimumChecksInViolation = value[CheckDefinitionDetails._fieldNumber + 0]
             self.checkLinkIds = value[CheckDefinitionDetails._fieldNumber + 1]
 
     @property
     def minimumChecksInViolation(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 0]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 0]
 
     @minimumChecksInViolation.setter
     def minimumChecksInViolation(self, minimumChecksInViolation):
-        self._value[CheckDefinitionDetails._fieldNumber + 0] = mal.UInteger(minimumChecksInViolation, canBeNull=False, attribName='minimumChecksInViolation')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 0] = mal.UInteger(minimumChecksInViolation, canBeNull=False, attribName='minimumChecksInViolation')
         self._isNull = False
 
     @property
     def checkLinkIds(self):
-        return self._value[CheckDefinitionDetails._fieldNumber + 1]
+        return self._internal_value[CheckDefinitionDetails._fieldNumber + 1]
 
     @checkLinkIds.setter
     def checkLinkIds(self, checkLinkIds):
-        self._value[CheckDefinitionDetails._fieldNumber + 1] = mal.LongList(checkLinkIds, canBeNull=False, attribName='checkLinkIds')
+        self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = mal.LongList(checkLinkIds, canBeNull=False, attribName='checkLinkIds')
         self._isNull = False
 
 
@@ -1152,19 +1167,19 @@ class CompoundCheckDefinitionList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CompoundCheckDefinition(v))
+                 self._internal_value.append(CompoundCheckDefinition(v))
 
 
 class CheckTypedInstance(mal.Composite):
@@ -1175,37 +1190,37 @@ class CheckTypedInstance(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.objDefCheckType = value[mal.Composite._fieldNumber + 0]
             self.objInstIds = value[mal.Composite._fieldNumber + 1]
 
     @property
     def objDefCheckType(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @objDefCheckType.setter
     def objDefCheckType(self, objDefCheckType):
-        self._value[mal.Composite._fieldNumber + 0] = com.ObjectType(objDefCheckType, canBeNull=False, attribName='objDefCheckType')
+        self._internal_value[mal.Composite._fieldNumber + 0] = com.ObjectType(objDefCheckType, canBeNull=False, attribName='objDefCheckType')
         self._isNull = False
 
     @property
     def objInstIds(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @objInstIds.setter
     def objInstIds(self, objInstIds):
-        self._value[mal.Composite._fieldNumber + 1] = mc.ObjectInstancePair(objInstIds, canBeNull=True, attribName='objInstIds')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mc.ObjectInstancePair(objInstIds, canBeNull=True, attribName='objInstIds')
         self._isNull = False
 
 
@@ -1214,18 +1229,18 @@ class CheckTypedInstanceList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(CheckTypedInstance(v))
+                 self._internal_value.append(CheckTypedInstance(v))
 
 
