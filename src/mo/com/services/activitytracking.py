@@ -25,17 +25,17 @@ class ActivityTransfer(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*3
+        self._internal_value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.success = value[mal.Composite._fieldNumber + 0]
             self.estimateDuration = value[mal.Composite._fieldNumber + 1]
@@ -43,29 +43,29 @@ class ActivityTransfer(mal.Composite):
 
     @property
     def success(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @success.setter
     def success(self, success):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
         self._isNull = False
 
     @property
     def estimateDuration(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @estimateDuration.setter
     def estimateDuration(self, estimateDuration):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Duration(estimateDuration, canBeNull=True, attribName='estimateDuration')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Duration(estimateDuration, canBeNull=True, attribName='estimateDuration')
         self._isNull = False
 
     @property
     def nextDestination(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @nextDestination.setter
     def nextDestination(self, nextDestination):
-        self._value[mal.Composite._fieldNumber + 2] = mal.URI(nextDestination, canBeNull=True, attribName='nextDestination')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.URI(nextDestination, canBeNull=True, attribName='nextDestination')
         self._isNull = False
 
 
@@ -74,19 +74,19 @@ class ActivityTransferList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActivityTransfer(v))
+                 self._internal_value.append(ActivityTransfer(v))
 
 
 class ActivityAcceptance(mal.Composite):
@@ -97,27 +97,27 @@ class ActivityAcceptance(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*1
+        self._internal_value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.success = value[mal.Composite._fieldNumber + 0]
 
     @property
     def success(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @success.setter
     def success(self, success):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
         self._isNull = False
 
 
@@ -126,19 +126,19 @@ class ActivityAcceptanceList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActivityAcceptance(v))
+                 self._internal_value.append(ActivityAcceptance(v))
 
 
 class ActivityExecution(mal.Composite):
@@ -149,17 +149,17 @@ class ActivityExecution(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*3
+        self._internal_value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.success = value[mal.Composite._fieldNumber + 0]
             self.executionStage = value[mal.Composite._fieldNumber + 1]
@@ -167,29 +167,29 @@ class ActivityExecution(mal.Composite):
 
     @property
     def success(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @success.setter
     def success(self, success):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
         self._isNull = False
 
     @property
     def executionStage(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @executionStage.setter
     def executionStage(self, executionStage):
-        self._value[mal.Composite._fieldNumber + 1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
         self._isNull = False
 
     @property
     def stageCount(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @stageCount.setter
     def stageCount(self, stageCount):
-        self._value[mal.Composite._fieldNumber + 2] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
         self._isNull = False
 
 
@@ -198,19 +198,19 @@ class ActivityExecutionList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActivityExecution(v))
+                 self._internal_value.append(ActivityExecution(v))
 
 
 class OperationActivity(mal.Composite):
@@ -221,27 +221,27 @@ class OperationActivity(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*1
+        self._internal_value += [None]*1
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.interactionType = value[mal.Composite._fieldNumber + 0]
 
     @property
     def interactionType(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @interactionType.setter
     def interactionType(self, interactionType):
-        self._value[mal.Composite._fieldNumber + 0] = mal.InteractionType(interactionType, canBeNull=False, attribName='interactionType')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.InteractionType(interactionType, canBeNull=False, attribName='interactionType')
         self._isNull = False
 
 
@@ -250,18 +250,18 @@ class OperationActivityList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(OperationActivity(v))
+                 self._internal_value.append(OperationActivity(v))
 
 

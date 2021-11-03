@@ -93,19 +93,19 @@ class ActionCategoryList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActionCategory(v))
+                 self._internal_value.append(ActionCategory(v))
 
 
 class ActionDefinitionDetails(mal.Composite):
@@ -116,17 +116,17 @@ class ActionDefinitionDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*4
+        self._internal_value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.description = value[mal.Composite._fieldNumber + 0]
             self.category = value[mal.Composite._fieldNumber + 1]
@@ -135,38 +135,38 @@ class ActionDefinitionDetails(mal.Composite):
 
     @property
     def description(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @description.setter
     def description(self, description):
-        self._value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
         self._isNull = False
 
     @property
     def category(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @category.setter
     def category(self, category):
-        self._value[mal.Composite._fieldNumber + 1] = mal.UOctet(category, canBeNull=False, attribName='category')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.UOctet(category, canBeNull=False, attribName='category')
         self._isNull = False
 
     @property
     def progressStepCount(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @progressStepCount.setter
     def progressStepCount(self, progressStepCount):
-        self._value[mal.Composite._fieldNumber + 2] = mal.UShort(progressStepCount, canBeNull=False, attribName='progressStepCount')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.UShort(progressStepCount, canBeNull=False, attribName='progressStepCount')
         self._isNull = False
 
     @property
     def arguments(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @arguments.setter
     def arguments(self, arguments):
-        self._value[mal.Composite._fieldNumber + 3] = mc.ArgumentDefinitionDetailsList(arguments, canBeNull=True, attribName='arguments')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mc.ArgumentDefinitionDetailsList(arguments, canBeNull=True, attribName='arguments')
         self._isNull = False
 
 
@@ -175,19 +175,19 @@ class ActionDefinitionDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActionDefinitionDetails(v))
+                 self._internal_value.append(ActionDefinitionDetails(v))
 
 
 class ActionInstanceDetails(mal.Composite):
@@ -198,17 +198,17 @@ class ActionInstanceDetails(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*7
+        self._internal_value += [None]*7
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.defInstId = value[mal.Composite._fieldNumber + 0]
             self.stageStartedRequired = value[mal.Composite._fieldNumber + 1]
@@ -220,65 +220,65 @@ class ActionInstanceDetails(mal.Composite):
 
     @property
     def defInstId(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @defInstId.setter
     def defInstId(self, defInstId):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Long(defInstId, canBeNull=False, attribName='defInstId')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(defInstId, canBeNull=False, attribName='defInstId')
         self._isNull = False
 
     @property
     def stageStartedRequired(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @stageStartedRequired.setter
     def stageStartedRequired(self, stageStartedRequired):
-        self._value[mal.Composite._fieldNumber + 1] = mal.Boolean(stageStartedRequired, canBeNull=False, attribName='stageStartedRequired')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Boolean(stageStartedRequired, canBeNull=False, attribName='stageStartedRequired')
         self._isNull = False
 
     @property
     def stageProgressRequired(self):
-        return self._value[mal.Composite._fieldNumber + 2]
+        return self._internal_value[mal.Composite._fieldNumber + 2]
 
     @stageProgressRequired.setter
     def stageProgressRequired(self, stageProgressRequired):
-        self._value[mal.Composite._fieldNumber + 2] = mal.Boolean(stageProgressRequired, canBeNull=False, attribName='stageProgressRequired')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Boolean(stageProgressRequired, canBeNull=False, attribName='stageProgressRequired')
         self._isNull = False
 
     @property
     def stageCompletedRequired(self):
-        return self._value[mal.Composite._fieldNumber + 3]
+        return self._internal_value[mal.Composite._fieldNumber + 3]
 
     @stageCompletedRequired.setter
     def stageCompletedRequired(self, stageCompletedRequired):
-        self._value[mal.Composite._fieldNumber + 3] = mal.Boolean(stageCompletedRequired, canBeNull=False, attribName='stageCompletedRequired')
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Boolean(stageCompletedRequired, canBeNull=False, attribName='stageCompletedRequired')
         self._isNull = False
 
     @property
     def argumentValues(self):
-        return self._value[mal.Composite._fieldNumber + 4]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @argumentValues.setter
     def argumentValues(self, argumentValues):
-        self._value[mal.Composite._fieldNumber + 4] = mc.AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._internal_value[mal.Composite._fieldNumber + 4] = mc.AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
         self._isNull = False
 
     @property
     def argumentIds(self):
-        return self._value[mal.Composite._fieldNumber + 5]
+        return self._internal_value[mal.Composite._fieldNumber + 5]
 
     @argumentIds.setter
     def argumentIds(self, argumentIds):
-        self._value[mal.Composite._fieldNumber + 5] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
+        self._internal_value[mal.Composite._fieldNumber + 5] = mal.IdentifierList(argumentIds, canBeNull=True, attribName='argumentIds')
         self._isNull = False
 
     @property
     def isRawValue(self):
-        return self._value[mal.Composite._fieldNumber + 6]
+        return self._internal_value[mal.Composite._fieldNumber + 6]
 
     @isRawValue.setter
     def isRawValue(self, isRawValue):
-        self._value[mal.Composite._fieldNumber + 6] = mal.BooleanList(isRawValue, canBeNull=True, attribName='isRawValue')
+        self._internal_value[mal.Composite._fieldNumber + 6] = mal.BooleanList(isRawValue, canBeNull=True, attribName='isRawValue')
         self._isNull = False
 
 
@@ -287,19 +287,19 @@ class ActionInstanceDetailsList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActionInstanceDetails(v))
+                 self._internal_value.append(ActionInstanceDetails(v))
 
 
 class ActionCreationRequest(mal.Composite):
@@ -310,37 +310,37 @@ class ActionCreationRequest(mal.Composite):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value += [None]*2
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             self.name = value[mal.Composite._fieldNumber + 0]
             self.actionDefDetails = value[mal.Composite._fieldNumber + 1]
 
     @property
     def name(self):
-        return self._value[mal.Composite._fieldNumber + 0]
+        return self._internal_value[mal.Composite._fieldNumber + 0]
 
     @name.setter
     def name(self, name):
-        self._value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Identifier(name, canBeNull=False, attribName='name')
         self._isNull = False
 
     @property
     def actionDefDetails(self):
-        return self._value[mal.Composite._fieldNumber + 1]
+        return self._internal_value[mal.Composite._fieldNumber + 1]
 
     @actionDefDetails.setter
     def actionDefDetails(self, actionDefDetails):
-        self._value[mal.Composite._fieldNumber + 1] = ActionDefinitionDetails(actionDefDetails, canBeNull=False, attribName='actionDefDetails')
+        self._internal_value[mal.Composite._fieldNumber + 1] = ActionDefinitionDetails(actionDefDetails, canBeNull=False, attribName='actionDefDetails')
         self._isNull = False
 
 
@@ -349,18 +349,18 @@ class ActionCreationRequestList(mal.ElementList):
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._value = []
+        self._internal_value = []
         if type(value) == type(self):
-            if value.value is None:
+            if value.internal_value is None:
                 if self._canBeNull:
                     self._isNull = True
                 else:
                     raise ValueError("This {} cannot be Null".format(type(self)))
             else:
-                self._value = value.copy().value
+                self._internal_value = value.copy().internal_value
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._value.append(ActionCreationRequest(v))
+                 self._internal_value.append(ActionCreationRequest(v))
 
 

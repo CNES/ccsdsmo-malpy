@@ -110,31 +110,35 @@ class XMLEncoder(Encoder):
             subnode = parent.appendChild(domdoc.createElement(nodename))
 
             # Deal with the Null type:
-            if element.value is None:
+            if element.internal_value is None:
                 # ex: <longElement xsi:nul="True" /> or <Identifier xsi:nul="True" />
                 # It's a leaf, we don't recurse deeper.
                 subnode.setAttribute('xsi:nil', 'true')
             # if it's a list, it means this is a composite or a list of thing
-            elif type(element.value) is list:
+            elif type(element.internal_value) is list:
                 # so we recurse over each item and append them below the objects
-                # ex: the ?? is defined with se same algorithm
-                for subelement in element.value:
+                # ex: the ?? is defined with the same algorithm
+                for subelement in element.internal_value:
                     _encode_internal(subelement, subnode)
             # else it's an attribute we add a subnode
             else:
-                # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
-                # It's a leaf, we don't recurse deeper.
-                attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
-                # Special case for IntEnum (the encoded message is a string that we convert to enums)
-                if issubclass(type(element.value), IntEnum):
-                    value = element.value.name
-                # Special case for Blob (the value is b'toto' and we want 'toto')
-                elif type(element) is mal.maltypes.Blob:
-                    value = element.value.decode('utf8')
-                # Normal case
+                if issubclass(type(element), mal.Composite):
+                    # it's a composite, so we recurse
+                    _encode_internal(element.internal_value, subnode)
                 else:
-                    value = str(element.value)
-                attributenode.appendChild(domdoc.createTextNode(value))
+                    # ex: <longElement><Long>9</Long><longElement> or <Identifier><Identifier>LIVE</Identifier></Identifier>
+                    # It's a leaf, we don't recurse deeper.
+                    attributenode = subnode.appendChild(domdoc.createElement(type(element).__name__))
+                    # Special case for IntEnum (the encoded message is a string that we convert to enums)
+                    if issubclass(type(element.internal_value), IntEnum):
+                        value = element.internal_value.name
+                    # Special case for Blob (the value is b'toto' and we want 'toto')
+                    elif type(element) is mal.maltypes.Blob:
+                        value = element.internal_value.decode('utf8')
+                    # Normal case
+                    else:
+                        value = str(element.internal_value)
+                    attributenode.appendChild(domdoc.createTextNode(value))
 
         dom = xml.dom.getDOMImplementation()
 
@@ -308,19 +312,19 @@ class JSONEncoder(Encoder):
             nodename = element.attribName or type(element).__name__
 
             # Deal with the Null type:
-            if element.value is None:
+            if element.internal_value is None:
                 # It's a leaf, we don't recurse deeper.
                doc = doc +  "\"{}\" : ".format(nodename) + "null,"
                if isInList:
                   doc = '{' + doc[0:-1] + '},' # Remove last caractere (comma) of doc String befor add }
 
             # if it's a list, it means this is a composite or a list of thing
-            elif type(element.value) is list:
+            elif type(element.internal_value) is list:
                 # so we recurse over each item and append them below the objects
                 # ex: the ?? is defined with se same algorithm
                 if nodename.find('List') > 0:
                     doc = doc + "\"{}\" : [".format(nodename) 
-                    for subelement in element.value:
+                    for subelement in element.internal_value:
                         doc = doc + _encode_internal(subelement, True)
                     doc = doc[0:-1] + '],' # Remove last caractere (comma) of doc String befor add }
                 else:
@@ -328,7 +332,7 @@ class JSONEncoder(Encoder):
                         doc = doc + ' {'
                     else:
                         doc = doc + "\"{}\" : ".format(nodename) +' {'
-                    for subelement in element.value:
+                    for subelement in element.internal_value:
                         doc = doc + _encode_internal(subelement, False)
                     doc = doc[0:-1] + '},' # Remove last caractere (comma) of doc String befor add }
 
@@ -336,11 +340,11 @@ class JSONEncoder(Encoder):
             else:
                 # It's a leaf, we don't recurse deeper.
                 # Special case for IntEnum (the encoding message is a string that we convert to enums)
-                if issubclass(type(element.value), IntEnum):
-                    value = element.value.name
+                if issubclass(type(element.internal_value), IntEnum):
+                    value = element.internal_value.name
                 # Normal case
                 else:
-                    value = str(element.value)
+                    value = str(element.internal_value)
                 doc = doc +  "\"{}\" : ".format(nodename) + "\"{}\",".format(value)
 
                 if isInList:
