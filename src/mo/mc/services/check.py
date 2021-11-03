@@ -445,7 +445,10 @@ class CheckResult(mal.Composite):
 
     @checkedValue.setter
     def checkedValue(self, checkedValue):
-        self._internal_value[mal.Composite._fieldNumber + 3] = type(checkedValue)(checkedValue, canBeNull=True, attribName='checkedValue')
+        if checkedValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 3] = mal.Attribute(checkedValue, canBeNull=True, attribName='checkedValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 3] = type(checkedValue)(checkedValue, canBeNull=True, attribName='checkedValue')
         self._isNull = False
 
 
@@ -1000,7 +1003,10 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
     @lowerThreshold.setter
     def lowerThreshold(self, lowerThreshold):
-        self._internal_value[CheckDefinitionDetails._fieldNumber + 3] = type(lowerThreshold)(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        if lowerThreshold is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 3] = mal.Attribute(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 3] = type(lowerThreshold)(lowerThreshold, canBeNull=True, attribName='lowerThreshold')
         self._isNull = False
 
     @property
@@ -1009,7 +1015,10 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
     @upperThreshold.setter
     def upperThreshold(self, upperThreshold):
-        self._internal_value[CheckDefinitionDetails._fieldNumber + 4] = type(upperThreshold)(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        if upperThreshold is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 4] = mal.Attribute(upperThreshold, canBeNull=True, attribName='upperThreshold')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 4] = type(upperThreshold)(upperThreshold, canBeNull=True, attribName='upperThreshold')
         self._isNull = False
 
 
@@ -1072,7 +1081,10 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
     @lowerLimit.setter
     def lowerLimit(self, lowerLimit):
-        self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = type(lowerLimit)(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        if lowerLimit is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = mal.Attribute(lowerLimit, canBeNull=True, attribName='lowerLimit')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 1] = type(lowerLimit)(lowerLimit, canBeNull=True, attribName='lowerLimit')
         self._isNull = False
 
     @property
@@ -1081,7 +1093,10 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
     @upperLimit.setter
     def upperLimit(self, upperLimit):
-        self._internal_value[CheckDefinitionDetails._fieldNumber + 2] = type(upperLimit)(upperLimit, canBeNull=True, attribName='upperLimit')
+        if upperLimit is None:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 2] = mal.Attribute(upperLimit, canBeNull=True, attribName='upperLimit')
+        else:
+            self._internal_value[CheckDefinitionDetails._fieldNumber + 2] = type(upperLimit)(upperLimit, canBeNull=True, attribName='upperLimit')
         self._isNull = False
 
 

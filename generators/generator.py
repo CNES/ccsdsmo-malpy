@@ -521,7 +521,7 @@ class MALBuffer(object):
                 self.write('\n')
         self.write("\n")
         self.write("\n")
-        
+
         enumType = MALTypeXML()
         enumType.area = "MAL"
         enumType.name = "AbstractEnum"
@@ -650,7 +650,7 @@ class MALBuffer(object):
     "            for v in list(self.value_type):\n"
     "                 if v.name == value:\n"
     "                     value = v\n"
-    "        elif type(value) == type(1):\n" 
+    "        elif type(value) == type(1):\n"
     "            value = self.value_type(value)\n"
     "        elif type(value) == type(self).value_type:\n"
     "            pass  # Everything is fine\n"
@@ -661,7 +661,7 @@ class MALBuffer(object):
     "        super().__init__(value, canBeNull, attribName)\n"
     "\n\n"
         )
-   
+
     def write_abstractcomposite_class(self, d):
         blockcomposite = [
     "    _fieldNumber = 0\n"
@@ -738,12 +738,14 @@ class MALBuffer(object):
         for i, field in enumerate(d.fields):
             index = "{}._fieldNumber + {}".format(parentclass, i)
             fieldtype = self._element_completename(field.maltype)
+            fieldtype_known = True
 
             if field.maltype.isList:
                 fieldtype += 'List'
 
             if fieldtype == 'mal.Attribute' or fieldtype == 'Attribute':
-                fieldtype = "type({})".format(field.name)
+                fieldtype_runtime = "type({})".format(field.name)
+                fieldtype_known = False
 
             self.write("\n")
             self.write(
@@ -752,10 +754,22 @@ class MALBuffer(object):
     "        return self._internal_value[{}]\n".format(index) +
     "\n" +
     "    @{}.setter\n".format(field.name) +
-    "    def {0}(self, {0}):\n".format(field.name) +
-    "        self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull) +
+    "    def {0}(self, {0}):\n".format(field.name)
+            )
+            if fieldtype_known:
+                self.write(
+    "        self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull)
+                )
+            else:
+                self.write(
+    "        if {0} is None:\n".format(field.name) +
+    "            self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype, field.name, field.canBeNull) +
+    "        else:\n" +
+    "            self._internal_value[{0}] = {1}({2}, canBeNull={3}, attribName='{2}')\n".format(index, fieldtype_runtime, field.name, field.canBeNull)
+                )
+            self.write(
     "        self._isNull = False\n"
-        )
+            )
 
         self.write("\n")
         self.write("\n")
