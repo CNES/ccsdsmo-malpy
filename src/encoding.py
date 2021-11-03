@@ -1,3 +1,4 @@
+import datetime
 import pickle
 import xml.dom.minidom
 import re
@@ -127,7 +128,22 @@ class XMLEncoder(Encoder):
                     value = element.value.name
                 # Special case for Blob (the value is b'toto' and we want 'toto')
                 elif type(element) is mal.maltypes.Blob:
-                    value = element.value.decode('utf8')
+                    value = element.value.hex()
+                # Special case for Time (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sss)
+                elif type(element) is mal.maltypes.Time:
+                    value = datetime.datetime.fromtimestamp(element.value).isoformat()
+                    if '.' in value:  # it means we have microsecond
+                        value = value[:-3]  # we reduce to millisecond
+                    else:
+                        value += ".000"
+                # Special case for FineTime (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sssssssss)
+                elif type(element) is mal.maltypes.FineTime:
+                    # get YYYY-MM-DDThh:mm:ss.ssssss
+                    value = datetime.datetime.fromtimestamp(element.value).isoformat()
+                    if '.' in value:  # it means we have microsecond
+                        value += 000   # we add zeroes to nanoseconds
+                    else:
+                        value += ".000000000"
                 # Normal case
                 else:
                     value = str(element.value)
@@ -209,7 +225,14 @@ class XMLEncoder(Encoder):
                             else:
                                 # Handle 'blob' special case
                                 if objectClass.value_type == bytes and type(element.nodeValue) == str:
-                                    value = element.nodeValue.encode('utf8')
+                                    value = bytes.fromhex(element.nodeValue)
+                                # Special case for Time (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sss)
+                                elif objectClass.value_type == float and type(element.nodeValue) == str and len(element.nodeValue) == len('YYYY-MM-DDThh:mm:ss.sss'):
+                                    value = datetime.datetime.strptime(element.nodeValue, '%Y-%m-%dT%H:%M:%S.%f').timestamp()
+                                # Special case for FineTime (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sssssssss)
+                                elif objectClass.value_type == float and type(element.nodeValue) == str and len(element.nodeValue) == len('YYYY-MM-DDThh:mm:ss.sssssssss'):
+                                    value = datetime.datetime.strptime(element.nodeValue[:-3], '%Y-%m-%dT%H:%M:%S.%f').timestamp()
+                                    value += int(element.nodeValue[-3:]) * 1e-9
                                 else:
                                     value = element.nodeValue
                                 castedValue = objectClass.value_type(value)
