@@ -426,7 +426,10 @@ class CompositeFilter(mal.Composite):
 
     @fieldValue.setter
     def fieldValue(self, fieldValue):
-        self._internal_value[mal.Composite._fieldNumber + 2] = type(fieldValue)(fieldValue, canBeNull=True, attribName='fieldValue')
+        if fieldValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 2] = mal.Attribute(fieldValue, canBeNull=True, attribName='fieldValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 2] = type(fieldValue)(fieldValue, canBeNull=True, attribName='fieldValue')
         self._isNull = False
 
 

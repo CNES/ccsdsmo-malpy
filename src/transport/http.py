@@ -39,11 +39,11 @@ def _split_uri(uri):
     path = None
 
     splitted_uri = uri.split(':')
-    if splitted_uri[0][:4].lower() == "http":
+    if splitted_uri[0].lower() in ["http", "https", "malhttp"]:
         host = splitted_uri[1][2:]
         rest_uri = uri.split(':',2)[2]
     else:
-        host =splitted_uri[0]
+        host = splitted_uri[0]
         rest_uri = uri.split(':',1)[1]
 
     splitted_rest_uri = rest_uri.split('/',1)
@@ -120,10 +120,15 @@ def _encode_ip_type(ip_type):
 
 
 def _decode_enum(value, enumeration):
-    for k in enumeration:
-        if k.name == value:
-            return k
-    raise ValueError("{} not found in enumeration {}".format(value, enumeration))
+    if type(value) == int:
+        return enumeration(value)
+    elif type(value) == str:
+        for k in enumeration:
+            if k.name == value:
+                return k
+        raise ValueError("{} not found in enumeration {}".format(value, enumeration))
+    else:
+        raise ValueError("{} not found in enumeration {}".format(value, enumeration))
 
 
 def _encode_ascii(s):
@@ -267,7 +272,7 @@ class HTTPSocket(MALSocket):
         malheader.session = _decode_session(headers['X-MAL-Session'])
         malheader.session_name = _decode_ascii(headers['X-MAL-Session-Name'])
         malheader.ip_type = _decode_enum(headers['X-MAL-Interaction-Type'], mal.InteractionTypeEnum)
-        malheader.ip_stage = _decode_enum(headers['X-MAL-Interaction-Stage'], mal.MAL_IP_STAGES)
+        malheader.ip_stage = int(headers['X-MAL-Interaction-Stage'])
         malheader.transaction_id = int(headers['X-MAL-Transaction-Id'])
         malheader.area = int(headers['X-MAL-Service-Area'])
         malheader.service = int(headers['X-MAL-Service'])
@@ -292,7 +297,7 @@ class HTTPSocket(MALSocket):
             "X-MAL-Session": message.header.session.name,
             "X-MAL-Session-Name": _encode_ascii(message.header.session_name),
             "X-MAL-Interaction-Type": message.header.ip_type.name,
-            "X-MAL-Interaction-Stage": message.header.ip_stage.name,
+            "X-MAL-Interaction-Stage": str(message.header.ip_stage),
             "X-MAL-Transaction-Id": str(message.header.transaction_id),
             "X-MAL-Service-Area": str(message.header.area),
             "X-MAL-Service": str(message.header.service),
@@ -337,10 +342,10 @@ class HTTPSocket(MALSocket):
 
     def _receive_http_response(self):
         response=self.client.getresponse()
-        if response.status != 200:
-            raise RuntimeError("Got en error: {} - {}".format(response.status, response.reason))
         headers=response.headers
         body=response.read().decode('utf-8')
+        if response.status != 200:
+            raise RuntimeError("Got en error: {} - {}\n{}".format(response.status, response.reason, body))
         return headers, body
 
     def _receive_pickle_request(self):

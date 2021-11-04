@@ -285,7 +285,10 @@ class ParameterValue(mal.Composite):
 
     @rawValue.setter
     def rawValue(self, rawValue):
-        self._internal_value[mal.Composite._fieldNumber + 1] = type(rawValue)(rawValue, canBeNull=True, attribName='rawValue')
+        if rawValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 1] = type(rawValue)(rawValue, canBeNull=True, attribName='rawValue')
         self._isNull = False
 
     @property
@@ -294,7 +297,10 @@ class ParameterValue(mal.Composite):
 
     @convertedValue.setter
     def convertedValue(self, convertedValue):
-        self._internal_value[mal.Composite._fieldNumber + 2] = type(convertedValue)(convertedValue, canBeNull=True, attribName='convertedValue')
+        if convertedValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 2] = mal.Attribute(convertedValue, canBeNull=True, attribName='convertedValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 2] = type(convertedValue)(convertedValue, canBeNull=True, attribName='convertedValue')
         self._isNull = False
 
 
@@ -490,7 +496,10 @@ class ParameterRawValue(mal.Composite):
 
     @rawValue.setter
     def rawValue(self, rawValue):
-        self._internal_value[mal.Composite._fieldNumber + 1] = type(rawValue)(rawValue, canBeNull=True, attribName='rawValue')
+        if rawValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 1] = type(rawValue)(rawValue, canBeNull=True, attribName='rawValue')
         self._isNull = False
 
 
