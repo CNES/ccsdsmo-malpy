@@ -1,7 +1,7 @@
 import socket as pythonsocket
 
-from malpydefinitions import MALPY_ENCODING
-from mo import mal
+from malpy.malpydefinitions import MALPY_ENCODING
+from malpy.mo import mal
 
 from .abstract_transport import MALSocket
 

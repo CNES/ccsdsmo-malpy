@@ -15,8 +15,8 @@ The event service only defines a single operation that supports the publishing o
 Events are published with a MAL update type of DELETION. Events are something that happens at a given point in time, therefore they in themselves have no lifetime, they are created and deleted at the time instant in time. For efficiency purposes only the deletion update is used."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
+from malpy.mo import mal
+from malpy.mo import com
 
 number = 1
 

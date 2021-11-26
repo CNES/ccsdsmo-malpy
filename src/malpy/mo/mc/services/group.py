@@ -10,9 +10,9 @@ The creation of cyclic group of groups should also be avoided.
 The group service does not provide any operations directly, but allows consumers to add, remove, and modify groups via the COM archive."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
-from mo import mc
+from malpy.mo import mal
+from malpy.mo import com
+from malpy.mo import mc
 
 number = 8
 class MALShortForm(IntEnum):

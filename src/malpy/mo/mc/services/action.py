@@ -13,9 +13,9 @@ The service also includes an operation, preCheckAction, which checks that an act
 The action service defines three types of objects, the first type is the ActionIdentity object that holds the name of an action. The second type is the ActionDefinition object that holds the description of an action with the list of required/optional arguments. The third type is the ActionInstance object that holds details of a specific action instance namely a value for each of the arguments of the action."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
-from mo import mc
+from malpy.mo import mal
+from malpy.mo import com
+from malpy.mo import mc
 
 number = 1
 

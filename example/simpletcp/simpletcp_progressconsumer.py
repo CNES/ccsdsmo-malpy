@@ -3,9 +3,9 @@
 import sys
 sys.path.append('../../src')
 
-from mo import mal
-import transport.tcp
-import encoding
+from malpy.mo import mal
+from malpy.transport import tcp
+from malpy import encoding
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     host = '127.0.0.1'
     port = 8009
 
-    s = transport.tcp.TCPSocket()
+    s = tcp.TCPSocket()
     enc = encoding.PickleEncoder()
     progress = mal.ProgressConsumerHandler(s, enc, "myprovider", "live_session")
     progress.connect((host, port))

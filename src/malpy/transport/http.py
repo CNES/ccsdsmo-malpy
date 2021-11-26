@@ -9,7 +9,7 @@ import json
 from email.header import Header, decode_header, make_header
 from io import BytesIO
 from malpydefinitions import MALPY_ENCODING
-from mo import mal
+from malpy.mo import mal
 from struct import *  # pack() unpack()
 
 

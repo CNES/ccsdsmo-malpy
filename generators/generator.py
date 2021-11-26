@@ -11,7 +11,7 @@ MO_XML = {
     }
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
 COM_NS = "http://www.ccsds.org/schema/COMSchema"
-OUTFILE = "../src/mo"
+OUTFILE = "../src/malpy/mo"
 IMPORTS = {
     'MAL': [
         'from enum import IntEnum',
@@ -19,12 +19,12 @@ IMPORTS = {
         ],
     'COM': [
         'from enum import IntEnum',
-        'from mo import mal'
+        'from malpy.mo import mal'
         ],
     'MC': [
         'from enum import IntEnum',
-        'from mo import mal',
-        'from mo import com'
+        'from malpy.mo import mal',
+        'from malpy.mo import com'
         ]
     }
 PARAMFILE = 'parameters.yaml'
@@ -851,7 +851,7 @@ class MALBuffer(object):
     "\"\"\"{}\"\"\"\n".format(service.comment) +
     "\n" +
     "{}\n".format("\n".join(IMPORTS[self.generator.area.name])) +
-    "from mo import {}\n".format(self.generator.area.name.lower()) +
+    "from malpy.mo import {}\n".format(self.generator.area.name.lower()) +
     "\n" +
     "number = {}\n".format(service.number)
         )

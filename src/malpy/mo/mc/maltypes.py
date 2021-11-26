@@ -9,8 +9,8 @@ To aid comprehension, several tables are included for each service and operation
 All service specifications in this document are part of the MC area, which has a short form number of '4'."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
+from malpy.mo import mal
+from malpy.mo import com
 
 name = "MC"
 number = 4
