@@ -369,6 +369,9 @@ class HTTPSocket(MALSocket):
 
         # Perhaps pipe broken
         if size_packed == b'':
+            # Close socket
+            self.socket.close()
+
             # Rebuild a new server_socket
             logger.warning("Perhaps pipe broken. Create new server socket")
             server_socket = pythonsocket.socket(pythonsocket.AF_INET,
