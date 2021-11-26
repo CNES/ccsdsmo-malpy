@@ -9,8 +9,8 @@ The query operation is extensible but the extensions would be outside this stand
 Finally, a consumer of the archive can monitor it for changes by subscribing for archive events from the event service. Any change to the archive is published using the event service if it is supported by an implementation."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
+from malpy.mo import mal
+from malpy.mo import com
 
 number = 2
 

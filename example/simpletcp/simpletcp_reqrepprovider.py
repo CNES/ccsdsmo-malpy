@@ -5,9 +5,9 @@ sys.path.append('../../src')
 
 import threading
 
-from mo import mal
-import transport.tcp
-import encoding
+from malpy.mo import mal
+from malpy.transport import tcp
+from malpy import encoding
 
 
 def clientthread(socket):
@@ -25,7 +25,7 @@ def main():
         host = '127.0.0.1'
         port = 8009
 
-        s = transport.tcp.TCPSocket()
+        s = tcp.TCPSocket()
         s.bind((host, port))
         s.listen(10)
         print("[*] Server listening on %s %d" % (host, (port)))

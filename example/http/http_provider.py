@@ -5,9 +5,9 @@ sys.path.append('../../src')
 
 import threading
 
-from mo import mal
-from transport import http
-import encoding
+from malpy.mo import mal
+from malpy.transport import http
+from malpy import encoding
 
 
 class MyRequestProviderHandler(mal.RequestProviderHandler):

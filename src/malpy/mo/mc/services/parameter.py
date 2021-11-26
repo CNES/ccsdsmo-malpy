@@ -13,9 +13,9 @@ The parameter service does not include any value checking, this is delegated to 
 Parameter definitions are maintained using the operations defined in this service but storage of definitions is delegated to the COM archive."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
-from mo import mc
+from malpy.mo import mal
+from malpy.mo import com
+from malpy.mo import mc
 
 number = 2
 

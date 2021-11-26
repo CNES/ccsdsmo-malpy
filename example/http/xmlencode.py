@@ -4,9 +4,9 @@ import sys
 sys.path.append('../../src/')
 
 
-from mo import mal
-from mo.mc.services import parameter
-import encoding
+from malpy.mo import mal
+from malpy.mo.mc.services import parameter
+from malpy import encoding
 
 #encoding.LOG_LEVEL = 'DEBUG'
 

@@ -3,96 +3,27 @@
 # This file is generated. Do NOT edit it by hand.   #
 #####################################################
 
-"""The activity tracking service provides the ability to monitor the progress of activities; an activity is anything that has a measurable period of time (a command, a remote procedure, a schedule etc). It defines an event pattern that supports the monitoring of activities from the initial consumer request, tracking its progress across a transport link, to reception by the provider and execution in that provider."""
+"""The conversion service provides a set of basic conversion definition types that allows the specification of a conversion between two representations. These conversions are used by the other MC services (such as Action, Alert, and Parameter) to define conversions from raw field representations to some engineering representation.
+Conversions are associated with other entities such as parameters or action/alert arguments through the configuration of the relevant service (action/alert/parameter).
+The conversion service does not provide any operations directly, but allows consumers to add, remove, and modify conversion definitions via the COM archive."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
+from malpy.mo import mal
+from malpy.mo import com
+from malpy.mo import mc
 
-number = 3
+number = 7
 class MALShortForm(IntEnum):
-    ACTIVITYTRANSFER = 1
-    ACTIVITYACCEPTANCE = 2
-    ACTIVITYEXECUTION = 3
-    OPERATIONACTIVITY = 4
+    DISCRETECONVERSIONDETAILS = 1
+    LINECONVERSIONDETAILS = 2
+    POLYCONVERSIONDETAILS = 3
+    RANGECONVERSIONDETAILS = 4
 
 
-class ActivityTransfer(mal.Composite):
-    """The structure holds details for a Release, Reception, or Forward event of an activity."""
+class DiscreteConversionDetails(mal.Composite):
+    """The DiscreteConversionDetails structure holds a bidirectional conversion between raw and converted values. The first element of the pair is the raw value and the second is the converted value. Both sets of values must be unique."""
 
-    shortForm = MALShortForm.ACTIVITYTRANSFER
-    _fieldNumber = mal.Composite._fieldNumber + 3
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*3
-        if value is None and self._canBeNull:
-            self._isNull = True
-        elif type(value) == type(self):
-            if value.internal_value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._internal_value = value.copy().internal_value
-        else:
-            self.success = value[mal.Composite._fieldNumber + 0]
-            self.estimateDuration = value[mal.Composite._fieldNumber + 1]
-            self.nextDestination = value[mal.Composite._fieldNumber + 2]
-
-    @property
-    def success(self):
-        return self._internal_value[mal.Composite._fieldNumber + 0]
-
-    @success.setter
-    def success(self, success):
-        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
-        self._isNull = False
-
-    @property
-    def estimateDuration(self):
-        return self._internal_value[mal.Composite._fieldNumber + 1]
-
-    @estimateDuration.setter
-    def estimateDuration(self, estimateDuration):
-        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Duration(estimateDuration, canBeNull=True, attribName='estimateDuration')
-        self._isNull = False
-
-    @property
-    def nextDestination(self):
-        return self._internal_value[mal.Composite._fieldNumber + 2]
-
-    @nextDestination.setter
-    def nextDestination(self, nextDestination):
-        self._internal_value[mal.Composite._fieldNumber + 2] = mal.URI(nextDestination, canBeNull=True, attribName='nextDestination')
-        self._isNull = False
-
-
-class ActivityTransferList(mal.ElementList):
-    shortForm = -MALShortForm.ACTIVITYTRANSFER
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._internal_value = []
-        if type(value) == type(self):
-            if value.internal_value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._internal_value = value.copy().internal_value
-        else:
-            listvalue = value if type(value) == list else [value]
-            for v in listvalue:
-                 self._internal_value.append(ActivityTransfer(v))
-
-
-class ActivityAcceptance(mal.Composite):
-    """The structure is used to hold details of an Acceptance event."""
-
-    shortForm = MALShortForm.ACTIVITYACCEPTANCE
+    shortForm = MALShortForm.DISCRETECONVERSIONDETAILS
     _fieldNumber = mal.Composite._fieldNumber + 1
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
@@ -109,20 +40,20 @@ class ActivityAcceptance(mal.Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.success = value[mal.Composite._fieldNumber + 0]
+            self.mapping = value[mal.Composite._fieldNumber + 0]
 
     @property
-    def success(self):
+    def mapping(self):
         return self._internal_value[mal.Composite._fieldNumber + 0]
 
-    @success.setter
-    def success(self, success):
-        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+    @mapping.setter
+    def mapping(self, mapping):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.PairList(mapping, canBeNull=False, attribName='mapping')
         self._isNull = False
 
 
-class ActivityAcceptanceList(mal.ElementList):
-    shortForm = -MALShortForm.ACTIVITYACCEPTANCE
+class DiscreteConversionDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.DISCRETECONVERSIONDETAILS
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -138,18 +69,18 @@ class ActivityAcceptanceList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(ActivityAcceptance(v))
+                 self._internal_value.append(DiscreteConversionDetails(v))
 
 
-class ActivityExecution(mal.Composite):
-    """The structure is used to report the execution status of an activity in the final destination."""
+class LineConversionDetails(mal.Composite):
+    """The LineConversionDetails structure is a bi-directional conversion between raw and converted values. It is defined by a series of points between which values are to be interpolated. The extrapolate attribute indicates if values can also be linearly extrapolated beyond the initial and final points."""
 
-    shortForm = MALShortForm.ACTIVITYEXECUTION
-    _fieldNumber = mal.Composite._fieldNumber + 3
+    shortForm = MALShortForm.LINECONVERSIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*3
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -161,40 +92,30 @@ class ActivityExecution(mal.Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.success = value[mal.Composite._fieldNumber + 0]
-            self.executionStage = value[mal.Composite._fieldNumber + 1]
-            self.stageCount = value[mal.Composite._fieldNumber + 2]
+            self.extrapolate = value[mal.Composite._fieldNumber + 0]
+            self.points = value[mal.Composite._fieldNumber + 1]
 
     @property
-    def success(self):
+    def extrapolate(self):
         return self._internal_value[mal.Composite._fieldNumber + 0]
 
-    @success.setter
-    def success(self, success):
-        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+    @extrapolate.setter
+    def extrapolate(self, extrapolate):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(extrapolate, canBeNull=False, attribName='extrapolate')
         self._isNull = False
 
     @property
-    def executionStage(self):
+    def points(self):
         return self._internal_value[mal.Composite._fieldNumber + 1]
 
-    @executionStage.setter
-    def executionStage(self, executionStage):
-        self._internal_value[mal.Composite._fieldNumber + 1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
-        self._isNull = False
-
-    @property
-    def stageCount(self):
-        return self._internal_value[mal.Composite._fieldNumber + 2]
-
-    @stageCount.setter
-    def stageCount(self, stageCount):
-        self._internal_value[mal.Composite._fieldNumber + 2] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
+    @points.setter
+    def points(self, points):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.PairList(points, canBeNull=False, attribName='points')
         self._isNull = False
 
 
-class ActivityExecutionList(mal.ElementList):
-    shortForm = -MALShortForm.ACTIVITYEXECUTION
+class LineConversionDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.LINECONVERSIONDETAILS
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -210,13 +131,13 @@ class ActivityExecutionList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(ActivityExecution(v))
+                 self._internal_value.append(LineConversionDetails(v))
 
 
-class OperationActivity(mal.Composite):
-    """The OperationActivity structure contains the details of a MAL operation activity."""
+class PolyConversionDetails(mal.Composite):
+    """The PolyConversionDetails structure holds only forward (raw to converted) polynomial conversions. They are defined by a series of points for the polynomial coefficients."""
 
-    shortForm = MALShortForm.OPERATIONACTIVITY
+    shortForm = MALShortForm.POLYCONVERSIONDETAILS
     _fieldNumber = mal.Composite._fieldNumber + 1
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
@@ -233,20 +154,20 @@ class OperationActivity(mal.Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.interactionType = value[mal.Composite._fieldNumber + 0]
+            self.points = value[mal.Composite._fieldNumber + 0]
 
     @property
-    def interactionType(self):
+    def points(self):
         return self._internal_value[mal.Composite._fieldNumber + 0]
 
-    @interactionType.setter
-    def interactionType(self, interactionType):
-        self._internal_value[mal.Composite._fieldNumber + 0] = mal.InteractionType(interactionType, canBeNull=False, attribName='interactionType')
+    @points.setter
+    def points(self, points):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
         self._isNull = False
 
 
-class OperationActivityList(mal.ElementList):
-    shortForm = -MALShortForm.OPERATIONACTIVITY
+class PolyConversionDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.POLYCONVERSIONDETAILS
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -262,6 +183,58 @@ class OperationActivityList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(OperationActivity(v))
+                 self._internal_value.append(PolyConversionDetails(v))
+
+
+class RangeConversionDetails(mal.Composite):
+    """The RangeConversionDetails structure holds a range for a one-way conversion to convert between a continuous range to a discrete value. A range is defined as from this point up to, but not including, the next point."""
+
+    shortForm = MALShortForm.RANGECONVERSIONDETAILS
+    _fieldNumber = mal.Composite._fieldNumber + 1
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*1
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.points = value[mal.Composite._fieldNumber + 0]
+
+    @property
+    def points(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @points.setter
+    def points(self, points):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.PairList(points, canBeNull=False, attribName='points')
+        self._isNull = False
+
+
+class RangeConversionDetailsList(mal.ElementList):
+    shortForm = -MALShortForm.RANGECONVERSIONDETAILS
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(RangeConversionDetails(v))
 
 

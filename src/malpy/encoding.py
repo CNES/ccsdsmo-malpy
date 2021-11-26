@@ -5,10 +5,10 @@ import re
 import sys
 from enum import IntEnum
 
-from malpydefinitions import MALPY_ENCODING
-from mo import mal, com, mc
-from mo.com.services import *
-from mo.mc.services import *
+from malpy.malpydefinitions import MALPY_ENCODING
+from malpy.mo import mal, com, mc
+from malpy.mo.com.services import *
+from malpy.mo.mc.services import *
 
 LOG_LEVEL = "INFO"
 
@@ -35,18 +35,18 @@ def DEBUG_OUT(*args):
 
 
 MAL_MODULES = [
-    'mo.mal', 'mo.com', 'mo.mc',
-    'mo.com.services.archive',
-    'mo.com.services.activitytracking',
-    'mo.com.services.event',
-    'mo.mc.services.action',
-    'mo.mc.services.aggregation',
-    'mo.mc.services.alert',
-    'mo.mc.services.check',
-    'mo.mc.services.conversion',
-    'mo.mc.services.group',
-    'mo.mc.services.parameter',
-    'mo.mc.services.statistic'
+    'malpy.mo.mal', 'malpy.mo.com', 'malpy.mo.mc',
+    'malpy.mo.com.services.archive',
+    'malpy.mo.com.services.activitytracking',
+    'malpy.mo.com.services.event',
+    'malpy.mo.mc.services.action',
+    'malpy.mo.mc.services.aggregation',
+    'malpy.mo.mc.services.alert',
+    'malpy.mo.mc.services.check',
+    'malpy.mo.mc.services.conversion',
+    'malpy.mo.mc.services.group',
+    'malpy.mo.mc.services.parameter',
+    'malpy.mo.mc.services.statistic'
     ]
 
 

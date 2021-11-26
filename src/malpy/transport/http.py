@@ -8,8 +8,8 @@ import json
 
 from email.header import Header, decode_header, make_header
 from io import BytesIO
-from malpydefinitions import MALPY_ENCODING
-from mo import mal
+from malpy.malpydefinitions import MALPY_ENCODING
+from malpy.mo import mal
 from struct import *  # pack() unpack()
 
 
@@ -203,7 +203,7 @@ class HTTPSocket(MALSocket):
         logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
         # For deregister stage, request is not private
-        if headers['X-MAL-Interaction-Stage'] == 'PUBSUB_DEREGISTER':
+        if headers['X-MAL-Interaction-Stage'] ==  str(mal.MAL_IP_STAGES.PUBSUB_DEREGISTER):
            self._private = False
 
         if self._private is False :
@@ -242,7 +242,7 @@ class HTTPSocket(MALSocket):
 
         if self._private is False and \
            self._lastCommandIsSend is True and \
-           (headers['X-MAL-Interaction-Stage'] != 'PUBSUB_PUBLISH_REGISTER_ACK' and headers['X-MAL-Interaction-Stage'] != 'PUBSUB_PUBLISH_DEREGISTER_ACK'):
+           (headers['X-MAL-Interaction-Stage'] != str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER_ACK) and headers['X-MAL-Interaction-Stage'] != str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER_ACK)):
             self._private = True
 
         self._lastCommandIsSend = False
@@ -321,7 +321,7 @@ class HTTPSocket(MALSocket):
         if not self.client:
              logger.debug('Create Client')
              self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
-             self.client.set_debuglevel(1)
+             self.client.set_debuglevel(0)
         
         #try:
         logger.debug('Send POST \nrequest url : {} \nheaders : {} \nbody : {}'.format(target, json.dumps(headers,indent=4), body.decode('utf-8)')))
@@ -331,11 +331,12 @@ class HTTPSocket(MALSocket):
 
         # Dans certains cas, il faut faire un getreponse()
         if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.SEND) ) or \
-           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.INVOKE) and headers['X-MAL-Interaction-Stage'] == 'INVOKE_RESPONSE')  or  \
+           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.INVOKE) and \
+               headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.INVOKE_RESPONSE))  or  \
            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PROGRESS) and \
-               (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_RESPONSE' ) or (headers['X-MAL-Interaction-Stage'] == 'PROGRESS_UPDATE' ) ) or \
-            ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PUBSUB) and \
-               (headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH' ) or (headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH_ERROR' ) ):
+               ( (headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PROGRESS_RESPONSE) ) or (headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PROGRESS_UPDATE)))) or \
+           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PUBSUB) and \
+               headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH)  ):
             logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
             response=self.client.getresponse()
 
@@ -368,6 +369,9 @@ class HTTPSocket(MALSocket):
 
         # Perhaps pipe broken
         if size_packed == b'':
+            # Close socket
+            self.socket.close()
+
             # Rebuild a new server_socket
             logger.warning("Perhaps pipe broken. Create new server socket")
             server_socket = pythonsocket.socket(pythonsocket.AF_INET,
@@ -449,7 +453,7 @@ class HTTPSocketPubSub(HTTPSocket):
 
         # Rajouter un send_http_response() dans le cas de la reception d'un PUBSUB_PUBLISH
         if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PUBSUB) and \
-             headers['X-MAL-Interaction-Stage'] == 'PUBSUB_PUBLISH'  ):
+             headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH)  ):
             logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
             self.send_http_response(b'')
 
@@ -472,10 +476,12 @@ class HTTPSocketPubSub(HTTPSocket):
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
 
         # For stage NOTIFY, the request is a HTTP POST request
-        if headers['X-MAL-Interaction-Stage'] == 'PUBSUB_NOTIFY' :
+        if headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PUBSUB_NOTIFY) :
             self._send_http_request(target=message.header.uri_to, body=body, headers=headers)
         else:
-            # For other cases it's a 200 http response
+
+            logger.info("send http response")
+# For other cases it's a 200 http response
             self.socket.send_response(200, 'OK')
 
             # Write headers in HTTP response

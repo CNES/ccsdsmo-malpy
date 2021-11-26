@@ -20,9 +20,9 @@ The final check type, compound, monitors a set of previously defined checks and 
 The service only publishes check results (as check transition events) when either the result changes from the previous value (for example a check starts to violate), or the maximum reporting interval expires. This reduces the amount of 'no change' reporting data being distributed. For situations where regular reporting of the check result is required, even when no change is detected, a low maximum reporting interval value should be specified."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
-from mo import mc
+from malpy.mo import mal
+from malpy.mo import com
+from malpy.mo import mc
 
 number = 4
 

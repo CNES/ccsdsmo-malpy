@@ -19,9 +19,9 @@ For the statistic service, the list of possible statistics functions is deployme
 NOTE: To ensure deterministic behaviour, implementations should endeavour to respect Nyquistï¿½s theorem."""
 
 from enum import IntEnum
-from mo import mal
-from mo import com
-from mo import mc
+from malpy.mo import mal
+from malpy.mo import com
+from malpy.mo import mc
 
 number = 5
 
