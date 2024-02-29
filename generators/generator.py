@@ -5,9 +5,8 @@ import xml.etree.ElementTree as ET
 import yaml
 
 MO_XML = {
-    'MAL': "../xml/CCSDS-MO-MAL.xml",
-    'COM': "../xml/CCSDS-MO-COM.xml",
-    'MC': "../xml/CCSDS-MO-MC.xml"
+    'MAL': "../xml/area001-v003-MAL.xml",
+    'MC': "../xml/area004-v002-MC.xml"
     }
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
 COM_NS = "http://www.ccsds.org/schema/COMSchema"
@@ -17,14 +16,9 @@ IMPORTS = {
         'from enum import IntEnum',
         'from abc import ABC'
         ],
-    'COM': [
-        'from enum import IntEnum',
-        'from malpy.mo import mal'
-        ],
     'MC': [
         'from enum import IntEnum',
-        'from malpy.mo import mal',
-        'from malpy.mo import com'
+        'from malpy.mo import mal'
         ]
     }
 PARAMFILE = 'parameters.yaml'
@@ -414,7 +408,7 @@ class MALErrorXML(object):
             self.parse(node)
 
     def parse(self, node):
-        self.name = node.attrib['name']
+        self.name = node.attrib['name'].replace(' ', '_')
         self.number = node.attrib['number']
         self.comment = node.attrib.get('comment', None)
 
@@ -639,6 +633,65 @@ class MALBuffer(object):
         ]
         self.write_element_class(d, blockattribute)
 
+    def write_objectref_class(self, d):
+        blockattribute = [
+    "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
+    "        Element.__init__(self, value, canBeNull, attribName)\n"
+    "        self._internal_value = [None]*4\n"
+    "        if value is None and self._canBeNull:\n"
+    "            self._isNull = True\n"
+    "        elif type(value) == type(self):\n"
+    "            if value.internal_value is None:\n"
+    "                if self._canBeNull:\n"
+    "                    self._isNull = True\n"
+    "                else:\n"
+    "                    raise ValueError(\"This {} cannot be Null\".format(type(self)))\n"
+    "            else:\n"
+    "                self._internal_value = value.copy().internal_value\n"
+    "        else:\n"
+    "            self.domain = value[0]\n"
+    "            self.type = value[1]\n"
+    "            self.key = value[2]\n"
+    "            self.version = value[3]\n"
+    ,
+    "    @property\n"
+    "    def domain(self):\n"
+    "        return self._internal_value[0]\n"
+    ,
+    "    @domain.setter\n"
+    "    def domain(self, domain):\n"
+    "        self._internal_value[0] = IdentifierList(domain, canBeNull=False, attribName='domain')\n"
+    "        self._isNull = False\n"
+    ,
+    "    @property\n"
+    "    def type(self):\n"
+    "        return self._internal_value[1]\n"
+    ,
+    "    @type.setter\n"
+    "    def type(self, objecType):\n"
+    "        self._internal_value[1] = Long(objecType, canBeNull=False, attribName='type')\n"
+    "        self._isNull = False\n"
+    ,
+    "    @property\n"
+    "    def key(self):\n"
+    "        return self._internal_value[2]\n"
+    ,
+    "    @key.setter\n"
+    "    def key(self, key):\n"
+    "        self._internal_value[2] = Identifier(key, canBeNull=True, attribName='key')\n"
+    "        self._isNull = False\n"
+    ,
+    "    @property\n"
+    "    def version(self):\n"
+    "        return self._internal_value[3]\n"
+    ,
+    "    @version.setter\n"
+    "    def version(self, version):\n"
+    "        self._internal_value[3] = UInteger(version, canBeNull=False, attribName='version')\n"
+    "        self._isNull = False\n"
+        ]
+        self.write_element_class(d, blockattribute)
+
     def write_abstract_enum_class(self):
         self.write(
     "class AbstractEnum(Attribute):\n"
@@ -825,15 +878,20 @@ class MALBuffer(object):
         if 'Element' in data_types:
             if 'Attribute' in data_types['Element']:
                 self.write_attribute_class(data_types['Element']['Attribute'])
+                self.write_elementlist_class(data_types['Element']['Attribute'])
                 self.write_abstract_enum_class()
             if 'Composite' in data_types['Element']:
                 self.write_abstractcomposite_class(data_types['Element']['Composite'])
+                self.write_elementlist_class(data_types['Element']['Composite'])
 
             for dname, d in data_types['Element'].items():
-                if dname == 'Element' or dname == 'Attribute' or dname == 'Composite':
+                if dname in ('Element', 'Attribute', 'Composite', 'ObjectRef'):
                     continue
                 self.write_element_class(d)
                 self.write_elementlist_class(d)
+            if 'ObjectRef' in data_types['Element']:
+                self.write_objectref_class(data_types['Element']['ObjectRef'])
+                self.write_elementlist_class(data_types['Element']['ObjectRef'])
 
         if 'Enumeration' in data_types:
             for dname, d in data_types['Enumeration'].items():
@@ -844,6 +902,11 @@ class MALBuffer(object):
             for dname, d in data_types['Composite'].items():
                 self.write_composite_class(d)
                 self.write_elementlist_class(d)
+
+        if 'Element' in data_types and 'ObjectRef' in data_types['Element']:
+            self.write(
+    "ObjectRef.value_type = ObjectIdentity  # Needed here so that ObjectIdentity is defined\n\n\n"
+            )
 
     def write_serviceprovider_module(self, service):
 
@@ -973,7 +1036,7 @@ class MALTypeModuleGenerator(object):
 
 
 if __name__ == "__main__":
-    for areaname in ['MAL', 'COM', 'MC']:
+    for areaname in ['MAL', 'MC']:
         definitionfilepath = MO_XML[areaname]
         generator = MALTypeModuleGenerator(areaname.lower(), definitionfilepath, OUTFILE)
         generator.generate()

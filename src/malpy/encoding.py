@@ -6,8 +6,7 @@ import sys
 from enum import IntEnum
 
 from malpy.malpydefinitions import MALPY_ENCODING
-from malpy.mo import mal, com, mc
-from malpy.mo.com.services import *
+from malpy.mo import mal, mc
 from malpy.mo.mc.services import *
 
 LOG_LEVEL = "INFO"
@@ -35,10 +34,7 @@ def DEBUG_OUT(*args):
 
 
 MAL_MODULES = [
-    'malpy.mo.mal', 'malpy.mo.com', 'malpy.mo.mc',
-    'malpy.mo.com.services.archive',
-    'malpy.mo.com.services.activitytracking',
-    'malpy.mo.com.services.event',
+    'malpy.mo.mal','malpy.mo.mc',
     'malpy.mo.mc.services.action',
     'malpy.mo.mc.services.aggregation',
     'malpy.mo.mc.services.alert',

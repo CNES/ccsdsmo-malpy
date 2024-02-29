@@ -10,7 +10,7 @@ from abc import ABC
 
 name = "MAL"
 number = 1
-version = 1
+version = 3
 
 class MALShortForm(IntEnum):
     BLOB = 1
@@ -31,18 +31,22 @@ class MALShortForm(IntEnum):
     TIME = 16
     FINETIME = 17
     URI = 18
-    INTERACTIONTYPE = 19
-    SESSIONTYPE = 20
-    QOSLEVEL = 21
-    UPDATETYPE = 22
-    SUBSCRIPTION = 23
-    ENTITYREQUEST = 24
-    ENTITYKEY = 25
-    UPDATEHEADER = 26
-    IDBOOLEANPAIR = 27
-    PAIR = 28
-    NAMEDVALUE = 29
-    FILE = 30
+    OBJECTREF = 19
+    INTERACTIONTYPE = 101
+    SESSIONTYPE = 102
+    QOSLEVEL = 103
+    ATTRIBUTETYPE = 104
+    MOAREA = 105
+    SUBSCRIPTION = 1001
+    SUBSCRIPTIONFILTER = 1002
+    UPDATEHEADER = 1003
+    IDBOOLEANPAIR = 1004
+    PAIR = 1005
+    NAMEDVALUE = 1006
+    FILE = 1007
+    OBJECTIDENTITY = 1008
+    SERVICEID = 1009
+    NULLABLEATTRIBUTE = 1010
 
 
 class Element(ABC):
@@ -86,7 +90,7 @@ class ElementList(Element):
 
 
 class Attribute(Element):
-    """Attribute is the base type of all attributes of the MAL data model. Attributes are contained within Composites and are used to build complex structures that make the data model."""
+    """Attribute is the base type of all Attributes of the MAL data model. Attributes are contained within Composites and are used to build complex structures that make the data model."""
 
     shortForm = None
 
@@ -111,6 +115,26 @@ class Attribute(Element):
         return self.__class__(self.internal_value, self._canBeNull)
 
 
+class AttributeList(ElementList):
+    shortForm = None
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(Attribute(v))
+
+
 class AbstractEnum(Attribute):
 
     value_type = None
@@ -132,7 +156,7 @@ class AbstractEnum(Attribute):
 
 
 class Composite(Element):
-    """Composite is the base structure for composite structures that contain a set of elements."""
+    """Composite is the base structure for Composite structures that contain a set of Elements."""
 
     shortForm = None
 
@@ -152,8 +176,54 @@ class Composite(Element):
         return self.__class__(value, self._canBeNull)
 
 
+class CompositeList(ElementList):
+    shortForm = None
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(Composite(v))
+
+
+class Object(Composite):
+    """Object is the base structure for MO Objects in the MAL data model. Objects are representations of complex data types with two specific characteristics: Objects have a unique and an immutable identity and can be referenced unambiguously."""
+
+    shortForm = None
+
+
+class ObjectList(ElementList):
+    shortForm = None
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(Object(v))
+
+
 class Blob(Attribute):
-    """The Blob structure is used to store binary object attributes. It is a variable-length, unbounded, octet array. The distinction between this type and a list of Octet attributes is that this type may allow language mappings and encodings to use more efficient or appropriate representations."""
+    """The Blob structure shall be used to hold binary data. It shall be a variable-length Octet array and the maximum length shall depend on the selected encoding."""
 
     shortForm = MALShortForm.BLOB
     value_type = bytes
@@ -180,7 +250,7 @@ class BlobList(ElementList):
 
 
 class Boolean(Attribute):
-    """The Boolean structure is used to store Boolean attributes. Possible values are 'True' or 'False'."""
+    """The Boolean structure shall be used to hold Boolean Attributes. Possible values are ‘True’ or ‘False’."""
 
     shortForm = MALShortForm.BOOLEAN
     value_type = bool
@@ -207,7 +277,7 @@ class BooleanList(ElementList):
 
 
 class Duration(Attribute):
-    """The Duration structure is used to store Duration attributes. It represents a length of time in seconds. It may contain a fractional component."""
+    """The Duration structure shall be used to hold duration Attributes at nanoseconds resolution. It can be negative because it may be used to represent offsets. The duration shall support a range between -2^63 nanoseconds, and (2^63)-1 nanoseconds (to allow representation as a 64-bit signed integer)."""
 
     shortForm = MALShortForm.DURATION
     value_type = float
@@ -234,8 +304,7 @@ class DurationList(ElementList):
 
 
 class Float(Attribute):
-    """The Float structure is used to store floating point attributes using the IEEE 754 32-bit range.
-Three special values exist for this type: POSITIVE_INFINITY, NEGATIVE_INFINITY, and NaN (Not A Number)."""
+    """The Float structure shall be used to hold floating point Attributes using the IEEE 754 32-bit range."""
 
     shortForm = MALShortForm.FLOAT
     value_type = float
@@ -262,8 +331,7 @@ class FloatList(ElementList):
 
 
 class Double(Attribute):
-    """The Double structure is used to store floating point attributes using the IEEE 754 64-bit range.
-Three special values exist for this type: POSITIVE_INFINITY, NEGATIVE_INFINITY, and NaN (Not A Number)."""
+    """The Double structure shall be used to hold floating point Attributes using the IEEE 754 64-bit range."""
 
     shortForm = MALShortForm.DOUBLE
     value_type = float
@@ -290,7 +358,7 @@ class DoubleList(ElementList):
 
 
 class Identifier(Attribute):
-    """The Identifier structure is used to store an identifier and can be used for indexing. It is a variable-length, unbounded, Unicode string."""
+    """The Identifier structure shall be used to hold an identifier and can be used for indexing. It is a variable-length Unicode string and the maximum length shall depend on the selected encoding. For some encoding/decoding bindings, the use of a numeric value might be appropriate for this Attribute, for example, via a dictionary."""
 
     shortForm = MALShortForm.IDENTIFIER
     value_type = str
@@ -317,7 +385,7 @@ class IdentifierList(ElementList):
 
 
 class Octet(Attribute):
-    """The Octet structure is used to store 8-bit signed attributes. The permitted range is -128 to 127."""
+    """The Octet structure shall be used to hold 8-bit signed Attributes. The permitted range is −128 to 127."""
 
     shortForm = MALShortForm.OCTET
     value_type = int
@@ -349,7 +417,7 @@ class OctetList(ElementList):
 
 
 class UOctet(Attribute):
-    """The UOctet structure is used to store 8-bit unsigned attributes. The permitted range is 0 to 255."""
+    """The UOctet structure shall be used to hold 8-bit unsigned Attributes. The permitted range is 0 to 255."""
 
     shortForm = MALShortForm.UOCTET
     value_type = int
@@ -381,7 +449,7 @@ class UOctetList(ElementList):
 
 
 class Short(Attribute):
-    """The Short structure is used to store 16-bit signed attributes. The permitted range is -32768 to 32767."""
+    """The Short structure shall be used to hold 16-bit signed Attributes. The permitted range is −32768 to 32767."""
 
     shortForm = MALShortForm.SHORT
     value_type = int
@@ -413,7 +481,7 @@ class ShortList(ElementList):
 
 
 class UShort(Attribute):
-    """The UShort structure is used to store 16-bit unsigned attributes. The permitted range is 0 to 65535."""
+    """The UShort structure shall be used to hold 16-bit unsigned Attributes. The permitted range is 0 to 65535."""
 
     shortForm = MALShortForm.USHORT
     value_type = int
@@ -445,7 +513,7 @@ class UShortList(ElementList):
 
 
 class Integer(Attribute):
-    """The Integer structure is used to store 32-bit signed attributes. The permitted range is -2147483648 to 2147483647."""
+    """The Integer structure shall be used to hold 32-bit signed Attributes. The permitted range is −2147483648 to 2147483647."""
 
     shortForm = MALShortForm.INTEGER
     value_type = int
@@ -477,7 +545,7 @@ class IntegerList(ElementList):
 
 
 class UInteger(Attribute):
-    """The UInteger structure is used to store 32-bit unsigned attributes. The permitted range is 0 to 4294967295."""
+    """The UInteger structure shall be used to hold 32-bit unsigned Attributes. The permitted range is 0 to 4294967295."""
 
     shortForm = MALShortForm.UINTEGER
     value_type = int
@@ -509,7 +577,7 @@ class UIntegerList(ElementList):
 
 
 class Long(Attribute):
-    """The Long structure is used to store 64-bit signed attributes. The permitted range is -9223372036854775808 to 9223372036854775807."""
+    """The Long structure shall be used to hold 64-bit signed Attributes. The permitted range is −9223372036854775808 to 9223372036854775807."""
 
     shortForm = MALShortForm.LONG
     value_type = int
@@ -541,7 +609,7 @@ class LongList(ElementList):
 
 
 class ULong(Attribute):
-    """The ULong structure is used to store 64-bit unsigned attributes. The permitted range is 0 to 18446744073709551615."""
+    """The ULong structure shall be used to hold 64-bit unsigned Attributes. The permitted range is 0 to 18446744073709551615."""
 
     shortForm = MALShortForm.ULONG
     value_type = int
@@ -573,7 +641,7 @@ class ULongList(ElementList):
 
 
 class String(Attribute):
-    """The String structure is used to store String attributes. It is a variable-length, unbounded, Unicode string."""
+    """The String structure shall be used to hold string Attributes. It is a variable-length Unicode string and the maximum length shall depend on the selected encoding."""
 
     shortForm = MALShortForm.STRING
     value_type = str
@@ -600,7 +668,7 @@ class StringList(ElementList):
 
 
 class Time(Attribute):
-    """The Time structure is used to store absolute time attributes. It represents an absolute date and time to millisecond resolution."""
+    """The Time structure shall be used to hold absolute time Attributes. It shall represent an absolute date and time to millisecond resolution. The range shall depend on the selected encoding."""
 
     shortForm = MALShortForm.TIME
     value_type = float
@@ -627,7 +695,7 @@ class TimeList(ElementList):
 
 
 class FineTime(Attribute):
-    """The FineTime structure is used to store high-resolution absolute time attributes. It represents an absolute date and time to picosecond resolution."""
+    """The FineTime structure shall be used to hold high-resolution absolute time Attributes. It shall represent an absolute date and time to nanosecond resolution. The range shall depend on the selected encoding."""
 
     shortForm = MALShortForm.FINETIME
     value_type = float
@@ -654,7 +722,7 @@ class FineTimeList(ElementList):
 
 
 class URI(Attribute):
-    """The URI structure is used to store URI addresses. It is a variable-length, unbounded, Unicode string."""
+    """The URI structure shall be used to hold URI addresses. It shall be a variable-length Unicode string and the maximum length shall depend on the selected encoding."""
 
     shortForm = MALShortForm.URI
     value_type = str
@@ -680,19 +748,100 @@ class URIList(ElementList):
                  self._internal_value.append(URI(v))
 
 
-class InteractionTypeEnum(IntEnum):
-    """InteractionType is an enumeration holding the possible interaction pattern types."""
+class ObjectRef(Attribute):
+    """The ObjectRef structure shall be used to hold references to MO Objects."""
 
-    SEND = 1  # Used for Send interactions.
-    SUBMIT = 2  # Used for Submit interactions.
-    REQUEST = 3  # Used for Request interactions.
-    INVOKE = 4  # Used for Invoke interactions.
-    PROGRESS = 5  # Used for Progress interactions.
-    PUBSUB = 6  # Used for Publish/Subscribe interactions.
+    shortForm = MALShortForm.OBJECTREF
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        Element.__init__(self, value, canBeNull, attribName)
+        self._internal_value = [None]*4
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.domain = value[0]
+            self.type = value[1]
+            self.key = value[2]
+            self.version = value[3]
+
+    @property
+    def domain(self):
+        return self._internal_value[0]
+
+    @domain.setter
+    def domain(self, domain):
+        self._internal_value[0] = IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._isNull = False
+
+    @property
+    def type(self):
+        return self._internal_value[1]
+
+    @type.setter
+    def type(self, objecType):
+        self._internal_value[1] = Long(objecType, canBeNull=False, attribName='type')
+        self._isNull = False
+
+    @property
+    def key(self):
+        return self._internal_value[2]
+
+    @key.setter
+    def key(self, key):
+        self._internal_value[2] = Identifier(key, canBeNull=True, attribName='key')
+        self._isNull = False
+
+    @property
+    def version(self):
+        return self._internal_value[3]
+
+    @version.setter
+    def version(self, version):
+        self._internal_value[3] = UInteger(version, canBeNull=False, attribName='version')
+        self._isNull = False
+
+
+class ObjectRefList(ElementList):
+    shortForm = -MALShortForm.OBJECTREF
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ObjectRef(v))
+
+
+class InteractionTypeEnum(IntEnum):
+    """InteractionType is an enumeration that shall be used to hold the possible Interaction Pattern types."""
+
+    SEND = 1  # Used for SEND interactions.
+    SUBMIT = 2  # Used for SUBMIT interactions.
+    REQUEST = 3  # Used for REQUEST interactions.
+    INVOKE = 4  # Used for INVOKE interactions.
+    PROGRESS = 5  # Used for PROGRESS interactions.
+    PUBSUB = 6  # Used for Publish-Subscribe interactions.
 
 
 class InteractionType(AbstractEnum):
-    """InteractionType is an enumeration holding the possible interaction pattern types."""
+    """InteractionType is an enumeration that shall be used to hold the possible Interaction Pattern types."""
 
     shortForm = MALShortForm.INTERACTIONTYPE
     value_type = InteractionTypeEnum
@@ -719,7 +868,7 @@ class InteractionTypeList(ElementList):
 
 
 class SessionTypeEnum(IntEnum):
-    """SessionType is an enumeration holding the session types."""
+    """SessionType is an enumeration that shall be used to hold the session types. This facilitates the use of different Sessions in out-of-band agreements."""
 
     LIVE = 1  # Used for Live sessions.
     SIMULATION = 2  # Used for Simulation sessions.
@@ -727,7 +876,7 @@ class SessionTypeEnum(IntEnum):
 
 
 class SessionType(AbstractEnum):
-    """SessionType is an enumeration holding the session types."""
+    """SessionType is an enumeration that shall be used to hold the session types. This facilitates the use of different Sessions in out-of-band agreements."""
 
     shortForm = MALShortForm.SESSIONTYPE
     value_type = SessionTypeEnum
@@ -754,7 +903,7 @@ class SessionTypeList(ElementList):
 
 
 class QoSLevelEnum(IntEnum):
-    """QoSLevel is an enumeration holding the possible QoS levels."""
+    """QoSLevel is an enumeration that shall be used to hold the possible QoS levels. This facilitates the use of different QoS in out-of-band agreements."""
 
     BESTEFFORT = 1  # Used for Best Effort QoS Level.
     ASSURED = 2  # Used for Assured QoS Level.
@@ -763,7 +912,7 @@ class QoSLevelEnum(IntEnum):
 
 
 class QoSLevel(AbstractEnum):
-    """QoSLevel is an enumeration holding the possible QoS levels."""
+    """QoSLevel is an enumeration that shall be used to hold the possible QoS levels. This facilitates the use of different QoS in out-of-band agreements."""
 
     shortForm = MALShortForm.QOSLEVEL
     value_type = QoSLevelEnum
@@ -789,24 +938,39 @@ class QoSLevelList(ElementList):
                  self._internal_value.append(QoSLevel(v))
 
 
-class UpdateTypeEnum(IntEnum):
-    """UpdateType is an enumeration holding the possible Update types."""
+class AttributeTypeEnum(IntEnum):
+    """AttributeType is an enumeration that shall be used to hold the defined MAL Attribute types."""
 
-    CREATION = 1  # Update is notification of the creation of the item.
-    UPDATE = 2  # Update is just a periodic update of the item and has not changed its value.
-    MODIFICATION = 3  # Update is for a changed value or modification of the item.
-    DELETION = 4  # Update is notification of the removal of the item.
+    BLOB = 1  # Blob type.
+    BOOLEAN = 2  # Boolean type.
+    DURATION = 3  # Duration type.
+    FLOAT = 4  # Float type.
+    DOUBLE = 5  # Double type.
+    IDENTIFIER = 6  # Identifier type.
+    OCTET = 7  # Octet type.
+    UOCTET = 8  # UOctet type.
+    SHORT = 9  # Short type.
+    USHORT = 10  # UShort type.
+    INTEGER = 11  # Integer type.
+    UINTEGER = 12  # UInteger type.
+    LONG = 13  # Long type.
+    ULONG = 14  # ULong type.
+    STRING = 15  # String type.
+    TIME = 16  # Time type.
+    FINETIME = 17  # FineTime type.
+    URI = 18  # URI type.
+    OBJECTREF = 19  # ObjectRef type.
 
 
-class UpdateType(AbstractEnum):
-    """UpdateType is an enumeration holding the possible Update types."""
+class AttributeType(AbstractEnum):
+    """AttributeType is an enumeration that shall be used to hold the defined MAL Attribute types."""
 
-    shortForm = MALShortForm.UPDATETYPE
-    value_type = UpdateTypeEnum
+    shortForm = MALShortForm.ATTRIBUTETYPE
+    value_type = AttributeTypeEnum
 
 
-class UpdateTypeList(ElementList):
-    shortForm = -MALShortForm.UPDATETYPE
+class AttributeTypeList(ElementList):
+    shortForm = -MALShortForm.ATTRIBUTETYPE
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -822,18 +986,57 @@ class UpdateTypeList(ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(UpdateType(v))
+                 self._internal_value.append(AttributeType(v))
 
 
-class Subscription(Composite):
-    """The Subscription structure is used when subscribing for updates using the PUBSUB interaction pattern. It contains a single identifier that identifies the subscription being defined and a set of entities being requested."""
+class MOAreaEnum(IntEnum):
+    """MOArea is an enumeration that shall be used to hold the known existing area numbers in use."""
 
-    shortForm = MALShortForm.SUBSCRIPTION
-    _fieldNumber = Composite._fieldNumber + 2
+    MAL = 1  # The MAL area number.
+    COM = 2  # The COM area number. The COM is deprecated; therefore this area number is reserved for backward compatibility.
+    COMMON = 3  # The Common area number.
+    MC = 4  # The Monitor and Control area number.
+    MPS = 5  # The Mission Planning and Scheduling area number.
+    SM = 7  # The Software Management area number.
+    MDPD = 9  # The Mission Data Product Distribution area number.
+
+
+class MOArea(AbstractEnum):
+    """MOArea is an enumeration that shall be used to hold the known existing area numbers in use."""
+
+    shortForm = MALShortForm.MOAREA
+    value_type = MOAreaEnum
+
+
+class MOAreaList(ElementList):
+    shortForm = -MALShortForm.MOAREA
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*2
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(MOArea(v))
+
+
+class Subscription(Composite):
+    """The Subscription structure shall be used when subscribing for updates using the PUBSUB Interaction Pattern. It shall contain a single identifier that identifies the subscription being defined and a set of entities being requested."""
+
+    shortForm = MALShortForm.SUBSCRIPTION
+    _fieldNumber = Composite._fieldNumber + 4
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*4
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -846,7 +1049,9 @@ class Subscription(Composite):
                 self._internal_value = value.copy().internal_value
         else:
             self.subscriptionId = value[Composite._fieldNumber + 0]
-            self.entities = value[Composite._fieldNumber + 1]
+            self.domain = value[Composite._fieldNumber + 1]
+            self.selectedKeys = value[Composite._fieldNumber + 2]
+            self.filters = value[Composite._fieldNumber + 3]
 
     @property
     def subscriptionId(self):
@@ -858,12 +1063,30 @@ class Subscription(Composite):
         self._isNull = False
 
     @property
-    def entities(self):
+    def domain(self):
         return self._internal_value[Composite._fieldNumber + 1]
 
-    @entities.setter
-    def entities(self, entities):
-        self._internal_value[Composite._fieldNumber + 1] = EntityRequestList(entities, canBeNull=False, attribName='entities')
+    @domain.setter
+    def domain(self, domain):
+        self._internal_value[Composite._fieldNumber + 1] = IdentifierList(domain, canBeNull=True, attribName='domain')
+        self._isNull = False
+
+    @property
+    def selectedKeys(self):
+        return self._internal_value[Composite._fieldNumber + 2]
+
+    @selectedKeys.setter
+    def selectedKeys(self, selectedKeys):
+        self._internal_value[Composite._fieldNumber + 2] = IdentifierList(selectedKeys, canBeNull=True, attribName='selectedKeys')
+        self._isNull = False
+
+    @property
+    def filters(self):
+        return self._internal_value[Composite._fieldNumber + 3]
+
+    @filters.setter
+    def filters(self, filters):
+        self._internal_value[Composite._fieldNumber + 3] = SubscriptionFilterList(filters, canBeNull=True, attribName='filters')
         self._isNull = False
 
 
@@ -887,15 +1110,15 @@ class SubscriptionList(ElementList):
                  self._internal_value.append(Subscription(v))
 
 
-class EntityRequest(Composite):
-    """The EntityRequest structure is used when subscribing for updates using the PUBSUB interaction pattern."""
+class SubscriptionFilter(Composite):
+    """The SubscriptionFilter structure shall be used when subscribing for updates using the PUBSUB Interaction Pattern. It shall contain a single identifier that identifies the Subscription Key name and the set of values to be registered for the defined key name."""
 
-    shortForm = MALShortForm.ENTITYREQUEST
-    _fieldNumber = Composite._fieldNumber + 6
+    shortForm = MALShortForm.SUBSCRIPTIONFILTER
+    _fieldNumber = Composite._fieldNumber + 2
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*6
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -907,70 +1130,30 @@ class EntityRequest(Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.subDomain = value[Composite._fieldNumber + 0]
-            self.allAreas = value[Composite._fieldNumber + 1]
-            self.allServices = value[Composite._fieldNumber + 2]
-            self.allOperations = value[Composite._fieldNumber + 3]
-            self.onlyOnChange = value[Composite._fieldNumber + 4]
-            self.entityKeys = value[Composite._fieldNumber + 5]
+            self.name = value[Composite._fieldNumber + 0]
+            self.values = value[Composite._fieldNumber + 1]
 
     @property
-    def subDomain(self):
+    def name(self):
         return self._internal_value[Composite._fieldNumber + 0]
 
-    @subDomain.setter
-    def subDomain(self, subDomain):
-        self._internal_value[Composite._fieldNumber + 0] = IdentifierList(subDomain, canBeNull=True, attribName='subDomain')
+    @name.setter
+    def name(self, name):
+        self._internal_value[Composite._fieldNumber + 0] = Identifier(name, canBeNull=False, attribName='name')
         self._isNull = False
 
     @property
-    def allAreas(self):
+    def values(self):
         return self._internal_value[Composite._fieldNumber + 1]
 
-    @allAreas.setter
-    def allAreas(self, allAreas):
-        self._internal_value[Composite._fieldNumber + 1] = Boolean(allAreas, canBeNull=False, attribName='allAreas')
-        self._isNull = False
-
-    @property
-    def allServices(self):
-        return self._internal_value[Composite._fieldNumber + 2]
-
-    @allServices.setter
-    def allServices(self, allServices):
-        self._internal_value[Composite._fieldNumber + 2] = Boolean(allServices, canBeNull=False, attribName='allServices')
-        self._isNull = False
-
-    @property
-    def allOperations(self):
-        return self._internal_value[Composite._fieldNumber + 3]
-
-    @allOperations.setter
-    def allOperations(self, allOperations):
-        self._internal_value[Composite._fieldNumber + 3] = Boolean(allOperations, canBeNull=False, attribName='allOperations')
-        self._isNull = False
-
-    @property
-    def onlyOnChange(self):
-        return self._internal_value[Composite._fieldNumber + 4]
-
-    @onlyOnChange.setter
-    def onlyOnChange(self, onlyOnChange):
-        self._internal_value[Composite._fieldNumber + 4] = Boolean(onlyOnChange, canBeNull=False, attribName='onlyOnChange')
-        self._isNull = False
-
-    @property
-    def entityKeys(self):
-        return self._internal_value[Composite._fieldNumber + 5]
-
-    @entityKeys.setter
-    def entityKeys(self, entityKeys):
-        self._internal_value[Composite._fieldNumber + 5] = EntityKeyList(entityKeys, canBeNull=False, attribName='entityKeys')
+    @values.setter
+    def values(self, values):
+        self._internal_value[Composite._fieldNumber + 1] = AttributeList(values, canBeNull=False, attribName='values')
         self._isNull = False
 
 
-class EntityRequestList(ElementList):
-    shortForm = -MALShortForm.ENTITYREQUEST
+class SubscriptionFilterList(ElementList):
+    shortForm = -MALShortForm.SUBSCRIPTIONFILTER
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -986,100 +1169,18 @@ class EntityRequestList(ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(EntityRequest(v))
-
-
-class EntityKey(Composite):
-    """The EntityKey structure is used to identify an entity in the PUBSUB interaction pattern."""
-
-    shortForm = MALShortForm.ENTITYKEY
-    _fieldNumber = Composite._fieldNumber + 4
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*4
-        if value is None and self._canBeNull:
-            self._isNull = True
-        elif type(value) == type(self):
-            if value.internal_value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._internal_value = value.copy().internal_value
-        else:
-            self.firstSubKey = value[Composite._fieldNumber + 0]
-            self.secondSubKey = value[Composite._fieldNumber + 1]
-            self.thirdSubKey = value[Composite._fieldNumber + 2]
-            self.fourthSubKey = value[Composite._fieldNumber + 3]
-
-    @property
-    def firstSubKey(self):
-        return self._internal_value[Composite._fieldNumber + 0]
-
-    @firstSubKey.setter
-    def firstSubKey(self, firstSubKey):
-        self._internal_value[Composite._fieldNumber + 0] = Identifier(firstSubKey, canBeNull=True, attribName='firstSubKey')
-        self._isNull = False
-
-    @property
-    def secondSubKey(self):
-        return self._internal_value[Composite._fieldNumber + 1]
-
-    @secondSubKey.setter
-    def secondSubKey(self, secondSubKey):
-        self._internal_value[Composite._fieldNumber + 1] = Long(secondSubKey, canBeNull=True, attribName='secondSubKey')
-        self._isNull = False
-
-    @property
-    def thirdSubKey(self):
-        return self._internal_value[Composite._fieldNumber + 2]
-
-    @thirdSubKey.setter
-    def thirdSubKey(self, thirdSubKey):
-        self._internal_value[Composite._fieldNumber + 2] = Long(thirdSubKey, canBeNull=True, attribName='thirdSubKey')
-        self._isNull = False
-
-    @property
-    def fourthSubKey(self):
-        return self._internal_value[Composite._fieldNumber + 3]
-
-    @fourthSubKey.setter
-    def fourthSubKey(self, fourthSubKey):
-        self._internal_value[Composite._fieldNumber + 3] = Long(fourthSubKey, canBeNull=True, attribName='fourthSubKey')
-        self._isNull = False
-
-
-class EntityKeyList(ElementList):
-    shortForm = -MALShortForm.ENTITYKEY
-
-    def __init__(self, value=None, canBeNull=True, attribName=None):
-        super().__init__(value, canBeNull, attribName)
-        self._internal_value = []
-        if type(value) == type(self):
-            if value.internal_value is None:
-                if self._canBeNull:
-                    self._isNull = True
-                else:
-                    raise ValueError("This {} cannot be Null".format(type(self)))
-            else:
-                self._internal_value = value.copy().internal_value
-        else:
-            listvalue = value if type(value) == list else [value]
-            for v in listvalue:
-                 self._internal_value.append(EntityKey(v))
+                 self._internal_value.append(SubscriptionFilter(v))
 
 
 class UpdateHeader(Composite):
-    """The UpdateHeader structure is used by updates using the PUBSUB interaction pattern. It holds information that identifies a single update."""
+    """The UpdateHeader structure shall be used by updates using the PUBSUB Interaction Pattern. It shall hold information that identifies a single update."""
 
     shortForm = MALShortForm.UPDATEHEADER
-    _fieldNumber = Composite._fieldNumber + 4
+    _fieldNumber = Composite._fieldNumber + 3
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*4
+        self._internal_value += [None]*3
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -1091,45 +1192,35 @@ class UpdateHeader(Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.timestamp = value[Composite._fieldNumber + 0]
-            self.sourceURI = value[Composite._fieldNumber + 1]
-            self.updateType = value[Composite._fieldNumber + 2]
-            self.key = value[Composite._fieldNumber + 3]
+            self.source = value[Composite._fieldNumber + 0]
+            self.domain = value[Composite._fieldNumber + 1]
+            self.keyValues = value[Composite._fieldNumber + 2]
 
     @property
-    def timestamp(self):
+    def source(self):
         return self._internal_value[Composite._fieldNumber + 0]
 
-    @timestamp.setter
-    def timestamp(self, timestamp):
-        self._internal_value[Composite._fieldNumber + 0] = Time(timestamp, canBeNull=False, attribName='timestamp')
+    @source.setter
+    def source(self, source):
+        self._internal_value[Composite._fieldNumber + 0] = Identifier(source, canBeNull=True, attribName='source')
         self._isNull = False
 
     @property
-    def sourceURI(self):
+    def domain(self):
         return self._internal_value[Composite._fieldNumber + 1]
 
-    @sourceURI.setter
-    def sourceURI(self, sourceURI):
-        self._internal_value[Composite._fieldNumber + 1] = URI(sourceURI, canBeNull=False, attribName='sourceURI')
+    @domain.setter
+    def domain(self, domain):
+        self._internal_value[Composite._fieldNumber + 1] = IdentifierList(domain, canBeNull=True, attribName='domain')
         self._isNull = False
 
     @property
-    def updateType(self):
+    def keyValues(self):
         return self._internal_value[Composite._fieldNumber + 2]
 
-    @updateType.setter
-    def updateType(self, updateType):
-        self._internal_value[Composite._fieldNumber + 2] = UpdateType(updateType, canBeNull=False, attribName='updateType')
-        self._isNull = False
-
-    @property
-    def key(self):
-        return self._internal_value[Composite._fieldNumber + 3]
-
-    @key.setter
-    def key(self, key):
-        self._internal_value[Composite._fieldNumber + 3] = EntityKey(key, canBeNull=False, attribName='key')
+    @keyValues.setter
+    def keyValues(self, keyValues):
+        self._internal_value[Composite._fieldNumber + 2] = NullableAttributeList(keyValues, canBeNull=True, attribName='keyValues')
         self._isNull = False
 
 
@@ -1154,7 +1245,7 @@ class UpdateHeaderList(ElementList):
 
 
 class IdBooleanPair(Composite):
-    """IdBooleanPair is a simple pair type of an identifier and Boolean value."""
+    """IdBooleanPair shall be a simple pair type of an identifier and Boolean value."""
 
     shortForm = MALShortForm.IDBOOLEANPAIR
     _fieldNumber = Composite._fieldNumber + 2
@@ -1182,7 +1273,7 @@ class IdBooleanPair(Composite):
 
     @id.setter
     def id(self, id):
-        self._internal_value[Composite._fieldNumber + 0] = Identifier(id, canBeNull=True, attribName='id')
+        self._internal_value[Composite._fieldNumber + 0] = Identifier(id, canBeNull=False, attribName='id')
         self._isNull = False
 
     @property
@@ -1216,7 +1307,7 @@ class IdBooleanPairList(ElementList):
 
 
 class Pair(Composite):
-    """Pair is a simple composite structure for holding pairs. The pairs can be user-defined attributes."""
+    """Pair shall be a simple Composite structure for holding pairs."""
 
     shortForm = MALShortForm.PAIR
     _fieldNumber = Composite._fieldNumber + 2
@@ -1284,7 +1375,7 @@ class PairList(ElementList):
 
 
 class NamedValue(Composite):
-    """The NamedValue structure represents a simple pair type of an identifier and abstract attribute value."""
+    """The NamedValue structure shall represent a simple pair type of an identifier and abstract Attribute value."""
 
     shortForm = MALShortForm.NAMEDVALUE
     _fieldNumber = Composite._fieldNumber + 2
@@ -1312,7 +1403,7 @@ class NamedValue(Composite):
 
     @name.setter
     def name(self, name):
-        self._internal_value[Composite._fieldNumber + 0] = Identifier(name, canBeNull=True, attribName='name')
+        self._internal_value[Composite._fieldNumber + 0] = Identifier(name, canBeNull=False, attribName='name')
         self._isNull = False
 
     @property
@@ -1349,7 +1440,7 @@ class NamedValueList(ElementList):
 
 
 class File(Composite):
-    """The File structure represents a File and holds details about a File. It can also, optionally, hold a BLOB of the file data. The file type is denoted using the internet MIME media types, the list of official MIME types is held at http://www.iana.org/assignments/media-types/index.html."""
+    """The File structure represents a file and shall be used to hold details about a file. It may also, optionally, hold a BLOB of the file data. The file type shall be denoted using the internet MIME media types."""
 
     shortForm = MALShortForm.FILE
     _fieldNumber = Composite._fieldNumber + 7
@@ -1382,7 +1473,7 @@ class File(Composite):
 
     @name.setter
     def name(self, name):
-        self._internal_value[Composite._fieldNumber + 0] = Identifier(name, canBeNull=False, attribName='name')
+        self._internal_value[Composite._fieldNumber + 0] = String(name, canBeNull=False, attribName='name')
         self._isNull = False
 
     @property
@@ -1460,24 +1551,228 @@ class FileList(ElementList):
                  self._internal_value.append(File(v))
 
 
+class ObjectIdentity(Composite):
+    """The ObjectIdentity structure shall represent the Object Identity of an MO Object."""
+
+    shortForm = MALShortForm.OBJECTIDENTITY
+    _fieldNumber = Composite._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.domain = value[Composite._fieldNumber + 0]
+            self.key = value[Composite._fieldNumber + 1]
+            self.version = value[Composite._fieldNumber + 2]
+
+    @property
+    def domain(self):
+        return self._internal_value[Composite._fieldNumber + 0]
+
+    @domain.setter
+    def domain(self, domain):
+        self._internal_value[Composite._fieldNumber + 0] = IdentifierList(domain, canBeNull=False, attribName='domain')
+        self._isNull = False
+
+    @property
+    def key(self):
+        return self._internal_value[Composite._fieldNumber + 1]
+
+    @key.setter
+    def key(self, key):
+        self._internal_value[Composite._fieldNumber + 1] = Identifier(key, canBeNull=False, attribName='key')
+        self._isNull = False
+
+    @property
+    def version(self):
+        return self._internal_value[Composite._fieldNumber + 2]
+
+    @version.setter
+    def version(self, version):
+        self._internal_value[Composite._fieldNumber + 2] = UInteger(version, canBeNull=False, attribName='version')
+        self._isNull = False
+
+
+class ObjectIdentityList(ElementList):
+    shortForm = -MALShortForm.OBJECTIDENTITY
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ObjectIdentity(v))
+
+
+class ServiceId(Composite):
+    """The ServiceId structure shall represent a specific service in MO."""
+
+    shortForm = MALShortForm.SERVICEID
+    _fieldNumber = Composite._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.keyArea = value[Composite._fieldNumber + 0]
+            self.keyService = value[Composite._fieldNumber + 1]
+            self.keyAreaVersion = value[Composite._fieldNumber + 2]
+
+    @property
+    def keyArea(self):
+        return self._internal_value[Composite._fieldNumber + 0]
+
+    @keyArea.setter
+    def keyArea(self, keyArea):
+        self._internal_value[Composite._fieldNumber + 0] = UShort(keyArea, canBeNull=False, attribName='keyArea')
+        self._isNull = False
+
+    @property
+    def keyService(self):
+        return self._internal_value[Composite._fieldNumber + 1]
+
+    @keyService.setter
+    def keyService(self, keyService):
+        self._internal_value[Composite._fieldNumber + 1] = UShort(keyService, canBeNull=False, attribName='keyService')
+        self._isNull = False
+
+    @property
+    def keyAreaVersion(self):
+        return self._internal_value[Composite._fieldNumber + 2]
+
+    @keyAreaVersion.setter
+    def keyAreaVersion(self, keyAreaVersion):
+        self._internal_value[Composite._fieldNumber + 2] = UOctet(keyAreaVersion, canBeNull=False, attribName='keyAreaVersion')
+        self._isNull = False
+
+
+class ServiceIdList(ElementList):
+    shortForm = -MALShortForm.SERVICEID
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ServiceId(v))
+
+
+class NullableAttribute(Composite):
+    """NullableAttribute structure shall represent an Attribute that can be nullable."""
+
+    shortForm = MALShortForm.NULLABLEATTRIBUTE
+    _fieldNumber = Composite._fieldNumber + 1
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*1
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.value = value[Composite._fieldNumber + 0]
+
+    @property
+    def value(self):
+        return self._internal_value[Composite._fieldNumber + 0]
+
+    @value.setter
+    def value(self, value):
+        if value is None:
+            self._internal_value[Composite._fieldNumber + 0] = Attribute(value, canBeNull=True, attribName='value')
+        else:
+            self._internal_value[Composite._fieldNumber + 0] = type(value)(value, canBeNull=True, attribName='value')
+        self._isNull = False
+
+
+class NullableAttributeList(ElementList):
+    shortForm = -MALShortForm.NULLABLEATTRIBUTE
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(NullableAttribute(v))
+
+
+ObjectRef.value_type = ObjectIdentity  # Needed here so that ObjectIdentity is defined
+
+
 class Errors(IntEnum):
     """All MAL errors."""
 
-    DELIVERY_FAILED = 65536  # Confirmed communication error.
-    DELIVERY_TIMEDOUT = 65537  # Unconfirmed communication error.
-    DELIVERY_DELAYED = 65538  # Message queued somewhere awaiting contact.
-    DESTINATION_UNKNOWN = 65539  # Destination cannot be contacted.
-    DESTINATION_TRANSIENT = 65540  # Destination middleware reports destination application does not exist.
-    DESTINATION_LOST = 65541  # Destination lost halfway through conversation.
-    AUTHENTICATION_FAIL = 65542  # A failure to authenticate the message correctly.
-    AUTHORISATION_FAIL = 65543  # A failure in the MAL to authorise the message.
-    ENCRYPTION_FAIL = 65544  # A failure in the MAL to encrypt/decrypt the message.
-    UNSUPPORTED_AREA = 65545  # The destination does not support the service area.
-    UNSUPPORTED_OPERATION = 65546  # The destination does not support the operation.
-    UNSUPPORTED_VERSION = 65547  # The destination does not support the service version.
-    BAD_ENCODING = 65548  # The destination was unable to decode the message.
-    INTERNAL = 65549  # An internal error has occurred.
-    UNKNOWN = 65550  # Operation specific.
-    INCORRECT_STATE = 65551  # The destination was not in the correct state for the received message.
-    TOO_MANY = 65552  # Maximum number of subscriptions or providers of a broker has been exceeded.
-    SHUTDOWN = 65553  # The component is being shutdown.
+    Delivery_Failed = 65536  # Confirmed communication error.
+    Delivery_Timedout = 65537  # Unconfirmed communication error.
+    Delivery_Delayed = 65538  # Message queued somewhere awaiting contact.
+    Destination_Unknown = 65539  # Destination cannot be contacted.
+    Destination_Transient = 65540  # Destination middleware reports destination application does not exist.
+    Destination_Lost = 65541  # Destination lost halfway through conversation.
+    Authentication_Failed = 65542  # A failure to authenticate the message correctly.
+    Authorisation_Fail = 65543  # A failure in the MAL to authorise the message.
+    Encryption_Fail = 65544  # A failure in the MAL to encrypt/decrypt the message.
+    Unsupported_Area = 65545  # The destination does not support the selected area.
+    Unsupported_Area_Version = 65546  # The destination does not support the selected area version.
+    Unsupported_Service = 65547  # The destination does not support the selected service.
+    Unsupported_Operation = 65548  # The destination does not support the selected operation.
+    Bad_Encoding = 65549  # The destination was unable to decode the message.
+    Internal = 65550  # An internal error has occurred.
+    Unknown = 65551  # Operation specific.
+    Incorrect_State = 65552  # The destination was not in the correct state for the received message.
+    Too_Many = 65553  # Maximum number of subscriptions or providers of a broker has been exceeded.
+    Shutdown = 65554  # The component is being shutdown.
+    Transaction_Timeout = 65555  # The interaction exceeded a certain timeout duration.

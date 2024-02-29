@@ -21,7 +21,6 @@ The COM archive is used to hold the definitions of the aggregations."""
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 from malpy.mo import mc
 
 number = 6

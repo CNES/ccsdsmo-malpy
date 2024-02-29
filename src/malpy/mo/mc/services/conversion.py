@@ -9,7 +9,6 @@ The conversion service does not provide any operations directly, but allows cons
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 from malpy.mo import mc
 
 number = 7

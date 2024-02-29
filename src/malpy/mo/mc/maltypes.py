@@ -10,7 +10,6 @@ All service specifications in this document are part of the MC area, which has a
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 
 name = "MC"
 number = 4

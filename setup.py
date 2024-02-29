@@ -6,8 +6,6 @@ from distutils import util
 packages = [
     "malpy",
     "malpy.mo",
-    "malpy.mo.com",
-    "malpy.mo.com.services",
     "malpy.mo.mal",
     "malpy.mo.mc",
     "malpy.mo.mc.services",
@@ -23,7 +21,7 @@ def define_package_dir(packages):
 
 setup(
     name='malpy',
-    version='0.1',
+    version='0.2',
     description='CCSDS MO implementation in Python',
     author='CNES',
     maintainer='Olivier Churlaud',

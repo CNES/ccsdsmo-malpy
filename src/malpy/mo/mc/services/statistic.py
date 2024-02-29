@@ -20,7 +20,6 @@ NOTE: To ensure deterministic behaviour, implementations should endeavour to res
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 from malpy.mo import mc
 
 number = 5

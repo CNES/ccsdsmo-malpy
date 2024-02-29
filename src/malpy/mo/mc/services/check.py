@@ -21,7 +21,6 @@ The service only publishes check results (as check transition events) when eithe
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 from malpy.mo import mc
 
 number = 4

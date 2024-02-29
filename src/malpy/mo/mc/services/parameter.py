@@ -14,7 +14,6 @@ Parameter definitions are maintained using the operations defined in this servic
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 from malpy.mo import mc
 
 number = 2

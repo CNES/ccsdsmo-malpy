@@ -9,7 +9,6 @@ Alert definitions are maintained using the operations defined in this service bu
 
 from enum import IntEnum
 from malpy.mo import mal
-from malpy.mo import com
 from malpy.mo import mc
 
 number = 3
