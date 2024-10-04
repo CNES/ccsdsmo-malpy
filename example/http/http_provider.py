@@ -29,11 +29,12 @@ def clientthread(socket):
 
 
 def main():
-    try:
-        host = '127.0.0.1'
-        port = 8009
+    host = '127.0.0.1'
+    port = 8009
 
-        s = http.HTTPSocket()
+    s = http.HTTPSocket()
+    try:
+
         s.bind((host, port))
         s.listen(10)
         print("[*] Server listening on %s %d" % (host, (port)))
@@ -45,9 +46,8 @@ def main():
             threading.Thread(target=clientthread,
                              args=(newsocket,)
                              ).start()
-        s.unbind()
-
     except KeyboardInterrupt:
+        s.unbind()
         sys.exit(0)
 
 
