@@ -208,7 +208,7 @@ class XMLEncoder(Encoder):
                 objectClass = str_to_class(node.nodeName)
 
                 # First case: it's Null and we reached a leaf
-                if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil'):
+                if node.hasAttribute('xsi:nil') and node.getAttribute('xsi:nil') or len(node.childNodes) == 0:
                     DEBUG_OUT('Leaf > xsi:nil', 'value=None')
                     return objectClass(None, attribName=elementName)
 
@@ -253,10 +253,10 @@ class XMLEncoder(Encoder):
                             raise RuntimeError(element)
                 if len(internal) == 1:
                     parsed_object = objectClass(internal[0])
-                    DEBUG_OUT('return single Object', node, elementName, parsed_object)
+                    DEBUG_OUT('return single Object', node, elementName, parsed_object._internal_value)
                     return parsed_object
                 elif len(internal) == 0:
-                    raise RuntimeError("len(internal) == 0", node)
+                    raise RuntimeError("len(internal) == 0", node, elementName)
                 else:
                     parsed_object = objectClass(internal, attribName=elementName)
                     DEBUG_OUT('return list or composite', parsed_object, elementName)

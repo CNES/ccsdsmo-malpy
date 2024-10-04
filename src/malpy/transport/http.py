@@ -15,7 +15,14 @@ from struct import *  # pack() unpack()
 
 from .abstract_transport import MALSocket
 
-VERSION_NUMBER = 1  # Version number of the transport
+VERSION_NUMBER = 2  # Version number of the transport
+
+def entity2uri(entity):
+    raise NotImplementedError("You must define the conversion function with set_entity2uri_function(f)")
+
+def set_entity2uri_function(function):
+    global entity2uri
+    entity2uri = function
 
 def _encode_uri(uri):
     return '{}:{}'.format(uri[0], uri[1])
@@ -27,11 +34,12 @@ def _decode_uri(uri):
     #port = splitted_uri[2]
     host = splitted_uri[0]
     port = splitted_uri[1]
-    
+
     return (host, port)
 
 # Split uri in <schem>://<host>:<port>/<path>
 def _split_uri(uri):
+    print(uri)
     logger = logging.getLogger(__name__)
 
     host = None
@@ -69,45 +77,7 @@ def _decode_time(s):
     return time.mktime(time.strptime(s[:-4], "%Y-%jT%H:%M:%S")) + float(s[-4:])
 
 
-def _encode_qos_level(qos_level):
-    d = {
-        mal.QoSLevelEnum.BESTEFFORT: "BESTEFFORT",
-        mal.QoSLevelEnum.ASSURED: "ASSURED",
-        mal.QoSLevelEnum.QUEUED: "QUEUED",
-        mal.QoSLevelEnum.TIMELY: "TIMELY"
-    }
-    return d[qos_level]
-
-
-def _decode_qos_level(qos_level):
-    d = {
-        "BESTEFFORT": mal.QoSLevelEnum.BESTEFFORT,
-        "ASSURED": mal.QoSLevelEnum.ASSURED,
-        "QUEUED": mal.QoSLevelEnum.QUEUED,
-        "TIMELY": mal.QoSLevelEnum.TIMELY
-    }
-    return d[qos_level]
-
-
-def _encode_session(session):
-    d = {
-        mal.SessionTypeEnum.LIVE: "LIVE",
-        mal.SessionTypeEnum.SIMULATION: "SIMULATION",
-        mal.SessionTypeEnum.REPLAY: "REPLAY"
-    }
-    return d[session]
-
-
-def _decode_session(session):
-    d = {
-        "LIVE": mal.SessionTypeEnum.LIVE,
-        "SIMULATION": mal.SessionTypeEnum.SIMULATION,
-        "REPLAY": mal.SessionTypeEnum.REPLAY
-    }
-    return d[session]
-
-
-def _encode_ip_type(ip_type):
+def _encode_interaction_type(interaction_type):
     d = {
         mal.InteractionTypeEnum.SEND: "SEND",
         mal.InteractionTypeEnum.SUBMIT: "SUBMIT",
@@ -116,7 +86,7 @@ def _encode_ip_type(ip_type):
         mal.InteractionTypeEnum.PROGRESS: "PROGRESS",
         mal.InteractionTypeEnum.PUBSUB: "PUBSUB"
     }
-    return d[ip_type]
+    return d[interaction_type]
 
 
 def _decode_enum(value, enumeration):
@@ -151,9 +121,10 @@ class HTTPSocket(MALSocket):
     _messagesize = 1024
     struct_format = '!I'
 
-    def __init__(self, socket=None, CONTEXT=None,  private=False, private_host=None, private_port=None):
+    def __init__(self, socket=None, CONTEXT=None,  private=False, private_host=None, private_port=None, use_https=False):
         self._private = private
         self.CONTEXT=CONTEXT
+        self.use_https = use_https
         if private and socket is None:
             self.socket = pythonsocket.socket(pythonsocket.AF_INET,
                                               pythonsocket.SOCK_STREAM)
@@ -200,14 +171,14 @@ class HTTPSocket(MALSocket):
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
         body = message.msg_parts
 
-        logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
+        logger.debug("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
         # For deregister stage, request is not private
-        if headers['X-MAL-Interaction-Stage'] ==  str(mal.MAL_IP_STAGES.PUBSUB_DEREGISTER):
+        if headers['X-MAL-Interaction-Stage'] ==  str(mal.MAL_INTERACTION_STAGES.PUBSUB_DEREGISTER):
            self._private = False
 
         if self._private is False :
-            self._send_http_request(target=message.header.uri_to, body=body, headers=headers)
+            self._send_http_request(target=entity2uri(message.header.to_entity, message.header.service_area, message.header.service, message.header.area_version), body=body, headers=headers)
         else:
             self._send_pickle_response(headers, body)
 
@@ -229,10 +200,10 @@ class HTTPSocket(MALSocket):
 
         if self._private is True:
             headers, body = self._receive_pickle_request()
-            logger.info("headers : {}\nbody : {}".format(headers,body.decode('utf-8')))
+            logger.debug("headers : {}\nbody : {}".format(headers,body.decode('utf-8')))
         else:
             headers, body=self._receive_http_response()
-            logger.info("headers : {}\nbody : {}".format(headers,body))
+            logger.debug("headers : {}\nbody : {}".format(headers,body))
 #        logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
         malheader = self._header_http_to_mal(headers)
@@ -242,12 +213,12 @@ class HTTPSocket(MALSocket):
 
         if self._private is False and \
            self._lastCommandIsSend is True and \
-           (headers['X-MAL-Interaction-Stage'] != str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH_REGISTER_ACK) and headers['X-MAL-Interaction-Stage'] != str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH_DEREGISTER_ACK)):
+           (headers['X-MAL-Interaction-Stage'] != str(mal.MAL_INTERACTION_STAGES.PUBSUB_PUBLISH_REGISTER_ACK) and headers['X-MAL-Interaction-Stage'] != str(mal.MAL_INTERACTION_STAGES.PUBSUB_PUBLISH_DEREGISTER_ACK)):
             self._private = True
 
         self._lastCommandIsSend = False
         logger.debug("[**] private '{}' LastCommandIsSend {}".format(self._private, self._lastCommandIsSend))
-     
+
 
         return mal.MALMessage(header=malheader, msg_parts=body)
 
@@ -256,29 +227,29 @@ class HTTPSocket(MALSocket):
         return (self._uri)
 
     def _header_http_to_mal(self, headers):
+        def _optional(inputString): # TODO: remove when esa is compliant
+            if inputString == "<![CDATA[EmptyStringPlaceholder]]>":
+                return ""
+            else:
+                return inputString
 
         if int(headers['X-MAL-Version-Number']) != VERSION_NUMBER:
             raise RuntimeError("The incoming version number was {}, expected was {}".format(headers['X-MAL-Version-Number'], VERSION_NUMBER))
 
         malheader = mal.MALHeader()
-        malheader.auth_id = b''.fromhex(headers['X-MAL-Authentication-Id'])
-        malheader.uri_from = headers['X-MAL-URI-From']
-        malheader.uri_to = headers['X-MAL-URI-To']
+        malheader.from_entity = headers['X-MAL-From']
+        malheader.authentication_id = b''.fromhex(_optional(headers['X-MAL-Authentication-Id']))
+        malheader.to_entity = headers['X-MAL-To']
         malheader.timestamp = _decode_time(headers['X-MAL-Timestamp'])
-        malheader.qos_level = _decode_qos_level(headers['X-MAL-QoSlevel'])
-        malheader.priority = int(headers['X-MAL-Priority'])
-        malheader.domain = _decode_ascii(headers['X-MAL-Domain']).split('.')
-        malheader.network_zone = _decode_ascii(headers['X-MAL-Network-Zone'])
-        malheader.session = _decode_session(headers['X-MAL-Session'])
-        malheader.session_name = _decode_ascii(headers['X-MAL-Session-Name'])
-        malheader.ip_type = _decode_enum(headers['X-MAL-Interaction-Type'], mal.InteractionTypeEnum)
-        malheader.ip_stage = int(headers['X-MAL-Interaction-Stage'])
+        malheader.interaction_type = _decode_enum(headers['X-MAL-Interaction-Type'], mal.InteractionTypeEnum)
+        malheader.interaction_stage = int(headers['X-MAL-Interaction-Stage'])
         malheader.transaction_id = int(headers['X-MAL-Transaction-Id'])
-        malheader.area = int(headers['X-MAL-Service-Area'])
+        malheader.service_area = int(headers['X-MAL-Service-Area'])
         malheader.service = int(headers['X-MAL-Service'])
         malheader.operation = int(headers['X-MAL-Operation'])
         malheader.area_version = int(headers['X-MAL-Area-Version'])
         malheader.is_error_message = (headers["X-MAL-Is-Error-Message"] == "True")
+        malheader.supplements = _optional(headers['X-MAL-Supplements'])
 
         return malheader
 
@@ -286,25 +257,20 @@ class HTTPSocket(MALSocket):
 
         headers = {
             "Content-Length": len(message),
-            "X-MAL-Authentication-Id": message.header.auth_id.hex(),
-            "X-MAL-URI-From": message.header.uri_from,
-            "X-MAL-URI-To": message.header.uri_to,
+            "X-MAL-From": message.header.from_entity,
+            "X-MAL-Authentication-Id": message.header.authentication_id.hex(),
+            "X-MAL-To": message.header.to_entity,
             "X-MAL-Timestamp": _encode_time(message.header.timestamp),
-            "X-MAL-QoSlevel": message.header.qos_level.name,
-            "X-MAL-Priority": str(message.header.priority),
-            "X-MAL-Domain": ".".join([ _encode_ascii(x) for x in message.header.domain ]),
-            "X-MAL-Network-Zone": _encode_ascii(message.header.network_zone),
-            "X-MAL-Session": message.header.session.name,
-            "X-MAL-Session-Name": _encode_ascii(message.header.session_name),
-            "X-MAL-Interaction-Type": message.header.ip_type.name,
-            "X-MAL-Interaction-Stage": str(message.header.ip_stage),
+            "X-MAL-Interaction-Type": message.header.interaction_type.name,
+            "X-MAL-Interaction-Stage": str(message.header.interaction_stage),
             "X-MAL-Transaction-Id": str(message.header.transaction_id),
-            "X-MAL-Service-Area": str(message.header.area),
+            "X-MAL-Service-Area": str(message.header.service_area),
             "X-MAL-Service": str(message.header.service),
             "X-MAL-Operation": str(message.header.operation),
             "X-MAL-Area-Version": str(message.header.area_version),
             "X-MAL-Is-Error-Message": "True" if message.header.is_error_message else "False",
-            "X-MAL-Version-Number": str(VERSION_NUMBER)
+            "X-MAL-Version-Number": str(VERSION_NUMBER),
+            "X-MAL-Supplements": ""
         }
 
         return headers
@@ -314,15 +280,18 @@ class HTTPSocket(MALSocket):
         logger = logging.getLogger(__name__)
 
 	#modif httpsconnection request method header body en sendpostrequest
-        #logger.debug('Target [{}] Header {} body {}'.format(target, headers, body.decode('utf-8')))
+        logger.debug('Target [{}] Header {} body {}'.format(target, headers, body.decode('utf-8')))
 
         host,port,path = _split_uri(target)
         # If client doesn't exist
         if not self.client:
-             logger.debug('Create Client')
-             self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
-             self.client.set_debuglevel(0)
-        
+            logger.debug('Create Client')
+            if self.use_https:
+                self.client = http.client.HTTPSConnection(_encode_uri((host,port)), context=self.CONTEXT)
+            else:
+                self.client = http.client.HTTPConnection(_encode_uri((host,port)))
+            self.client.set_debuglevel(0)
+
         #try:
         logger.debug('Send POST \nrequest url : {} \nheaders : {} \nbody : {}'.format(target, json.dumps(headers,indent=4), body.decode('utf-8)')))
         self.client.request('POST', url=target, body=body, headers=headers)
@@ -330,21 +299,21 @@ class HTTPSocket(MALSocket):
         #    logger.warning("Exception {} URL {}".format(e, target))
 
         # Dans certains cas, il faut faire un getreponse()
-        if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.SEND) ) or \
-           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.INVOKE) and \
-               headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.INVOKE_RESPONSE))  or  \
-           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PROGRESS) and \
-               ( (headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PROGRESS_RESPONSE) ) or (headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PROGRESS_UPDATE)))) or \
-           ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PUBSUB) and \
-               headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH)  ):
+        if ( headers['X-MAL-Interaction-Type'] == _encode_interaction_type(mal.InteractionTypeEnum.SEND) ) or \
+           ( headers['X-MAL-Interaction-Type'] == _encode_interaction_type(mal.InteractionTypeEnum.INVOKE) and \
+               headers['X-MAL-Interaction-Stage'] == str(mal.MAL_INTERACTION_STAGES.INVOKE_RESPONSE))  or  \
+           ( headers['X-MAL-Interaction-Type'] == _encode_interaction_type(mal.InteractionTypeEnum.PROGRESS) and \
+               ( (headers['X-MAL-Interaction-Stage'] == str(mal.MAL_INTERACTION_STAGES.PROGRESS_RESPONSE) ) or (headers['X-MAL-Interaction-Stage'] == str(mal.MAL_INTERACTION_STAGES.PROGRESS_UPDATE)))) or \
+           ( headers['X-MAL-Interaction-Type'] == _encode_interaction_type(mal.InteractionTypeEnum.PUBSUB) and \
+               headers['X-MAL-Interaction-Stage'] == str(mal.MAL_INTERACTION_STAGES.PUBSUB_PUBLISH)  ):
             logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
-            response=self.client.getresponse()
+            _ = self.client.getresponse()
 
 
     def _receive_http_response(self):
-        response=self.client.getresponse()
-        headers=response.headers
-        body=response.read().decode('utf-8')
+        response = self.client.getresponse()
+        headers = response.headers
+        body = response.read().decode('utf-8')
         if response.status != 200:
             raise RuntimeError("Got en error: {} - {}\n{}".format(response.status, response.reason, body))
         return headers, body
@@ -354,7 +323,7 @@ class HTTPSocket(MALSocket):
 
         if self.socket is None:
             server_socket = pythonsocket.socket(pythonsocket.AF_INET,
-                                              pythonsocket.SOCK_STREAM)    
+                                              pythonsocket.SOCK_STREAM)
             server_socket.bind((self.private_host, self.private_port))
             server_socket.listen(10)
             logger.info("[*] Server listening on {} {}".format(self.private_host, self.private_port))
@@ -362,7 +331,7 @@ class HTTPSocket(MALSocket):
             logger.debug('socket accept  {} {}'.format(conn, addr))
             self.socket = conn
 
- 
+
         # Read first message lenght
         logger.debug("[**] Recv() ask  {} bytes".format(calcsize(self.struct_format)))
         size_packed = self.socket.recv(calcsize(self.struct_format))
@@ -375,7 +344,7 @@ class HTTPSocket(MALSocket):
             # Rebuild a new server_socket
             logger.warning("Perhaps pipe broken. Create new server socket")
             server_socket = pythonsocket.socket(pythonsocket.AF_INET,
-                                              pythonsocket.SOCK_STREAM)    
+                                              pythonsocket.SOCK_STREAM)
             server_socket.bind((self.private_host, self.private_port))
             server_socket.listen(10)
             logger.info("[*] Server listening on {} {}".format(self.private_host, self.private_port))
@@ -385,8 +354,6 @@ class HTTPSocket(MALSocket):
 
             logger.info("[**] Recv() ask  {} bytes".format(calcsize(self.struct_format)))
             size_packed = self.socket.recv(calcsize(self.struct_format))
-
-
 
 
         logger.info("[**] Received {} bytes".format(size_packed))
@@ -444,7 +411,7 @@ class HTTPSocketPubSub(HTTPSocket):
         body = self.socket.body
         headers = self.socket.headers
         logger.info("headers [{}] , body [{}]".format(headers,body.decode('utf-8')))
- 
+
         # Set MAL header from HTTP header
         malheader = self._header_http_to_mal(headers)
 
@@ -452,14 +419,14 @@ class HTTPSocketPubSub(HTTPSocket):
             raise RuntimeError("Unexpected encoding. Expected 'application/mal-xml', got '{}'".format(headers['Content-Type']))
 
         # Rajouter un send_http_response() dans le cas de la reception d'un PUBSUB_PUBLISH
-        if ( headers['X-MAL-Interaction-Type'] == _encode_ip_type(mal.InteractionTypeEnum.PUBSUB) and \
-             headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PUBSUB_PUBLISH)  ):
+        if ( headers['X-MAL-Interaction-Type'] == _encode_interaction_type(mal.InteractionTypeEnum.PUBSUB) and \
+             headers['X-MAL-Interaction-Stage'] == str(mal.MAL_INTERACTION_STAGES.PUBSUB_PUBLISH)  ):
             logger.debug('Interaction Type {} Stage {} -> getresponse()'.format(headers['X-MAL-Interaction-Type'], headers['X-MAL-Interaction-Stage']))
             self.send_http_response(b'')
 
         # Return a MAL message
         return mal.MALMessage(header=malheader, msg_parts=body)
-        
+
 
     def send(self, message):
         logger = logging.getLogger(__name__)
@@ -467,7 +434,7 @@ class HTTPSocketPubSub(HTTPSocket):
         # Set HTTP headers from MAL message
         headers = self._header_mal_to_http(message)
         body = message.msg_parts
-        logger.info("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
+        logger.debug("headers : {}\nbody : {}".format(json.dumps(headers,indent=4),body.decode('utf-8')))
 
         if self.encoding == MALPY_ENCODING.XML:
             headers['Content-Type'] = "application/mal-xml"
@@ -476,8 +443,8 @@ class HTTPSocketPubSub(HTTPSocket):
             raise NotImplementedError("Only the XML Encoding is implemented with the HTTP Transport.")
 
         # For stage NOTIFY, the request is a HTTP POST request
-        if headers['X-MAL-Interaction-Stage'] == str(mal.MAL_IP_STAGES.PUBSUB_NOTIFY) :
-            self._send_http_request(target=message.header.uri_to, body=body, headers=headers)
+        if headers['X-MAL-Interaction-Stage'] == str(mal.MAL_INTERACTION_STAGES.PUBSUB_NOTIFY) :
+            self._send_http_request(target=message.header.to_entity, body=body, headers=headers)
         else:
 
             logger.info("send http response")
@@ -501,6 +468,6 @@ class HTTPSocketPubSub(HTTPSocket):
         self.socket.end_headers()
         self.socket.wfile.write(message)
 
- 
+
 
 
