@@ -25,14 +25,28 @@ from malpy.mo import mc
 number = 5
 
 # CapabilitySet 1
-class GetStatistics(mal.RequestProviderHandler):
+class GetStatisticsProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
     OPERATION = 1
 
 
-class ResetEvaluation(mal.RequestProviderHandler):
+class GetStatisticsConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 1
+
+
+class ResetEvaluationProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 2
+
+
+class ResetEvaluationConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
@@ -41,7 +55,14 @@ class ResetEvaluation(mal.RequestProviderHandler):
 
 
 # CapabilitySet 2
-class MonitorStatistics(mal.PubSubProviderHandler):
+class MonitorStatisticsProviderHandler(mal.PubSubProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 3
+
+
+class MonitorStatisticsConsumerHandler(mal.PubSubConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
@@ -50,14 +71,28 @@ class MonitorStatistics(mal.PubSubProviderHandler):
 
 
 # CapabilitySet 3
-class EnableService(mal.SubmitProviderHandler):
+class EnableServiceProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
     OPERATION = 4
 
 
-class GetServiceStatus(mal.RequestProviderHandler):
+class EnableServiceConsumerHandler(mal.SubmitConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 4
+
+
+class GetServiceStatusProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 5
+
+
+class GetServiceStatusConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
@@ -66,7 +101,14 @@ class GetServiceStatus(mal.RequestProviderHandler):
 
 
 # CapabilitySet 4
-class EnableReporting(mal.SubmitProviderHandler):
+class EnableReportingProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 6
+
+
+class EnableReportingConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
@@ -75,7 +117,14 @@ class EnableReporting(mal.SubmitProviderHandler):
 
 
 # CapabilitySet 5
-class ListParameterEvaluations(mal.RequestProviderHandler):
+class ListParameterEvaluationsProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 7
+
+
+class ListParameterEvaluationsConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
@@ -84,21 +133,42 @@ class ListParameterEvaluations(mal.RequestProviderHandler):
 
 
 # CapabilitySet 6
-class AddParameterEvaluation(mal.RequestProviderHandler):
+class AddParameterEvaluationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
     OPERATION = 8
 
 
-class UpdateParameterEvaluation(mal.RequestProviderHandler):
+class AddParameterEvaluationConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 8
+
+
+class UpdateParameterEvaluationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5
     OPERATION = 9
 
 
-class RemoveParameterEvaluation(mal.SubmitProviderHandler):
+class UpdateParameterEvaluationConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 9
+
+
+class RemoveParameterEvaluationProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 5
+    OPERATION = 10
+
+
+class RemoveParameterEvaluationConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 5

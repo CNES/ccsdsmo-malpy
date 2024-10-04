@@ -19,14 +19,28 @@ from malpy.mo import mc
 number = 1
 
 # CapabilitySet 1
-class SubmitAction(mal.SubmitProviderHandler):
+class SubmitActionProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 1
     OPERATION = 1
 
 
-class PreCheckAction(mal.RequestProviderHandler):
+class SubmitActionConsumerHandler(mal.SubmitConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 1
+
+
+class PreCheckActionProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 2
+
+
+class PreCheckActionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 1
@@ -35,7 +49,14 @@ class PreCheckAction(mal.RequestProviderHandler):
 
 
 # CapabilitySet 2
-class ListDefinition(mal.RequestProviderHandler):
+class ListDefinitionProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 3
+
+
+class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 1
@@ -44,21 +65,42 @@ class ListDefinition(mal.RequestProviderHandler):
 
 
 # CapabilitySet 3
-class AddAction(mal.RequestProviderHandler):
+class AddActionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 1
     OPERATION = 4
 
 
-class UpdateDefinition(mal.RequestProviderHandler):
+class AddActionConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 4
+
+
+class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 1
     OPERATION = 5
 
 
-class RemoveAction(mal.SubmitProviderHandler):
+class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 5
+
+
+class RemoveActionProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 1
+    OPERATION = 6
+
+
+class RemoveActionConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 1

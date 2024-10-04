@@ -6,8 +6,10 @@ import yaml
 
 MO_XML = {
     'MAL': "../xml/area001-v003-MAL.xml",
-    'MC': "../xml/area004-v002-MC.xml"
+    'MC': "../xml/area004-v002-MC.xml",
+    'MPD': "../xml/area009-v001-MPD.xml"
     }
+AREA_TO_GENERATE = ['MAL', 'MC', 'MPD']
 MAL_NS = "http://www.ccsds.org/schema/ServiceSchema"
 COM_NS = "http://www.ccsds.org/schema/COMSchema"
 OUTFILE = "../src/malpy/mo"
@@ -17,6 +19,10 @@ IMPORTS = {
         'from abc import ABC'
         ],
     'MC': [
+        'from enum import IntEnum',
+        'from malpy.mo import mal'
+        ],
+   'MPD': [
         'from enum import IntEnum',
         'from malpy.mo import mal'
         ]
@@ -142,6 +148,9 @@ class MALMessageXML(object):
             self.parse(node)
 
     def parse(self, node):
+        if node.tag == '{http://www.ccsds.org/schema/ServiceSchema}subscriptionKeys':
+            print("SubscriptionKeys !!!  Not takenintoAccount")
+            return
         self.messageType = MESSAGETYPE[node.tag]
         for subnode in node:
             self.fields.append(MALMessageFieldXML(subnode))
@@ -924,10 +933,11 @@ class MALBuffer(object):
     "# CapabilitySet {}\n".format(capabilitySet.number)
             )
             for operation in capabilitySet.operations:
-                operationname = operation.name
-                operationclassname = operationname[0].upper() + operationname[1:]
-                parentclassname = "mal." + operation.interactionType + "ProviderHandler"
-                self.write(
+                for providerConsumer in ['Provider', 'Consumer']:
+                    operationname = operation.name + providerConsumer +"Handler"
+                    operationclassname = operationname[0].upper() + operationname[1:]
+                    parentclassname = "mal." + operation.interactionType + providerConsumer +"Handler"
+                    self.write(
     "class {}({}):\n".format(operationclassname, parentclassname) +
     "    AREA = {}\n".format(self.generator.area.number) +
     "    VERSION = {}\n".format(self.generator.area.version) +
@@ -1036,7 +1046,7 @@ class MALTypeModuleGenerator(object):
 
 
 if __name__ == "__main__":
-    for areaname in ['MAL', 'MC']:
+    for areaname in AREA_TO_GENERATE:
         definitionfilepath = MO_XML[areaname]
         generator = MALTypeModuleGenerator(areaname.lower(), definitionfilepath, OUTFILE)
         generator.generate()

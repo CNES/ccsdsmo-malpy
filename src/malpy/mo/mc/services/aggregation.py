@@ -26,7 +26,14 @@ from malpy.mo import mc
 number = 6
 
 # CapabilitySet 1
-class MonitorValue(mal.PubSubProviderHandler):
+class MonitorValueProviderHandler(mal.PubSubProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 1
+
+
+class MonitorValueConsumerHandler(mal.PubSubConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
@@ -35,7 +42,14 @@ class MonitorValue(mal.PubSubProviderHandler):
 
 
 # CapabilitySet 2
-class GetValue(mal.RequestProviderHandler):
+class GetValueProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 2
+
+
+class GetValueConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
@@ -44,14 +58,28 @@ class GetValue(mal.RequestProviderHandler):
 
 
 # CapabilitySet 3
-class EnableGeneration(mal.RequestProviderHandler):
+class EnableGenerationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
     OPERATION = 3
 
 
-class EnableFilter(mal.SubmitProviderHandler):
+class EnableGenerationConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 3
+
+
+class EnableFilterProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 4
+
+
+class EnableFilterConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
@@ -60,7 +88,14 @@ class EnableFilter(mal.SubmitProviderHandler):
 
 
 # CapabilitySet 4
-class ListDefinition(mal.RequestProviderHandler):
+class ListDefinitionProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 5
+
+
+class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
@@ -69,21 +104,42 @@ class ListDefinition(mal.RequestProviderHandler):
 
 
 # CapabilitySet 5
-class AddAggregation(mal.RequestProviderHandler):
+class AddAggregationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
     OPERATION = 6
 
 
-class UpdateDefinition(mal.RequestProviderHandler):
+class AddAggregationConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 6
+
+
+class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6
     OPERATION = 7
 
 
-class RemoveAggregation(mal.SubmitProviderHandler):
+class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 7
+
+
+class RemoveAggregationProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 6
+    OPERATION = 8
+
+
+class RemoveAggregationConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 6

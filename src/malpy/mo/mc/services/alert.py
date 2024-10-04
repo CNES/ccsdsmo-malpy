@@ -14,7 +14,14 @@ from malpy.mo import mc
 number = 3
 
 # CapabilitySet 1
-class EnableGeneration(mal.RequestProviderHandler):
+class EnableGenerationProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 1
+
+
+class EnableGenerationConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 3
@@ -23,7 +30,14 @@ class EnableGeneration(mal.RequestProviderHandler):
 
 
 # CapabilitySet 2
-class ListDefinition(mal.RequestProviderHandler):
+class ListDefinitionProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 2
+
+
+class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 3
@@ -32,21 +46,42 @@ class ListDefinition(mal.RequestProviderHandler):
 
 
 # CapabilitySet 3
-class AddAlert(mal.RequestProviderHandler):
+class AddAlertProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 3
     OPERATION = 3
 
 
-class UpdateDefinition(mal.RequestProviderHandler):
+class AddAlertConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 3
+
+
+class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 3
     OPERATION = 4
 
 
-class RemoveAlert(mal.SubmitProviderHandler):
+class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 4
+
+
+class RemoveAlertProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 3
+    OPERATION = 5
+
+
+class RemoveAlertConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 3

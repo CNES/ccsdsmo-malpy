@@ -19,7 +19,14 @@ from malpy.mo import mc
 number = 2
 
 # CapabilitySet 1
-class MonitorValue(mal.PubSubProviderHandler):
+class MonitorValueProviderHandler(mal.PubSubProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 1
+
+
+class MonitorValueConsumerHandler(mal.PubSubConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
@@ -28,7 +35,14 @@ class MonitorValue(mal.PubSubProviderHandler):
 
 
 # CapabilitySet 2
-class GetValue(mal.RequestProviderHandler):
+class GetValueProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 2
+
+
+class GetValueConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
@@ -37,7 +51,14 @@ class GetValue(mal.RequestProviderHandler):
 
 
 # CapabilitySet 3
-class SetValue(mal.SubmitProviderHandler):
+class SetValueProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 3
+
+
+class SetValueConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
@@ -46,7 +67,14 @@ class SetValue(mal.SubmitProviderHandler):
 
 
 # CapabilitySet 4
-class EnableGeneration(mal.RequestProviderHandler):
+class EnableGenerationProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 4
+
+
+class EnableGenerationConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
@@ -55,7 +83,14 @@ class EnableGeneration(mal.RequestProviderHandler):
 
 
 # CapabilitySet 5
-class ListDefinition(mal.RequestProviderHandler):
+class ListDefinitionProviderHandler(mal.RequestProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 5
+
+
+class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
@@ -64,21 +99,42 @@ class ListDefinition(mal.RequestProviderHandler):
 
 
 # CapabilitySet 6
-class AddParameter(mal.RequestProviderHandler):
+class AddParameterProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
     OPERATION = 6
 
 
-class UpdateDefinition(mal.RequestProviderHandler):
+class AddParameterConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 6
+
+
+class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
     OPERATION = 7
 
 
-class RemoveParameter(mal.SubmitProviderHandler):
+class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 7
+
+
+class RemoveParameterProviderHandler(mal.SubmitProviderHandler):
+    AREA = 4
+    VERSION = 1
+    SERVICE = 2
+    OPERATION = 8
+
+
+class RemoveParameterConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
     VERSION = 1
     SERVICE = 2
