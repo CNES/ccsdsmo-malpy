@@ -1,13 +1,13 @@
 import datetime
-import pickle
 import xml.dom.minidom
 import re
 import sys
 from enum import IntEnum
 
 from malpy.malpydefinitions import MALPY_ENCODING
-from malpy.mo import mal, mc
-from malpy.mo.mc.services import *
+from malpy.mo import mal
+
+from .abstract_encoding import Encoder
 
 LOG_LEVEL = "INFO"
 
@@ -24,6 +24,7 @@ class Debug():
     def DEBUG(self, *args):
         if LOG_LEVEL == "DEBUG":
             print(self.depth*'-', *args)
+
 debug = Debug()
 def DEBUG(*args):
     debug.DEBUG(*args)
@@ -45,28 +46,6 @@ MAL_MODULES = [
     'malpy.mo.mc.services.statistic'
     ]
 
-
-class Encoder(object):
-    encoding = None
-    parent = None
-
-    def encode(self, message):
-        raise NotImplementedError("This is to be implemented.")
-        return message
-
-    def decode(self, message):
-        raise NotImplementedError("This is to be implemented.")
-        return message
-
-
-class PickleEncoder(Encoder):
-    encoding = MALPY_ENCODING.PICKLE
-
-    def encode(self, message):
-        return pickle.dumps(message)
-
-    def decode(self, message):
-        return pickle.loads(message)
 
 
 MAL_XML_NAMESPACE_URL = "http://www.ccsds.org/schema/malxml/MAL"
@@ -251,6 +230,7 @@ class XMLEncoder(Encoder):
                                 internal.append(_decode_internal(element))
                         else:
                             raise RuntimeError(element)
+                print(internal, objectClass)
                 if len(internal) == 1:
                     parsed_object = objectClass(internal[0])
                     DEBUG_OUT('return single Object', node, elementName, parsed_object._internal_value)
@@ -305,81 +285,3 @@ class XMLEncoder(Encoder):
         _cleanupEmptyChildNodes(rootElement)
 
         return _decode_internal(rootElement)
-
-
-
-class JSONEncoder(Encoder):
-    encoding = MALPY_ENCODING.XML
-
-    def encode(self, message):
-        encoded_body = self.encode_body(message.msg_parts)
-        encoded_message = mal.MALMessage(header=message.header,
-                                         msg_parts=encoded_body)
-        return encoded_message
-
-    def decode(self, message):
-        decoded_body = self.decode_body(message.msg_parts)
-        decoded_message = mal.MALMessage(header=message.header,
-                                         msg_parts=decoded_body)
-        return decoded_message
-
-    def encode_body(self, body):
-
-        def _encode_internal(element,isInList):
-            doc=''
-            # The node name is attribName if it exists, otherwise its type
-            nodename = element.attribName or type(element).__name__
-
-            # Deal with the Null type:
-            if element.internal_value is None:
-                # It's a leaf, we don't recurse deeper.
-               doc = doc +  "\"{}\" : ".format(nodename) + "null,"
-               if isInList:
-                  doc = '{' + doc[0:-1] + '},' # Remove last caractere (comma) of doc String befor add }
-
-            # if it's a list, it means this is a composite or a list of thing
-            elif type(element.internal_value) is list:
-                # so we recurse over each item and append them below the objects
-                # ex: the ?? is defined with se same algorithm
-                if nodename.find('List') > 0:
-                    doc = doc + "\"{}\" : [".format(nodename)
-                    for subelement in element.internal_value:
-                        doc = doc + _encode_internal(subelement, True)
-                    doc = doc[0:-1] + '],' # Remove last caractere (comma) of doc String befor add }
-                else:
-                    if isInList:
-                        doc = doc + ' {'
-                    else:
-                        doc = doc + "\"{}\" : ".format(nodename) +' {'
-                    for subelement in element.internal_value:
-                        doc = doc + _encode_internal(subelement, False)
-                    doc = doc[0:-1] + '},' # Remove last caractere (comma) of doc String befor add }
-
-            # else it's an attribute we add a subnode
-            else:
-                # It's a leaf, we don't recurse deeper.
-                # Special case for IntEnum (the encoding message is a string that we convert to enums)
-                if issubclass(type(element.internal_value), IntEnum):
-                    value = element.internal_value.name
-                # Normal case
-                else:
-                    value = str(element.internal_value)
-                doc = doc +  "\"{}\" : ".format(nodename) + "\"{}\",".format(value)
-
-                if isInList:
-                    doc = '{' + doc[0:-1] + '}' # Remove last caractere (comma) of doc String befor add }
-
-            return doc
-
-        rootElement=''
-
-        # Recursively go through the object to encode it (a composite is a list of list)
-        if type(body) is not list:
-            body = [body]
-
-        rootElement = rootElement + '{'
-        for element in body:
-            rootElement = rootElement + _encode_internal(element, False)
-        rootElement = rootElement[0:-1] + '}' # Remove last caractere (comma) of doc String befor add }
-
-        return rootElement

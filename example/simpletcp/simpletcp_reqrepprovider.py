@@ -6,30 +6,35 @@ sys.path.append('../../src')
 import threading
 
 from malpy.mo import mal
-from malpy.transport import tcp
-from malpy import encoding
+from malpy.transport.tcp import TCPSocket
+from malpy.encoding.pickle import PickleEncoder
 
 
 def clientthread(socket):
-    enc = encoding.PickleEncoder()
+    enc = PickleEncoder()
     request = mal.RequestProviderHandler(socket, enc)
-    message = request.receive_request()
-    print("[**] Received '{}'".format(message.msg_parts.decode('utf8')))
-    request.response("I got it!".encode('utf8'))
-    print("[**] Closing connection with %s %d." % (socket.uri[0], socket.uri[1]))
-    socket.disconnect()
+    try:
+        message = request.receive_request()
+        print("[**] Received '{}'".format(message.msg_parts.decode('utf8')))
+    except Exception as e:
+        request.error("ERROR !".encode('utf8'))
+    else:
+        request.response("I got it!".encode('utf8'))
+    finally:
+        print("[**] Closing connection with %s %d." % (socket.uri[0], socket.uri[1]))
+        socket.disconnect()
 
 
 def main():
+    host = '127.0.0.1'
+    port = 8009
+
+    s = TCPSocket()
+    s.bind((host, port))
+    s.listen(10)
+    print("[*] Server listening on %s %d" % (host, (port)))
+
     try:
-        host = '127.0.0.1'
-        port = 8009
-
-        s = tcp.TCPSocket()
-        s.bind((host, port))
-        s.listen(10)
-        print("[*] Server listening on %s %d" % (host, (port)))
-
         while True:
             newsocket = s.waitforconnection()
             print("[**] Incoming connection from %s %d" % (newsocket.uri[0], newsocket.uri[1]))
@@ -37,9 +42,9 @@ def main():
                 target=clientthread,
                 args=(newsocket, )
                 ).start()
-        s.unbind()
 
     except KeyboardInterrupt:
+        s.unbind()
         sys.exit(0)
 
 

@@ -28,7 +28,7 @@ def main():
     host = '127.0.0.1'
     port = 1443
     private_port = 1445
-    
+
     provider = "myprovider"
     #consumer = "CNES-Olivier"
     consumer = "malhttp://127.0.0.1:1444/test/value_{}_{}".format(host, private_port)

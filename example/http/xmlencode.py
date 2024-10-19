@@ -6,7 +6,7 @@ import time
 
 from malpy.mo import mal
 from malpy.mo.mc.services import parameter
-from malpy.encoding import XMLEncoder
+from malpy.encoding import xml
 
 #encoding.LOG_LEVEL = 'DEBUG'
 
@@ -41,25 +41,25 @@ p= parameter.ParameterValue([mal.UOctet(5), mal.Blob(b'toto'), mal.String("Toto"
 
 print("mllml", p._internal_value[2]._isNull)
 
-e = XMLEncoder()
+e = xml.XMLEncoder()
 
 current_time = time.time()
 print("TEST: Time Attribute:", current_time)
 em = e.encode_body(mal.Time(current_time))
 print(em.decode('utf8'))
-print(e.decode_body(em))
+print(e.decode_body(em, mal.Time).internal_value)
 
 print("TEST: Null Time Attribute")
 em = e.encode_body(mal.Time(None))
 print(em.decode('utf8'))
-print(e.decode_body(em))
+print(e.decode_body(em, mal.Time).internal_value)
 
 
 print("TEST: TimeList")
 
 em = e.encode_body(mal.TimeList([time.time(), time.time(), time.time()]))
 print(em.decode('utf8'))
-print(e.decode_body(em))
+print(e.decode_body(em, mal.Time))
 
 #em = e.encode_body([m])
 #print(e.decode_body(em, mal.Subscription))

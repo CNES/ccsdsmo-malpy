@@ -176,9 +176,9 @@ class Handler(object):
         message = self.encoding.encode(message)
         return self.transport.send(message)
 
-    def receive_message(self):
+    def receive_message(self, signature):
         message = self.transport.recv()
-        return self.encoding.decode(message)
+        return self.encoding.decode(message, signature)
 
 
 class ConsumerHandler(Handler):
@@ -298,7 +298,7 @@ class ProviderHandler(Handler):
         # If parameter to_entity is defined
         if to_entity :
             header.to_entity = to_entity
-        elif self.broker_uri:
+        elif self.broker_entity:
             # if parameter to_entity is not defined and broker_entity is defined
             header.to_entity = self.broker_entity
         # else:
@@ -314,8 +314,8 @@ class SendProviderHandler(ProviderHandler):
 
     INTERACTION_TYPE = InteractionTypeEnum.SEND
 
-    def receive_send(self):
-        message = self.receive_message()
+    def receive_send(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -349,8 +349,8 @@ class SubmitProviderHandler(ProviderHandler):
 
     INTERACTION_TYPE = InteractionTypeEnum.SUBMIT
 
-    def receive_submit(self):
-        message = self.receive_message()
+    def receive_submit(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -360,7 +360,7 @@ class SubmitProviderHandler(ProviderHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.SUBMIT), ip=(interaction_type, interaction_stage))
 
-    def ack(self, body, async_send=False):
+    def ack(self, body):
         header = self.create_message_header(MAL_INTERACTION_STAGES.SUBMIT_ACK)
         message = MALMessage(header=header, msg_parts=body)
         self.interaction_terminated = True
@@ -387,8 +387,8 @@ class SubmitConsumerHandler(ConsumerHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_ack(self):
-        message = self.receive_message()
+    def receive_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -410,8 +410,8 @@ class RequestProviderHandler(ProviderHandler):
 
     INTERACTION_TYPE = InteractionTypeEnum.REQUEST
 
-    def receive_request(self):
-        message = self.receive_message()
+    def receive_request(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -421,7 +421,7 @@ class RequestProviderHandler(ProviderHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.REQUEST), ip=(interaction_type, interaction_stage))
 
-    def response(self, body, async_send=False):
+    def response(self, body):
         header = self.create_message_header(MAL_INTERACTION_STAGES.REQUEST_RESPONSE)
         message = MALMessage(header=header, msg_parts=body)
         self.interaction_terminated = True
@@ -448,8 +448,8 @@ class RequestConsumerHandler(ConsumerHandler):
         message = MALMessage(header=header, msg_parts=body)
         return self.send_message(message)
 
-    def receive_response(self):
-        message = self.receive_message()
+    def receive_response(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -471,8 +471,8 @@ class InvokeProviderHandler(ProviderHandler):
 
     INTERACTION_TYPE = InteractionTypeEnum.INVOKE
 
-    def receive_invoke(self):
-        message = self.receive_message()
+    def receive_invoke(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -482,7 +482,7 @@ class InvokeProviderHandler(ProviderHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.INVOKE), ip=(interaction_type, interaction_stage))
 
-    def ack(self, body, async_send=False):
+    def ack(self, body):
         header = self.create_message_header(MAL_INTERACTION_STAGES.INVOKE_ACK)
         message = MALMessage(header=header, msg_parts=body)
         return self.send_message(message)
@@ -493,7 +493,7 @@ class InvokeProviderHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         return self.send_message(message)
 
-    def response(self, body, async_send=False):
+    def response(self, body):
         header = self.create_message_header(MAL_INTERACTION_STAGES.INVOKE_RESPONSE)
         message = MALMessage(header=header, msg_parts=body)
         self.interaction_terminated = True
@@ -521,8 +521,8 @@ class InvokeConsumerHandler(ConsumerHandler):
         self.send_message(message)
         self.interaction_terminated = True
 
-    def receive_ack(self):
-        message = self.receive_message()
+    def receive_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -533,8 +533,8 @@ class InvokeConsumerHandler(ConsumerHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.INVOKE_ACK), ip=(interaction_type, interaction_stage))
 
-    def receive_response(self):
-        message = self.receive_message()
+    def receive_response(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -556,8 +556,8 @@ class ProgressProviderHandler(ProviderHandler):
 
     INTERACTION_TYPE = InteractionTypeEnum.PROGRESS
 
-    def receive_progress(self):
-        message = self.receive_message()
+    def receive_progress(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -567,7 +567,7 @@ class ProgressProviderHandler(ProviderHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.PROGRESS), ip=(interaction_type, interaction_stage))
 
-    def ack(self, body, async_send=False):
+    def ack(self, body):
         header = self.create_message_header(MAL_INTERACTION_STAGES.PROGRESS_ACK)
         message = MALMessage(header=header, msg_parts=body)
         return self.send_message(message)
@@ -589,7 +589,7 @@ class ProgressProviderHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         return self.send_message(message)
 
-    def response(self, body, async_send=False):
+    def response(self, body):
         header = self.create_message_header(MAL_INTERACTION_STAGES.PROGRESS_RESPONSE)
         message = MALMessage(header=header, msg_parts=body)
         self.interaction_terminated = True
@@ -616,8 +616,8 @@ class ProgressConsumerHandler(ConsumerHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_ack(self):
-        message = self.receive_message()
+    def receive_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -628,12 +628,12 @@ class ProgressConsumerHandler(ConsumerHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.PROGRESS_ACK), ip=(interaction_type, interaction_stage))
 
-    def receive_update(self):
+    def receive_update(self, signature):
         """ As it is not possible to know beforehand if the received message is
         an update or the final response, we only do receive_update. The content of
         the header message will let us know te corresponding state.
         """
-        message = self.receive_message()
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -673,8 +673,8 @@ class PubSubProviderHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_publish_register_ack(self):
-        message = self.receive_message()
+    def receive_publish_register_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -690,8 +690,8 @@ class PubSubProviderHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_publish_deregister_ack(self):
-        message = self.receive_message()
+    def receive_publish_deregister_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -719,8 +719,8 @@ class PubSubBrokerHandler(ProviderHandler):
 
     INTERACTION_TYPE = InteractionTypeEnum.PUBSUB
 
-    def receive_registration_message(self):
-        message = self.receive_message()
+    def receive_registration_message(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -758,8 +758,8 @@ class PubSubBrokerHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_deregister(self):
-        message = self.receive_message()
+    def receive_deregister(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -769,8 +769,8 @@ class PubSubBrokerHandler(ProviderHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.PUBSUB_DEREGISTER), ip=(interaction_type, interaction_stage))
 
-    def notify(self, body, uri_to):
-        header = self.create_message_header(MAL_INTERACTION_STAGES.PUBSUB_NOTIFY, uri_to=uri_to)
+    def notify(self, body, to_entity):
+        header = self.create_message_header(MAL_INTERACTION_STAGES.PUBSUB_NOTIFY, to_entity=to_entity)
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
@@ -780,8 +780,8 @@ class PubSubBrokerHandler(ProviderHandler):
     #     message = MALMessage(header=header, msg_parts=body)
     #     self.send_message(message)
 
-    def receive_publish_registration_message(self):
-        message = self.receive_message()
+    def receive_publish_registration_message(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -806,8 +806,8 @@ class PubSubBrokerHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_publish_deregister(self):
-        message = self.receive_message()
+    def receive_publish_deregister(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -823,8 +823,8 @@ class PubSubBrokerHandler(ProviderHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_publish(self):
-        message = self.receive_message()
+    def receive_publish(self, signature):
+        message = self.receive_message(signature)
         self.define_header(message.header)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
@@ -850,8 +850,8 @@ class PubSubConsumerHandler(ConsumerHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_register_ack(self):
-        message = self.receive_message()
+    def receive_register_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -867,8 +867,8 @@ class PubSubConsumerHandler(ConsumerHandler):
         message = MALMessage(header=header, msg_parts=body)
         self.send_message(message)
 
-    def receive_deregister_ack(self):
-        message = self.receive_message()
+    def receive_deregister_ack(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message
@@ -879,8 +879,8 @@ class PubSubConsumerHandler(ConsumerHandler):
         else:
             raise InvalidInteractionStageError(classname=self.__class__.__name__, expected_ip=(self.INTERACTION_TYPE, MAL_INTERACTION_STAGES.PUBSUB_DEREGISTER_ACK), ip=(interaction_type, interaction_stage))
 
-    def receive_notify(self):
-        message = self.receive_message()
+    def receive_notify(self, signature):
+        message = self.receive_message(signature)
         interaction_type = message.header.interaction_type
         interaction_stage = message.header.interaction_stage
         is_error_message = message.header.is_error_message

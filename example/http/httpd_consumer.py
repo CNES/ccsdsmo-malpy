@@ -17,7 +17,7 @@ from malpy.mo import mal
 # HTTPD CONSUMER URI
 HOST = '127.0.0.1'
 PORT = 1444
- 
+
 server_address = (HOST, PORT)
 
 #FORMAT = config['LOGGER_FORMAT']
@@ -76,7 +76,7 @@ class MyTestHandler(http.server.BaseHTTPRequestHandler):
         data=pickle.dumps(request_dict)
         data_lenght = len(data)
         data_lenght_packed = pack(self.struct_format,data_lenght)
-    
+
         # Send data lenght
         logger.debug("Send {} bytes '{}'".format(len(data_lenght_packed),data_lenght_packed))
         s.send(data_lenght_packed)
@@ -84,7 +84,7 @@ class MyTestHandler(http.server.BaseHTTPRequestHandler):
         # Send data
         logger.debug("Send {} bytes '{}'".format(data_lenght,data))
         s.send(data)
-        
+
     def do_GET(self):
         logger = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ class MyTestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(404, 'Get is not supported')
         self.end_headers()
         self.wfile.write("<html><h1>Only POST request are authorized</h1><p>{}</html>".format(self.requestline).encode('utf-8'))
- 
+
     def do_POST(self):
         logger = logging.getLogger(__name__)
 
@@ -119,7 +119,7 @@ class MyTestHandler(http.server.BaseHTTPRequestHandler):
         #logger.debug("uri_host {} uri_port {} uri_path {}".format(uri_host, uri_port, uri_path))
         consumer_host, consumer_port = self._split_path(uri_path)
         logger.debug("consumer_host {} consumer_port {}".format(consumer_host, consumer_port))
-    
+
         key = "{}:{}".format(consumer_host, consumer_port)
         # Search key in openned connections
         if key in sockets_list:
@@ -154,7 +154,7 @@ class MyTestHandler(http.server.BaseHTTPRequestHandler):
             except Exception as e:
                 logger.warning("Send to consumer {} Abort Exception {}".format(key, e))
 
-        
+
         # TODO Revoir ce if ..... Remove socket in sockets_list except for PROGRESS_UPDATE and PUBSUB_NOTIFY stage
         if (self.headers.get('X-MAL-Interaction-Stage') != str(mal.MAL_INTERACTION_STAGES.PROGRESS_UPDATE) and \
             (self.headers.get('X-MAL-Interaction-Stage') != str(mal.MAL_INTERACTION_STAGES.PUBSUB_NOTIFY)) ):
@@ -163,8 +163,8 @@ class MyTestHandler(http.server.BaseHTTPRequestHandler):
         logger.info("********** Send Http Response to provider (Public) ************************")
         self.send_response(200, 'OK')
         self.end_headers()
-        self.wfile.write(b'')        
-    
+        self.wfile.write(b'')
+
 
 with http.server.HTTPServer(server_address, MyTestHandler) as httpd:
 

@@ -4,8 +4,8 @@ import sys
 sys.path.append('../../src')
 
 from malpy.mo import mal
-from malpy.transport import tcp
-from malpy import encoding
+from malpy.transport.tcp import TCPSocket
+from malpy.encoding.pickle import PickleEncoder
 
 
 def main():
@@ -13,23 +13,23 @@ def main():
     host = '127.0.0.1'
     port = 8009
 
-    s = tcp.TCPSocket()
-    enc = encoding.PickleEncoder()
+    s = TCPSocket()
+    enc = PickleEncoder()
     progress = mal.ProgressConsumerHandler(s, enc, "myprovider", "live_session")
     progress.connect((host, port))
     print("[*] Connected to %s %d" % (host, port))
-    progress.progress("value1".encode('utf8'))
-    progress.receive_ack()
-    result = b""
+    progress.progress(mal.String("README.md"))
+    progress.receive_ack([])
+    result = ""
     while True:
-        partial_result = progress.receive_update()
+        partial_result = progress.receive_update(mal.String)
         if progress.interaction_terminated:
-            print("[**] Response: {}".format(partial_result.msg_parts))
+            print("[**] Response: {}".format(partial_result.msg_parts._internal_value))
             break
         else:
-            print("[**] Received part: {}".format(partial_result.msg_parts))
-            result += partial_result.msg_parts
-    print("[*] Received:\n{}\n{}\n{}".format('-'*10, result.decode('utf8'), '-'*10))
+            print("[**] Received part: {}".format(partial_result.msg_parts._internal_value[:-1])) # Remove the \n at the end of the line
+            result += partial_result.msg_parts._internal_value
+    print("[*] Received:\n{}\n{}\n{}".format('-'*10, result, '-'*10))
 
 if __name__ == "__main__":
     main()
