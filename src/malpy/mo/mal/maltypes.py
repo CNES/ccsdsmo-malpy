@@ -796,7 +796,7 @@ class ObjectRef(Attribute):
 
     @key.setter
     def key(self, key):
-        self._internal_value[2] = Identifier(key, canBeNull=True, attribName='key')
+        self._internal_value[2] = Identifier(key, canBeNull=True, attribName='key')  # TODO: change to False when ESA impl is fixed
         self._isNull = False
 
     @property

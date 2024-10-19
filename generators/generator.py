@@ -687,7 +687,7 @@ class MALBuffer(object):
     ,
     "    @key.setter\n"
     "    def key(self, key):\n"
-    "        self._internal_value[2] = Identifier(key, canBeNull=True, attribName='key')\n"
+    "        self._internal_value[2] = Identifier(key, canBeNull=True, attribName='key')  # TODO: change to False when ESA impl is fixed\n"
     "        self._isNull = False\n"
     ,
     "    @property\n"
