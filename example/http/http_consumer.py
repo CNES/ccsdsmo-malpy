@@ -40,7 +40,7 @@ def main():
     request.connect((host, port))
     print("[*] Connected to %s %d" % (host, port))
     request.request([mpd.StandingOrder([mal.Identifier("Olivier"), None, None,
-                                       mpd.DeliveryMethodEnumEnum.SERVICE, None, mal.String("A comment")
+                                        mpd.DeliveryMethodEnumEnum.SERVICE, None, mal.String("A comment")
                                         ])
                     ])
     message = request.receive_response()
@@ -53,7 +53,6 @@ def main():
     subscriber.register(mal.Subscription( [mal.Identifier("Olivier"), [], [], []]))
     message = subscriber.receive_register_ack()
     print(message.msg_parts)
-
 
     while True:
         notification = subscriber.receive_notify()
