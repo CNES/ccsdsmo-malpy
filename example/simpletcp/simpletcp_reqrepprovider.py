@@ -6,7 +6,7 @@ sys.path.append('../../src')
 import threading
 
 from malpy.mo import mal
-from malpy.transport import tcp
+from malpy.transport.simpletcp import TCPSocket
 from malpy import encoding
 
 
@@ -38,7 +38,7 @@ def main():
     host = '127.0.0.1'
     port = 8009
 
-    s = tcp.TCPSocket()
+    s = TCPSocket()
     s.bind((host, port))
     try:
         s.listen(10)

@@ -4,7 +4,7 @@ import sys
 sys.path.append('../../src')
 
 from malpy.mo import mal
-from malpy.transport import tcp
+from malpy.transport.simpletcp import TCPSocket
 from malpy import encoding
 
 
@@ -20,7 +20,7 @@ def main():
     host = '127.0.0.1'
     port = 8009
 
-    s = tcp.TCPSocket()
+    s = TCPSocket()
     enc = encoding.PickleEncoder()
     request = MyRequestConsumerHandler(s, enc, "myprovider")
    

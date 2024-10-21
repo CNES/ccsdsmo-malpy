@@ -1,4 +1,5 @@
 import socket as pythonsocket
+import struct
 
 from malpy.malpydefinitions import MALPY_ENCODING
 from malpy.mo import mal
@@ -38,10 +39,13 @@ class TCPSocket(MALSocket):
         self.socket.close()
 
     def send(self, message):
+        self.socket.send(struct.pack('I', len(message)))
         self.socket.send(message)
 
     def recv(self):
-        return self.socket.recv(self._messagesize)
+        msg_size = struct.unpack('I', self.socket.recv(4))[0]
+        message = self.socket.recv(msg_size)
+        return message
 
     @property
     def uri(self):
