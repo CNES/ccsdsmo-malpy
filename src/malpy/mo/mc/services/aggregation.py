@@ -28,14 +28,14 @@ number = 6
 # CapabilitySet 1
 class MonitorValueProviderHandler(mal.PubSubProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 1
 
 
 class MonitorValueConsumerHandler(mal.PubSubConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 1
 
@@ -44,14 +44,14 @@ class MonitorValueConsumerHandler(mal.PubSubConsumerHandler):
 # CapabilitySet 2
 class GetValueProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 2
 
 
 class GetValueConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 2
 
@@ -60,28 +60,28 @@ class GetValueConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 3
 class EnableGenerationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 3
 
 
 class EnableGenerationConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 3
 
 
 class EnableFilterProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 4
 
 
 class EnableFilterConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 4
 
@@ -90,14 +90,14 @@ class EnableFilterConsumerHandler(mal.SubmitConsumerHandler):
 # CapabilitySet 4
 class ListDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 5
 
 
 class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 5
 
@@ -106,42 +106,42 @@ class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 5
 class AddAggregationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 6
 
 
 class AddAggregationConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 6
 
 
 class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 7
 
 
 class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 7
 
 
 class RemoveAggregationProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 8
 
 
 class RemoveAggregationConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 6
     OPERATION = 8
 

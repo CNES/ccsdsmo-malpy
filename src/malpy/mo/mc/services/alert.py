@@ -16,14 +16,14 @@ number = 3
 # CapabilitySet 1
 class EnableGenerationProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 1
 
 
 class EnableGenerationConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 1
 
@@ -32,14 +32,14 @@ class EnableGenerationConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 2
 class ListDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 2
 
 
 class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 2
 
@@ -48,42 +48,42 @@ class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 3
 class AddAlertProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 3
 
 
 class AddAlertConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 3
 
 
 class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 4
 
 
 class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 4
 
 
 class RemoveAlertProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 5
 
 
 class RemoveAlertConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 5
 

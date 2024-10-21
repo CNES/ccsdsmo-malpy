@@ -21,28 +21,28 @@ number = 1
 # CapabilitySet 1
 class SubmitActionProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 1
 
 
 class SubmitActionConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 1
 
 
 class PreCheckActionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 2
 
 
 class PreCheckActionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 2
 
@@ -51,14 +51,14 @@ class PreCheckActionConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 2
 class ListDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 3
 
 
 class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 3
 
@@ -67,42 +67,42 @@ class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 3
 class AddActionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 4
 
 
 class AddActionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 4
 
 
 class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 5
 
 
 class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 5
 
 
 class RemoveActionProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 6
 
 
 class RemoveActionConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 6
 

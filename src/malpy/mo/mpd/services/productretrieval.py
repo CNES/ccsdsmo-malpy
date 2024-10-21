@@ -14,42 +14,42 @@ number = 1
 # CapabilitySet 1
 class ListProductsProviderHandler(mal.RequestProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 1
 
 
 class ListProductsConsumerHandler(mal.RequestConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 1
 
 
 class GetProductsProviderHandler(mal.ProgressProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 2
 
 
 class GetProductsConsumerHandler(mal.ProgressConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 2
 
 
 class GetProductFilesProviderHandler(mal.ProgressProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 3
 
 
 class GetProductFilesConsumerHandler(mal.ProgressConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 1
     OPERATION = 3
 

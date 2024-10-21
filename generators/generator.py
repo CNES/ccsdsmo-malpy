@@ -940,7 +940,7 @@ class MALBuffer(object):
                     self.write(
     "class {}({}):\n".format(operationclassname, parentclassname) +
     "    AREA = {}\n".format(self.generator.area.number) +
-    "    VERSION = {}\n".format(self.generator.area.version) +
+    "    AREA_VERSION = {}\n".format(self.generator.area.version) +
     "    SERVICE = {}\n".format(service.number) +
     "    OPERATION = {}\n".format(operation.number) +
     "\n\n"

@@ -14,28 +14,28 @@ number = 3
 # CapabilitySet 1
 class NotifyProductDeliveryProviderHandler(mal.PubSubProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 1
 
 
 class NotifyProductDeliveryConsumerHandler(mal.PubSubConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 1
 
 
 class DeliverProductsProviderHandler(mal.PubSubProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 2
 
 
 class DeliverProductsConsumerHandler(mal.PubSubConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 3
     OPERATION = 2
 

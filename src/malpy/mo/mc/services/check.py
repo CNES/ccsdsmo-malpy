@@ -28,28 +28,28 @@ number = 4
 # CapabilitySet 1
 class GetCurrentTransitionListProviderHandler(mal.ProgressProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 1
 
 
 class GetCurrentTransitionListConsumerHandler(mal.ProgressConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 1
 
 
 class GetSummaryReportProviderHandler(mal.ProgressProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 2
 
 
 class GetSummaryReportConsumerHandler(mal.ProgressConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 2
 
@@ -58,28 +58,28 @@ class GetSummaryReportConsumerHandler(mal.ProgressConsumerHandler):
 # CapabilitySet 2
 class EnableServiceProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 3
 
 
 class EnableServiceConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 3
 
 
 class GetServiceStatusProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 4
 
 
 class GetServiceStatusConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 4
 
@@ -88,14 +88,14 @@ class GetServiceStatusConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 3
 class EnableCheckProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 5
 
 
 class EnableCheckConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 5
 
@@ -104,14 +104,14 @@ class EnableCheckConsumerHandler(mal.SubmitConsumerHandler):
 # CapabilitySet 4
 class TriggerCheckProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 6
 
 
 class TriggerCheckConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 6
 
@@ -120,28 +120,28 @@ class TriggerCheckConsumerHandler(mal.SubmitConsumerHandler):
 # CapabilitySet 5
 class ListDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 7
 
 
 class ListDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 7
 
 
 class ListCheckLinksProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 8
 
 
 class ListCheckLinksConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 8
 
@@ -150,42 +150,42 @@ class ListCheckLinksConsumerHandler(mal.RequestConsumerHandler):
 # CapabilitySet 6
 class AddCheckProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 9
 
 
 class AddCheckConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 9
 
 
 class UpdateDefinitionProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 10
 
 
 class UpdateDefinitionConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 10
 
 
 class RemoveCheckProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 11
 
 
 class RemoveCheckConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 11
 
@@ -194,28 +194,28 @@ class RemoveCheckConsumerHandler(mal.SubmitConsumerHandler):
 # CapabilitySet 7
 class AddParameterCheckProviderHandler(mal.RequestProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 12
 
 
 class AddParameterCheckConsumerHandler(mal.RequestConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 12
 
 
 class RemoveParameterCheckProviderHandler(mal.SubmitProviderHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 13
 
 
 class RemoveParameterCheckConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 4
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 4
     OPERATION = 13
 

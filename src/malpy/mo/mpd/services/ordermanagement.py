@@ -14,42 +14,42 @@ number = 2
 # CapabilitySet 1
 class ListStandingOrdersProviderHandler(mal.RequestProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 2
     OPERATION = 1
 
 
 class ListStandingOrdersConsumerHandler(mal.RequestConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 2
     OPERATION = 1
 
 
 class SubmitStandingOrderProviderHandler(mal.RequestProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 2
     OPERATION = 2
 
 
 class SubmitStandingOrderConsumerHandler(mal.RequestConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 2
     OPERATION = 2
 
 
 class CancelStandingOrderProviderHandler(mal.SubmitProviderHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 2
     OPERATION = 3
 
 
 class CancelStandingOrderConsumerHandler(mal.SubmitConsumerHandler):
     AREA = 9
-    VERSION = 1
+    AREA_VERSION = 1
     SERVICE = 2
     OPERATION = 3
 
