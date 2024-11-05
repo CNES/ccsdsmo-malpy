@@ -157,13 +157,12 @@ class MALMessageXML(object):
 
 
 class MALOperationXML(object):
-    __slots__ = ['name', 'number', 'comment', 'supportReplay', 'interactionType', 'messages', 'errors']
+    __slots__ = ['name', 'number', 'comment', 'interactionType', 'messages', 'errors']
 
     def __init__(self, node=None):
         self.name = None
         self.number = None
         self.comment = None
-        self.supportReplay = None
         self.interactionType = None
         self.messages = []
         self.errors = []
@@ -175,7 +174,6 @@ class MALOperationXML(object):
         self.number = int(node.attrib['number'])
         if 'comment' in node.attrib:
             self.comment = node.attrib['comment']
-        self.supportReplay = node.attrib['supportInReplay'] == "true"
         self.interactionType = OPERATIONTYPE[node.tag]
         for subnode in node:
             if subnode.tag == maltag('messages'):
@@ -311,6 +309,10 @@ class MALTypeXML(object):
     def parse(self, node):
         self.name = node.attrib['name']
         self.area = node.attrib['area']
+        if 'ObjectRef(' in self.name:
+            print(self.name, '-> ObjectRef')
+            self.name = 'ObjectRef'
+            self.area = "MAL"
         if 'service' in node.attrib:
             self.service = node.attrib['service']
         self.isList = (node.attrib.get('list', 'false') == 'true')
@@ -475,6 +477,16 @@ class MALBuffer(object):
     "version = {}\n".format(self.generator.area.version) +
     "\n"
         )
+
+    def write_maltype_struct(self):
+        self.write(
+    "class MALType():\n"
+    "    def __init__(self, maltype, nullable=False):\n"
+    "        self.type = maltype\n"
+    "        self.nullable = nullable\n"
+        )
+        self.write("\n")
+        self.write("\n")
 
     def write_shortforms(self, data_types):
         if not data_types:
@@ -727,6 +739,7 @@ class MALBuffer(object):
     def write_abstractcomposite_class(self, d):
         blockcomposite = [
     "    _fieldNumber = 0\n"
+    "    _fieldTypes = []\n"
         ,
     "    def __init__(self, value=None, canBeNull=True, attribName=None):\n"
     "        super().__init__(value, canBeNull, attribName)\n"
@@ -766,7 +779,7 @@ class MALBuffer(object):
         fieldNumber = "{}._fieldNumber + {}".format(parentclass, len(d.fields))
         self.write(
     "    _fieldNumber = {}\n".format(fieldNumber)
-            )
+        )
 
         self.write("\n")
         self.write(
@@ -836,6 +849,45 @@ class MALBuffer(object):
         self.write("\n")
         self.write("\n")
 
+    def write_fieldtypes_description(self, d):
+        parentclass = self._element_parentclass(d)
+
+        # Seems to be a bug in the XML from COM and MC
+        if parentclass == 'ABC':
+            parentclass = "mal.Composite"
+
+        if len(d.fields) == 0:
+            self.write(
+    "{}._fieldTypes = []\n".format(d.name)
+            )
+        else:
+            if self.generator.area.name == "MAL":
+                maltypeclass = "MALType"
+            else:
+                maltypeclass = "mal.MALType"
+
+            self.write(
+    "{}._fieldTypes = {}._fieldTypes + [\n".format(d.name, parentclass)
+            )
+            firstLoop = True
+            for field in d.fields:
+                if firstLoop:
+                    firstLoop = False
+                else:
+                    self.write(",\n")
+
+                fieldtype = self._element_completename(field.maltype)
+                if field.maltype.isList:
+                    fieldtype += 'List'
+                nullable = field.canBeNull
+                self.write(
+    "    {}({}, nullable={})".format(maltypeclass, fieldtype, nullable)
+                )
+            self.write('\n')
+            self.write(
+    "]\n"
+            )
+        
     def write_elementlist_class(self, d):
         if self.generator.area.name == "MAL":
             parentclass = "ElementList"
@@ -853,6 +905,15 @@ class MALBuffer(object):
             self.write(
     "    shortForm = None\n"
             )
+
+        if self.generator.area.name == "MAL":
+            maltypeclass = "MALType"
+        else:
+            maltypeclass = "mal.MALType"
+        self.write(
+    "    _fieldTypes = {}({})".format(maltypeclass, d.name)
+            )
+
         self.write(
     "\n" +
     "    def __init__(self, value=None, canBeNull=True, attribName=None):\n" +
@@ -876,6 +937,9 @@ class MALBuffer(object):
         self.write("\n")
 
     def write_datatypes(self, data_types):
+        if self.generator.area.name == "MAL":
+            self.write_maltype_struct()
+
         self.write_shortforms(data_types)
 
         # Abstract ElementList is needed for EnumerationLists
@@ -911,7 +975,9 @@ class MALBuffer(object):
             for dname, d in data_types['Composite'].items():
                 self.write_composite_class(d)
                 self.write_elementlist_class(d)
-
+            # Hack: add fieldtypes after declaring composites
+            for dname, d in data_types['Composite'].items():
+                self.write_fieldtypes_description(d)
         if 'Element' in data_types and 'ObjectRef' in data_types['Element']:
             self.write(
     "ObjectRef.value_type = ObjectIdentity  # Needed here so that ObjectIdentity is defined\n\n\n"

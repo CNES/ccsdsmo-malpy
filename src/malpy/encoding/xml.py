@@ -1,5 +1,6 @@
 import datetime
 import xml.dom.minidom
+import logging
 import re
 import sys
 from enum import IntEnum
@@ -8,32 +9,6 @@ from malpy.malpydefinitions import MALPY_ENCODING
 from malpy.mo import mal
 
 from .abstract_encoding import Encoder
-
-LOG_LEVEL = "INFO"
-
-class Debug():
-    depth = 0
-    def IN(self, *args):
-        self.DEBUG('>', *args)
-        self.depth += 1
-
-    def OUT(self, *args):
-        self.depth -= 1
-        self.DEBUG('<', *args)
-
-    def DEBUG(self, *args):
-        if LOG_LEVEL == "DEBUG":
-            print(self.depth*'-', *args)
-
-debug = Debug()
-def DEBUG(*args):
-    debug.DEBUG(*args)
-def DEBUG_IN(*args):
-    debug.IN(*args)
-def DEBUG_OUT(*args):
-    debug.OUT(*args)
-
-
 
 MAL_XML_NAMESPACE_URL = "http://www.ccsds.org/schema/malxml/MAL"
 MAL_XML = "xmlns:malxml"
@@ -141,11 +116,8 @@ class XMLEncoder(Encoder):
         # If the XML document was indented, there will be text node made of tabs
         # and newline characters. Those are not relevant for decoding.
         emptyNodePattern = re.compile(r"^[\n\t]*$")
-        maltypes = []
-
 
         def _cleanupEmptyChildNodes(node):
-
             clean_childNodes = []
             for element in node.childNodes:
                 # We only keep nodes that do not match the pattern
@@ -154,20 +126,26 @@ class XMLEncoder(Encoder):
                     _cleanupEmptyChildNodes(element)
             node.childNodes = clean_childNodes
 
-        def str_to_class(classname):
-            for module in MAL_MODULES:
-                try:
-                    return getattr(sys.modules[module], classname)
-                except AttributeError:
-                    pass
-            raise RuntimeError("I don't know this object")
 
-
-        def _decode_enum(element, objectClass):
-            # Special case for IntEnum (the encoding message is a string that we convert to enums)
-            for v in list(objectClass.value_type):
-                if v.name == element.nodeValue:
-                    return objectClass(v)
+        def _decode_composite(element, objectClass):
+            """
+            <IdBooleanPair>
+                <id>
+                        <Identifier>TOTO</Identifier>
+                </id>
+                <value>
+                        <Boolean>False</Boolean>
+                </value>
+            </IdBooleanPair>
+            """
+            logging.debug("_decode_composite")
+            subelements = element.childNodes
+            resultList = []
+            for k in range(len(subelements)):
+                resultList.append(
+                    _decode_internal2(subelements[k], objectClass._fieldTypes[k].type)
+                    )
+            return objectClass(resultList)
 
         def _decode_list(element, objectClass, name=None):
             """
@@ -183,23 +161,20 @@ class XMLEncoder(Encoder):
                 </Time>
             </TimeList>
             """
+            logging.debug("_decode_list")
             subelements = element.childNodes
+            resultList = []
             for subelement in subelements:
-                _decode_internal2(subelement, str_to_class())
+                resultList.append(
+                    _decode_internal2(subelement, objectClass._fieldTypes.type)
+                )
+            return objectClass(resultList)
 
-
-
-        def _decode_attribute(element, objectClass, name=None):
+        def _decode_enum(element, objectClass):
             """
-            <Time>
-                <Time>2024-10-20T12:22:00.999</Time>
-            </Time>
-            or
-            <timeName>
-                <Time>2024-10-20T12:22:00.999</Time>
-            </timeName>
-            or
-            <Time xsi:nil="true"/>
+            <InteractionType>
+                <InteractionType>SEND</InteractionType>
+            </InteractionType>
             """
 
             if len(element.childNodes) == 0:  # It's certainly a NULL
@@ -217,38 +192,93 @@ class XMLEncoder(Encoder):
             if len(subelement.childNodes) != 1:
                 raise RuntimeError("This is an attribute: it shall have exactly one child, got {}".format(len(element.childNodes)))
 
-            if objectClass.__name__ != element.nodeName:
+            if objectClass.__name__ not in ('Attribute', subelement.nodeName):
                 raise RuntimeError("ElementName shall be the name of the attribute: got {} instead of {}"
-                                    .format(element.nodeName, objectClass.__name__))
+                                    .format(subelement.nodeName, objectClass.__name__))
             subelement = subelement.childNodes[0]
 
-            print(subelement)
             if subelement.nodeType is subelement.TEXT_NODE:
-                print(subelement)
+                # Special case for IntEnum (the encoding message is a string that we convert to enums)
+                for v in list(objectClass.value_type):
+                    if v.name == subelement.nodeValue:
+                        return objectClass(v)
+            else:
+                raise RuntimeError("node should have been of type TEXT", subelement)
+
+        def _decode_attribute(element, objectClass, name=None):
+            """
+            <Time>
+                <Time>2024-10-20T12:22:00.999</Time>
+            </Time>
+            or
+            <timeName>
+                <Time>2024-10-20T12:22:00.999</Time>
+            </timeName>
+            or
+            <Time xsi:nil="true"/>
+            """
+            logging.debug("_decode_attribute")
+            
+            if len(element.childNodes) == 0:  # It's certainly a NULL
+                if element.hasAttribute('xsi:nil') and element.getAttribute('xsi:nil') == "true":
+                    return objectClass(None)
+                else:
+                    raise RuntimeError("elementNode, but not None")
+
+            # For all the other cases
+            if len(element.childNodes) != 1:
+                raise RuntimeError("This is an attribute: it shall have exactly one child, got {}".format(len(element.childNodes)))
+
+            subelement = element.childNodes[0]
+
+            if len(subelement.childNodes) != 1:
+                raise RuntimeError("This is an attribute: it shall have exactly one child, got {}".format(len(element.childNodes)))
+
+            if objectClass.__name__ not in ('Attribute', subelement.nodeName):
+                raise RuntimeError("ElementName shall be the name of the attribute: got {} instead of {}"
+                                    .format(subelement.nodeName, objectClass.__name__))
+            
+            if objectClass.__name__ == "Attribute":
+                # The nodeName is supposed to be the concrete attribute type
+                attributeType = getattr(sys.modules["malpy.mo.mal"], subelement.nodeName)
+            else:
+                attributeType = objectClass
+            subelement = subelement.childNodes[0]
+
+            if subelement.nodeType is subelement.TEXT_NODE:
                 # Handle 'blob' special case
-                if objectClass.__name__ == "Blob":
+                if attributeType.__name__ == "Blob":
                     value = bytes.fromhex(subelement.nodeValue)
                 # Special case for Time (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sss)
-                elif objectClass.__name__ == "Time":
+                elif attributeType.__name__ == "Time":
                     value = datetime.datetime.strptime(subelement.nodeValue, '%Y-%m-%dT%H:%M:%S.%f').timestamp()
                 # Special case for FineTime (value is a timestamp and we want YYYY-MM-DDThh:mm:ss.sssssssss)
-                elif objectClass.__name__ == "FineTime":
+                elif attributeType.__name__ == "FineTime":
                     value = datetime.datetime.strptime(subelement.nodeValue[:-3], '%Y-%m-%dT%H:%M:%S.%f').timestamp()
                     value += int(subelement.nodeValue[-3:]) * 1e-9
+                elif attributeType.__name__ == "Boolean":
+                    booleanTable = {
+                        'True': True,
+                        'False': False
+                    }
+                    try:
+                        value = booleanTable[subelement.nodeValue]
+                    except KeyError:
+                        raise RuntimeError("Boolean expects values 'True/False', got: {}".format(subelement.nodeValue))
                 else:
                     value = subelement.nodeValue
 
-                return objectClass(value)
+                return attributeType(value)
             else:
                 raise RuntimeError("node should have been of type TEXT", subelement)
 
         def _decode_internal2(body, signature):
             if mal.ElementList in signature.mro():
                 return _decode_list(body, signature)
-          #  elif mal.Composite in signature.mro():
-          #      return _decode_composite(body, signature)
-          #  elif mal.AbstractEnum in signature.mro():
-          #      return _decode_enum(body, signature)
+            elif mal.Composite in signature.mro():
+                return _decode_composite(body, signature)
+            elif mal.AbstractEnum in signature.mro():
+                return _decode_enum(body, signature)
             elif mal.Attribute in signature.mro():
                 return _decode_attribute(body, signature)
             else:
@@ -266,10 +296,8 @@ class XMLEncoder(Encoder):
         if type(signature) == type(list):
             decodedBody = []
             for i in range(len(signature)):
-                print(i, messageElements[i])
                 decodedBody.append(_decode_internal2(messageElements[i], signature[i]))
         else:
-            print(messageElements[0])
             subelement = messageElements[0]
             decoded_body = _decode_internal2(subelement, signature)
 

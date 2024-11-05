@@ -255,7 +255,7 @@ class CheckState(mal.AbstractEnum):
 
 class CheckStateList(mal.ElementList):
     shortForm = -MALShortForm.CHECKSTATE
-
+    _fieldTypes = mal.MALType(CheckState)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -367,7 +367,7 @@ class CheckDefinitionDetails(mal.Composite):
 
 class CheckDefinitionDetailsList(mal.ElementList):
     shortForm = None
-
+    _fieldTypes = mal.MALType(CheckDefinitionDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -459,7 +459,7 @@ class CheckLinkDetails(mal.Composite):
 
 class CheckLinkDetailsList(mal.ElementList):
     shortForm = -MALShortForm.CHECKLINKDETAILS
-
+    _fieldTypes = mal.MALType(CheckLinkDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -544,7 +544,7 @@ class CheckResult(mal.Composite):
 
 class CheckResultList(mal.ElementList):
     shortForm = -MALShortForm.CHECKRESULT
-
+    _fieldTypes = mal.MALType(CheckResult)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -636,7 +636,7 @@ class CheckLinkSummary(mal.Composite):
 
 class CheckLinkSummaryList(mal.ElementList):
     shortForm = -MALShortForm.CHECKLINKSUMMARY
-
+    _fieldTypes = mal.MALType(CheckLinkSummary)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -728,7 +728,7 @@ class CheckResultSummary(mal.Composite):
 
 class CheckResultSummaryList(mal.ElementList):
     shortForm = -MALShortForm.CHECKRESULTSUMMARY
-
+    _fieldTypes = mal.MALType(CheckResultSummary)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -820,7 +820,7 @@ class CheckResultFilter(mal.Composite):
 
 class CheckResultFilterList(mal.ElementList):
     shortForm = -MALShortForm.CHECKRESULTFILTER
-
+    _fieldTypes = mal.MALType(CheckResultFilter)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -892,7 +892,7 @@ class ReferenceValue(mal.Composite):
 
 class ReferenceValueList(mal.ElementList):
     shortForm = -MALShortForm.REFERENCEVALUE
-
+    _fieldTypes = mal.MALType(ReferenceValue)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -954,7 +954,7 @@ class ConstantCheckDefinition(CheckDefinitionDetails):
 
 class ConstantCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.CONSTANTCHECKDEFINITION
-
+    _fieldTypes = mal.MALType(ConstantCheckDefinition)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1016,7 +1016,7 @@ class ReferenceCheckDefinition(CheckDefinitionDetails):
 
 class ReferenceCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.REFERENCECHECKDEFINITION
-
+    _fieldTypes = mal.MALType(ReferenceCheckDefinition)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1114,7 +1114,7 @@ class DeltaCheckDefinition(CheckDefinitionDetails):
 
 class DeltaCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.DELTACHECKDEFINITION
-
+    _fieldTypes = mal.MALType(DeltaCheckDefinition)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1192,7 +1192,7 @@ class LimitCheckDefinition(CheckDefinitionDetails):
 
 class LimitCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.LIMITCHECKDEFINITION
-
+    _fieldTypes = mal.MALType(LimitCheckDefinition)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1254,7 +1254,7 @@ class CompoundCheckDefinition(CheckDefinitionDetails):
 
 class CompoundCheckDefinitionList(mal.ElementList):
     shortForm = -MALShortForm.COMPOUNDCHECKDEFINITION
-
+    _fieldTypes = mal.MALType(CompoundCheckDefinition)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1316,7 +1316,7 @@ class CheckTypedInstance(mal.Composite):
 
 class CheckTypedInstanceList(mal.ElementList):
     shortForm = -MALShortForm.CHECKTYPEDINSTANCE
-
+    _fieldTypes = mal.MALType(CheckTypedInstance)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1334,3 +1334,79 @@ class CheckTypedInstanceList(mal.ElementList):
                  self._internal_value.append(CheckTypedInstance(v))
 
 
+CheckDefinitionDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(mc.Severity, nullable=False),
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(mal.UInteger, nullable=False),
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(mal.UInteger, nullable=False),
+    mal.MALType(mal.Duration, nullable=False)
+]
+CheckLinkDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(mc.ParameterExpression, nullable=True)
+]
+CheckResult._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(CheckState, nullable=False),
+    mal.MALType(CheckState, nullable=False),
+    mal.MALType(mal.Long, nullable=True),
+    mal.MALType(mal.Attribute, nullable=True)
+]
+CheckLinkSummary._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(com.ObjectKey, nullable=True)
+]
+CheckResultSummary._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(com.ObjectKey, nullable=True),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(CheckResult, nullable=False)
+]
+CheckResultFilter._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.LongList, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.LongList, nullable=False),
+    mal.MALType(CheckStateList, nullable=False)
+]
+ReferenceValue._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.UShort, nullable=False),
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(com.ObjectKey, nullable=True)
+]
+ConstantCheckDefinition._fieldTypes = CheckDefinitionDetails._fieldTypes + [
+    mal.MALType(com.services.archive.ExpressionOperator, nullable=False),
+    mal.MALType(mc.AttributeValueList, nullable=False)
+]
+ReferenceCheckDefinition._fieldTypes = CheckDefinitionDetails._fieldTypes + [
+    mal.MALType(com.services.archive.ExpressionOperator, nullable=False),
+    mal.MALType(ReferenceValue, nullable=False)
+]
+DeltaCheckDefinition._fieldTypes = CheckDefinitionDetails._fieldTypes + [
+    mal.MALType(ReferenceValue, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Attribute, nullable=True),
+    mal.MALType(mal.Attribute, nullable=True)
+]
+LimitCheckDefinition._fieldTypes = CheckDefinitionDetails._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Attribute, nullable=True),
+    mal.MALType(mal.Attribute, nullable=True)
+]
+CompoundCheckDefinition._fieldTypes = CheckDefinitionDetails._fieldTypes + [
+    mal.MALType(mal.UInteger, nullable=False),
+    mal.MALType(mal.LongList, nullable=False)
+]
+CheckTypedInstance._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(com.ObjectType, nullable=False),
+    mal.MALType(mc.ObjectInstancePair, nullable=True)
+]

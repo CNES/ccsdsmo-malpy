@@ -228,7 +228,7 @@ class StatisticFunctionDetails(mal.Composite):
 
 class StatisticFunctionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.STATISTICFUNCTIONDETAILS
-
+    _fieldTypes = mal.MALType(StatisticFunctionDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -330,7 +330,7 @@ class StatisticLinkDetails(mal.Composite):
 
 class StatisticLinkDetailsList(mal.ElementList):
     shortForm = -MALShortForm.STATISTICLINKDETAILS
-
+    _fieldTypes = mal.MALType(StatisticLinkDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -435,7 +435,7 @@ class StatisticValue(mal.Composite):
 
 class StatisticValueList(mal.ElementList):
     shortForm = -MALShortForm.STATISTICVALUE
-
+    _fieldTypes = mal.MALType(StatisticValue)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -507,7 +507,7 @@ class StatisticCreationRequest(mal.Composite):
 
 class StatisticCreationRequestList(mal.ElementList):
     shortForm = -MALShortForm.STATISTICCREATIONREQUEST
-
+    _fieldTypes = mal.MALType(StatisticCreationRequest)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -599,7 +599,7 @@ class StatisticLinkSummary(mal.Composite):
 
 class StatisticLinkSummaryList(mal.ElementList):
     shortForm = -MALShortForm.STATISTICLINKSUMMARY
-
+    _fieldTypes = mal.MALType(StatisticLinkSummary)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -661,7 +661,7 @@ class StatisticEvaluationReport(mal.Composite):
 
 class StatisticEvaluationReportList(mal.ElementList):
     shortForm = -MALShortForm.STATISTICEVALUATIONREPORT
-
+    _fieldTypes = mal.MALType(StatisticEvaluationReport)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -679,3 +679,39 @@ class StatisticEvaluationReportList(mal.ElementList):
                  self._internal_value.append(StatisticEvaluationReport(v))
 
 
+StatisticFunctionDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Identifier, nullable=False),
+    mal.MALType(mal.String, nullable=False)
+]
+StatisticLinkDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(mal.Duration, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False)
+]
+StatisticValue._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Time, nullable=True),
+    mal.MALType(mal.Time, nullable=True),
+    mal.MALType(mal.Time, nullable=True),
+    mal.MALType(mal.Attribute, nullable=True),
+    mal.MALType(mal.UInteger, nullable=False)
+]
+StatisticCreationRequest._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(com.ObjectKey, nullable=False),
+    mal.MALType(StatisticLinkDetails, nullable=False)
+]
+StatisticLinkSummary._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(com.ObjectKey, nullable=False)
+]
+StatisticEvaluationReport._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(StatisticValue, nullable=False)
+]

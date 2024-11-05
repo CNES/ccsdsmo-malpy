@@ -12,6 +12,12 @@ name = "MAL"
 number = 1
 version = 3
 
+class MALType():
+    def __init__(self, maltype, nullable=False):
+        self.type = maltype
+        self.nullable = nullable
+
+
 class MALShortForm(IntEnum):
     BLOB = 1
     BOOLEAN = 2
@@ -117,7 +123,7 @@ class Attribute(Element):
 
 class AttributeList(ElementList):
     shortForm = None
-
+    _fieldTypes = MALType(Attribute)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -161,6 +167,7 @@ class Composite(Element):
     shortForm = None
 
     _fieldNumber = 0
+    _fieldTypes = []
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -178,7 +185,7 @@ class Composite(Element):
 
 class CompositeList(ElementList):
     shortForm = None
-
+    _fieldTypes = MALType(Composite)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -204,7 +211,7 @@ class Object(Composite):
 
 class ObjectList(ElementList):
     shortForm = None
-
+    _fieldTypes = MALType(Object)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -231,7 +238,7 @@ class Blob(Attribute):
 
 class BlobList(ElementList):
     shortForm = -MALShortForm.BLOB
-
+    _fieldTypes = MALType(Blob)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -258,7 +265,7 @@ class Boolean(Attribute):
 
 class BooleanList(ElementList):
     shortForm = -MALShortForm.BOOLEAN
-
+    _fieldTypes = MALType(Boolean)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -285,7 +292,7 @@ class Duration(Attribute):
 
 class DurationList(ElementList):
     shortForm = -MALShortForm.DURATION
-
+    _fieldTypes = MALType(Duration)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -312,7 +319,7 @@ class Float(Attribute):
 
 class FloatList(ElementList):
     shortForm = -MALShortForm.FLOAT
-
+    _fieldTypes = MALType(Float)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -339,7 +346,7 @@ class Double(Attribute):
 
 class DoubleList(ElementList):
     shortForm = -MALShortForm.DOUBLE
-
+    _fieldTypes = MALType(Double)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -366,7 +373,7 @@ class Identifier(Attribute):
 
 class IdentifierList(ElementList):
     shortForm = -MALShortForm.IDENTIFIER
-
+    _fieldTypes = MALType(Identifier)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -398,7 +405,7 @@ class Octet(Attribute):
 
 class OctetList(ElementList):
     shortForm = -MALShortForm.OCTET
-
+    _fieldTypes = MALType(Octet)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -430,7 +437,7 @@ class UOctet(Attribute):
 
 class UOctetList(ElementList):
     shortForm = -MALShortForm.UOCTET
-
+    _fieldTypes = MALType(UOctet)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -462,7 +469,7 @@ class Short(Attribute):
 
 class ShortList(ElementList):
     shortForm = -MALShortForm.SHORT
-
+    _fieldTypes = MALType(Short)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -494,7 +501,7 @@ class UShort(Attribute):
 
 class UShortList(ElementList):
     shortForm = -MALShortForm.USHORT
-
+    _fieldTypes = MALType(UShort)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -526,7 +533,7 @@ class Integer(Attribute):
 
 class IntegerList(ElementList):
     shortForm = -MALShortForm.INTEGER
-
+    _fieldTypes = MALType(Integer)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -558,7 +565,7 @@ class UInteger(Attribute):
 
 class UIntegerList(ElementList):
     shortForm = -MALShortForm.UINTEGER
-
+    _fieldTypes = MALType(UInteger)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -590,7 +597,7 @@ class Long(Attribute):
 
 class LongList(ElementList):
     shortForm = -MALShortForm.LONG
-
+    _fieldTypes = MALType(Long)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -622,7 +629,7 @@ class ULong(Attribute):
 
 class ULongList(ElementList):
     shortForm = -MALShortForm.ULONG
-
+    _fieldTypes = MALType(ULong)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -649,7 +656,7 @@ class String(Attribute):
 
 class StringList(ElementList):
     shortForm = -MALShortForm.STRING
-
+    _fieldTypes = MALType(String)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -676,7 +683,7 @@ class Time(Attribute):
 
 class TimeList(ElementList):
     shortForm = -MALShortForm.TIME
-
+    _fieldTypes = MALType(Time)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -703,7 +710,7 @@ class FineTime(Attribute):
 
 class FineTimeList(ElementList):
     shortForm = -MALShortForm.FINETIME
-
+    _fieldTypes = MALType(FineTime)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -730,7 +737,7 @@ class URI(Attribute):
 
 class URIList(ElementList):
     shortForm = -MALShortForm.URI
-
+    _fieldTypes = MALType(URI)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -811,7 +818,7 @@ class ObjectRef(Attribute):
 
 class ObjectRefList(ElementList):
     shortForm = -MALShortForm.OBJECTREF
-
+    _fieldTypes = MALType(ObjectRef)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -849,7 +856,7 @@ class InteractionType(AbstractEnum):
 
 class InteractionTypeList(ElementList):
     shortForm = -MALShortForm.INTERACTIONTYPE
-
+    _fieldTypes = MALType(InteractionType)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -884,7 +891,7 @@ class SessionType(AbstractEnum):
 
 class SessionTypeList(ElementList):
     shortForm = -MALShortForm.SESSIONTYPE
-
+    _fieldTypes = MALType(SessionType)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -920,7 +927,7 @@ class QoSLevel(AbstractEnum):
 
 class QoSLevelList(ElementList):
     shortForm = -MALShortForm.QOSLEVEL
-
+    _fieldTypes = MALType(QoSLevel)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -971,7 +978,7 @@ class AttributeType(AbstractEnum):
 
 class AttributeTypeList(ElementList):
     shortForm = -MALShortForm.ATTRIBUTETYPE
-
+    _fieldTypes = MALType(AttributeType)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1010,7 +1017,7 @@ class MOArea(AbstractEnum):
 
 class MOAreaList(ElementList):
     shortForm = -MALShortForm.MOAREA
-
+    _fieldTypes = MALType(MOArea)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1092,7 +1099,7 @@ class Subscription(Composite):
 
 class SubscriptionList(ElementList):
     shortForm = -MALShortForm.SUBSCRIPTION
-
+    _fieldTypes = MALType(Subscription)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1154,7 +1161,7 @@ class SubscriptionFilter(Composite):
 
 class SubscriptionFilterList(ElementList):
     shortForm = -MALShortForm.SUBSCRIPTIONFILTER
-
+    _fieldTypes = MALType(SubscriptionFilter)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1226,7 +1233,7 @@ class UpdateHeader(Composite):
 
 class UpdateHeaderList(ElementList):
     shortForm = -MALShortForm.UPDATEHEADER
-
+    _fieldTypes = MALType(UpdateHeader)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1288,7 +1295,7 @@ class IdBooleanPair(Composite):
 
 class IdBooleanPairList(ElementList):
     shortForm = -MALShortForm.IDBOOLEANPAIR
-
+    _fieldTypes = MALType(IdBooleanPair)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1356,7 +1363,7 @@ class Pair(Composite):
 
 class PairList(ElementList):
     shortForm = -MALShortForm.PAIR
-
+    _fieldTypes = MALType(Pair)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1421,7 +1428,7 @@ class NamedValue(Composite):
 
 class NamedValueList(ElementList):
     shortForm = -MALShortForm.NAMEDVALUE
-
+    _fieldTypes = MALType(NamedValue)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1533,7 +1540,7 @@ class File(Composite):
 
 class FileList(ElementList):
     shortForm = -MALShortForm.FILE
-
+    _fieldTypes = MALType(File)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1605,7 +1612,7 @@ class ObjectIdentity(Composite):
 
 class ObjectIdentityList(ElementList):
     shortForm = -MALShortForm.OBJECTIDENTITY
-
+    _fieldTypes = MALType(ObjectIdentity)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1677,7 +1684,7 @@ class ServiceId(Composite):
 
 class ServiceIdList(ElementList):
     shortForm = -MALShortForm.SERVICEID
-
+    _fieldTypes = MALType(ServiceId)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1732,7 +1739,7 @@ class NullableAttribute(Composite):
 
 class NullableAttributeList(ElementList):
     shortForm = -MALShortForm.NULLABLEATTRIBUTE
-
+    _fieldTypes = MALType(NullableAttribute)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -1750,6 +1757,55 @@ class NullableAttributeList(ElementList):
                  self._internal_value.append(NullableAttribute(v))
 
 
+Subscription._fieldTypes = Composite._fieldTypes + [
+    MALType(Identifier, nullable=False),
+    MALType(IdentifierList, nullable=True),
+    MALType(IdentifierList, nullable=True),
+    MALType(SubscriptionFilterList, nullable=True)
+]
+SubscriptionFilter._fieldTypes = Composite._fieldTypes + [
+    MALType(Identifier, nullable=False),
+    MALType(AttributeList, nullable=False)
+]
+UpdateHeader._fieldTypes = Composite._fieldTypes + [
+    MALType(Identifier, nullable=True),
+    MALType(IdentifierList, nullable=True),
+    MALType(NullableAttributeList, nullable=True)
+]
+IdBooleanPair._fieldTypes = Composite._fieldTypes + [
+    MALType(Identifier, nullable=False),
+    MALType(Boolean, nullable=True)
+]
+Pair._fieldTypes = Composite._fieldTypes + [
+    MALType(Attribute, nullable=True),
+    MALType(Attribute, nullable=True)
+]
+NamedValue._fieldTypes = Composite._fieldTypes + [
+    MALType(Identifier, nullable=False),
+    MALType(Attribute, nullable=True)
+]
+File._fieldTypes = Composite._fieldTypes + [
+    MALType(String, nullable=False),
+    MALType(String, nullable=True),
+    MALType(Time, nullable=True),
+    MALType(Time, nullable=True),
+    MALType(ULong, nullable=True),
+    MALType(Blob, nullable=True),
+    MALType(NamedValueList, nullable=True)
+]
+ObjectIdentity._fieldTypes = Composite._fieldTypes + [
+    MALType(IdentifierList, nullable=False),
+    MALType(Identifier, nullable=False),
+    MALType(UInteger, nullable=False)
+]
+ServiceId._fieldTypes = Composite._fieldTypes + [
+    MALType(UShort, nullable=False),
+    MALType(UShort, nullable=False),
+    MALType(UOctet, nullable=False)
+]
+NullableAttribute._fieldTypes = Composite._fieldTypes + [
+    MALType(Attribute, nullable=True)
+]
 ObjectRef.value_type = ObjectIdentity  # Needed here so that ObjectIdentity is defined
 
 

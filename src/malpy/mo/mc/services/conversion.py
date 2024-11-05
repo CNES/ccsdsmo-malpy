@@ -53,7 +53,7 @@ class DiscreteConversionDetails(mal.Composite):
 
 class DiscreteConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.DISCRETECONVERSIONDETAILS
-
+    _fieldTypes = mal.MALType(DiscreteConversionDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -115,7 +115,7 @@ class LineConversionDetails(mal.Composite):
 
 class LineConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.LINECONVERSIONDETAILS
-
+    _fieldTypes = mal.MALType(LineConversionDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -167,7 +167,7 @@ class PolyConversionDetails(mal.Composite):
 
 class PolyConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.POLYCONVERSIONDETAILS
-
+    _fieldTypes = mal.MALType(PolyConversionDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -219,7 +219,7 @@ class RangeConversionDetails(mal.Composite):
 
 class RangeConversionDetailsList(mal.ElementList):
     shortForm = -MALShortForm.RANGECONVERSIONDETAILS
-
+    _fieldTypes = mal.MALType(RangeConversionDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -237,3 +237,16 @@ class RangeConversionDetailsList(mal.ElementList):
                  self._internal_value.append(RangeConversionDetails(v))
 
 
+DiscreteConversionDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.PairList, nullable=False)
+]
+LineConversionDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.PairList, nullable=False)
+]
+PolyConversionDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.PairList, nullable=False)
+]
+RangeConversionDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.PairList, nullable=False)
+]

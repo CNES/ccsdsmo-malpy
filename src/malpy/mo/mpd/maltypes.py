@@ -43,7 +43,7 @@ class DeliveryMethodEnum(mal.AbstractEnum):
 
 class DeliveryMethodEnumList(mal.ElementList):
     shortForm = -MALShortForm.DELIVERYMETHODENUM
-
+    _fieldTypes = mal.MALType(DeliveryMethodEnum)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -81,7 +81,7 @@ class SecondaryErrorCodeEnum(mal.AbstractEnum):
 
 class SecondaryErrorCodeEnumList(mal.ElementList):
     shortForm = -MALShortForm.SECONDARYERRORCODEENUM
-
+    _fieldTypes = mal.MALType(SecondaryErrorCodeEnum)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -143,7 +143,7 @@ class ProductType(mal.Object):
 
 class ProductTypeList(mal.ElementList):
     shortForm = -MALShortForm.PRODUCTTYPE
-
+    _fieldTypes = mal.MALType(ProductType)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -195,7 +195,7 @@ class Product(mal.Object):
 
     @productType.setter
     def productType(self, productType):
-        self._internal_value[mal.Object._fieldNumber + 0] = ObjectRef(ProductType)(productType, canBeNull=False, attribName='productType')
+        self._internal_value[mal.Object._fieldNumber + 0] = mal.ObjectRef(productType, canBeNull=False, attribName='productType')
         self._isNull = False
 
     @property
@@ -255,7 +255,7 @@ class Product(mal.Object):
 
 class ProductList(mal.ElementList):
     shortForm = -MALShortForm.PRODUCT
-
+    _fieldTypes = mal.MALType(Product)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -357,7 +357,7 @@ class StandingOrder(mal.Composite):
 
 class StandingOrderList(mal.ElementList):
     shortForm = -MALShortForm.STANDINGORDER
-
+    _fieldTypes = mal.MALType(StandingOrder)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -409,7 +409,7 @@ class ProductSummary(mal.Composite):
 
     @productType.setter
     def productType(self, productType):
-        self._internal_value[mal.Composite._fieldNumber + 0] = ObjectRef(ProductType)(productType, canBeNull=False, attribName='productType')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.ObjectRef(productType, canBeNull=False, attribName='productType')
         self._isNull = False
 
     @property
@@ -418,7 +418,7 @@ class ProductSummary(mal.Composite):
 
     @product.setter
     def product(self, product):
-        self._internal_value[mal.Composite._fieldNumber + 1] = ObjectRef(Product)(product, canBeNull=False, attribName='product')
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.ObjectRef(product, canBeNull=False, attribName='product')
         self._isNull = False
 
     @property
@@ -469,7 +469,7 @@ class ProductSummary(mal.Composite):
 
 class ProductSummaryList(mal.ElementList):
     shortForm = -MALShortForm.PRODUCTSUMMARY
-
+    _fieldTypes = mal.MALType(ProductSummary)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -518,7 +518,7 @@ class ProductFilter(mal.Composite):
 
     @productType.setter
     def productType(self, productType):
-        self._internal_value[mal.Composite._fieldNumber + 0] = ObjectRef(ProductType)(productType, canBeNull=True, attribName='productType')
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.ObjectRef(productType, canBeNull=True, attribName='productType')
         self._isNull = False
 
     @property
@@ -551,7 +551,7 @@ class ProductFilter(mal.Composite):
 
 class ProductFilterList(mal.ElementList):
     shortForm = -MALShortForm.PRODUCTFILTER
-
+    _fieldTypes = mal.MALType(ProductFilter)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -613,7 +613,7 @@ class TimeWindow(mal.Composite):
 
 class TimeWindowList(mal.ElementList):
     shortForm = -MALShortForm.TIMEWINDOW
-
+    _fieldTypes = mal.MALType(TimeWindow)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -695,7 +695,7 @@ class ParameterDef(mal.Composite):
 
 class ParameterDefList(mal.ElementList):
     shortForm = -MALShortForm.PARAMETERDEF
-
+    _fieldTypes = mal.MALType(ParameterDef)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -757,7 +757,7 @@ class ParameterFilter(mal.Composite):
 
 class ParameterFilterList(mal.ElementList):
     shortForm = None
-
+    _fieldTypes = mal.MALType(ParameterFilter)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -825,7 +825,7 @@ class ValueRange(ParameterFilter):
 
 class ValueRangeList(mal.ElementList):
     shortForm = -MALShortForm.VALUERANGE
-
+    _fieldTypes = mal.MALType(ValueRange)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -877,7 +877,7 @@ class ValueSet(ParameterFilter):
 
 class ValueSetList(mal.ElementList):
     shortForm = -MALShortForm.VALUESET
-
+    _fieldTypes = mal.MALType(ValueSet)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -929,7 +929,7 @@ class StringPattern(ParameterFilter):
 
 class StringPatternList(mal.ElementList):
     shortForm = -MALShortForm.STRINGPATTERN
-
+    _fieldTypes = mal.MALType(StringPattern)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -947,6 +947,66 @@ class StringPatternList(mal.ElementList):
                  self._internal_value.append(StringPattern(v))
 
 
+ProductType._fieldTypes = mal.Object._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(ParameterDefList, nullable=True)
+]
+Product._fieldTypes = mal.Object._fieldTypes + [
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(mal.ObjectRef, nullable=True),
+    mal.MALType(TimeWindow, nullable=False),
+    mal.MALType(mal.NamedValueList, nullable=True),
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(mal.Blob, nullable=False)
+]
+StandingOrder._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Identifier, nullable=False),
+    mal.MALType(ProductFilter, nullable=True),
+    mal.MALType(TimeWindow, nullable=True),
+    mal.MALType(DeliveryMethodEnum, nullable=False),
+    mal.MALType(mal.URI, nullable=True),
+    mal.MALType(mal.String, nullable=False)
+]
+ProductSummary._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(mal.ObjectRef, nullable=True),
+    mal.MALType(TimeWindow, nullable=False),
+    mal.MALType(mal.NamedValueList, nullable=True),
+    mal.MALType(mal.String, nullable=False)
+]
+ProductFilter._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.ObjectRef, nullable=True),
+    mal.MALType(mal.IdentifierList, nullable=True),
+    mal.MALType(mal.ObjectRefList, nullable=True),
+    mal.MALType(ParameterFilterList, nullable=True)
+]
+TimeWindow._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(mal.Time, nullable=False)
+]
+ParameterDef._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Identifier, nullable=False),
+    mal.MALType(mal.AttributeType, nullable=False),
+    mal.MALType(mal.String, nullable=True),
+    mal.MALType(mal.String, nullable=True)
+]
+ParameterFilter._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Identifier, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False)
+]
+ValueRange._fieldTypes = ParameterFilter._fieldTypes + [
+    mal.MALType(mal.Attribute, nullable=True),
+    mal.MALType(mal.Attribute, nullable=True)
+]
+ValueSet._fieldTypes = ParameterFilter._fieldTypes + [
+    mal.MALType(mal.AttributeList, nullable=False)
+]
+StringPattern._fieldTypes = ParameterFilter._fieldTypes + [
+    mal.MALType(mal.String, nullable=False)
+]
 class Errors(IntEnum):
     """All MAL errors."""
 

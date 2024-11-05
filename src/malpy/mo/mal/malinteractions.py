@@ -4,6 +4,7 @@ from enum import IntEnum
 
 from .maltypes import InteractionTypeEnum, number
 
+
 class MAL_INTERACTION_STAGES:
     # Send
     SEND = 1

@@ -82,7 +82,7 @@ class GroupDetails(mal.Composite):
 
 class GroupDetailsList(mal.ElementList):
     shortForm = -MALShortForm.GROUPDETAILS
-
+    _fieldTypes = mal.MALType(GroupDetails)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -100,3 +100,9 @@ class GroupDetailsList(mal.ElementList):
                  self._internal_value.append(GroupDetails(v))
 
 
+GroupDetails._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(com.ObjectType, nullable=False),
+    mal.MALType(mal.IdentifierList, nullable=False),
+    mal.MALType(mal.LongList, nullable=False)
+]

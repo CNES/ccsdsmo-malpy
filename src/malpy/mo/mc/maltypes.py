@@ -3,39 +3,50 @@
 # This file is generated. Do NOT edit it by hand.   #
 #####################################################
 
-"""This section details the MC services, the structures used by the services are detailed in section 4. Both the services and structures are defined in terms of the MO MAL, which is defined in [2], so it is possible to deploy them over any supported protocol and message transport.
-The services defined here are also specified in terms of the COM, which is defined in [3].
-To aid comprehension, several tables are included for each service and operation definition. The table formats are briefly described in section 1.6.3.2 and are the same as those used for the specification of the MO COM services in [3]. 
-All service specifications in this document are part of the MC area, which has a short form number of '4'."""
+"""The M&C services provide operations for generic monitoring and control of a remote service provider (e.g., a spacecraft or ground system component)."""
 
 from enum import IntEnum
 from malpy.mo import mal
 
 name = "MC"
 number = 4
-version = 1
+version = 2
 
 class MALShortForm(IntEnum):
     SEVERITY = 6
-    ARGUMENTDEFINITIONDETAILS = 1
+    ACTIONCATEGORY = 10
+    VALIDITYSTATE = 20
+    ARGUMENTDEFINITION = 1
     ATTRIBUTEVALUE = 2
-    CONDITIONALCONVERSION = 3
-    PARAMETEREXPRESSION = 4
-    OBJECTINSTANCEPAIR = 7
+    ACTIONDEFINITION = 11
+    ACTIONEXECUTIONREQUEST = 12
+    ACTIONPROGRESSSTARTEVENT = 13
+    ACTIONPROGRESSEXECUTIONEVENT = 14
+    ACTIONPROGRESSCOMPLETIONEVENT = 15
+    PARAMETERDEFINITION = 21
+    PARAMETERVALUEDATA = 22
+    PARAMETERVALUE = 23
+    REPORTCONFIGURATION = 24
+    ALERTDEFINITION = 30
+    ALERTEVENT = 31
+    ALERTCONFIGURATION = 32
+    AGGREGATIONDEFINITION = 60
+    AGGREGATIONVALUE = 61
+    PACKETVALUE = 90
 
 
 class SeverityEnum(IntEnum):
-    """The severity enumeration holds the possible values for a severity. The numerical value represents the increasing severity, therefore CRITICAL is more severe than ALARM. Normally, for checks, only the Warning and Critical ranges are used: the colour yellow is associated with Warning, and the colour red is associated with Critical."""
+    """"""
 
-    INFORMATIONAL = 1  # Indicates a nominal situation with no consequences.
-    WARNING = 2  # Indicates unexpected behaviour without directly threatening consequences.
-    ALARM = 3  # Indicates behaviour of serious concern requiring the attention of an operator, but not necessarily a malfunction.
-    SEVERE = 4  # Indicates that the monitored item has malfunctioned. Requires operator attention.
-    CRITICAL = 5  # Indicates behaviour with mission threatening consequences. Requires operator attention.
+    INFORMATIONAL = 1  # 
+    WARNING = 2  # 
+    ALARM = 3  # 
+    SEVERE = 4  # 
+    CRITICAL = 5  # 
 
 
 class Severity(mal.AbstractEnum):
-    """The severity enumeration holds the possible values for a severity. The numerical value represents the increasing severity, therefore CRITICAL is more severe than ALARM. Normally, for checks, only the Warning and Critical ranges are used: the colour yellow is associated with Warning, and the colour red is associated with Critical."""
+    """"""
 
     shortForm = MALShortForm.SEVERITY
     value_type = SeverityEnum
@@ -43,7 +54,7 @@ class Severity(mal.AbstractEnum):
 
 class SeverityList(mal.ElementList):
     shortForm = -MALShortForm.SEVERITY
-
+    _fieldTypes = mal.MALType(Severity)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -61,15 +72,88 @@ class SeverityList(mal.ElementList):
                  self._internal_value.append(Severity(v))
 
 
-class ArgumentDefinitionDetails(mal.Composite):
-    """The ArgumentDefinitionDetails structure holds the details of an argument definition with a set of associated attributes, such as conversion used. The conditionalConversions define the conditions where a referenced conversion is applied. Only the first TRUE conversion should be applied."""
+class ActionCategoryEnum(IntEnum):
+    """"""
 
-    shortForm = MALShortForm.ARGUMENTDEFINITIONDETAILS
-    _fieldNumber = mal.Composite._fieldNumber + 7
+    DEFAULT = 1  # 
+    HIPRIORITY = 2  # 
+    CRITICAL = 3  # 
+
+
+class ActionCategory(mal.AbstractEnum):
+    """"""
+
+    shortForm = MALShortForm.ACTIONCATEGORY
+    value_type = ActionCategoryEnum
+
+
+class ActionCategoryList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONCATEGORY
+    _fieldTypes = mal.MALType(ActionCategory)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ActionCategory(v))
+
+
+class ValidityStateEnum(IntEnum):
+    """"""
+
+    VALID = 0  # 
+    EXPIRED = 1  # 
+    INVALID_RAW = 2  # 
+    INVALID_CONVERSION = 3  # 
+    UNVERIFIED = 4  # 
+    INVALID = 5  # 
+
+
+class ValidityState(mal.AbstractEnum):
+    """"""
+
+    shortForm = MALShortForm.VALIDITYSTATE
+    value_type = ValidityStateEnum
+
+
+class ValidityStateList(mal.ElementList):
+    shortForm = -MALShortForm.VALIDITYSTATE
+    _fieldTypes = mal.MALType(ValidityState)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ValidityState(v))
+
+
+class ArgumentDefinition(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.ARGUMENTDEFINITION
+    _fieldNumber = mal.Composite._fieldNumber + 6
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*7
+        self._internal_value += [None]*6
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -85,9 +169,8 @@ class ArgumentDefinitionDetails(mal.Composite):
             self.description = value[mal.Composite._fieldNumber + 1]
             self.rawType = value[mal.Composite._fieldNumber + 2]
             self.rawUnit = value[mal.Composite._fieldNumber + 3]
-            self.conditionalConversions = value[mal.Composite._fieldNumber + 4]
-            self.convertedType = value[mal.Composite._fieldNumber + 5]
-            self.convertedUnit = value[mal.Composite._fieldNumber + 6]
+            self.convertedType = value[mal.Composite._fieldNumber + 4]
+            self.convertedUnit = value[mal.Composite._fieldNumber + 5]
 
     @property
     def argId(self):
@@ -113,7 +196,7 @@ class ArgumentDefinitionDetails(mal.Composite):
 
     @rawType.setter
     def rawType(self, rawType):
-        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Octet(rawType, canBeNull=False, attribName='rawType')
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.AttributeType(rawType, canBeNull=False, attribName='rawType')
         self._isNull = False
 
     @property
@@ -126,36 +209,27 @@ class ArgumentDefinitionDetails(mal.Composite):
         self._isNull = False
 
     @property
-    def conditionalConversions(self):
-        return self._internal_value[mal.Composite._fieldNumber + 4]
-
-    @conditionalConversions.setter
-    def conditionalConversions(self, conditionalConversions):
-        self._internal_value[mal.Composite._fieldNumber + 4] = ConditionalConversionList(conditionalConversions, canBeNull=True, attribName='conditionalConversions')
-        self._isNull = False
-
-    @property
     def convertedType(self):
-        return self._internal_value[mal.Composite._fieldNumber + 5]
+        return self._internal_value[mal.Composite._fieldNumber + 4]
 
     @convertedType.setter
     def convertedType(self, convertedType):
-        self._internal_value[mal.Composite._fieldNumber + 5] = mal.Octet(convertedType, canBeNull=True, attribName='convertedType')
+        self._internal_value[mal.Composite._fieldNumber + 4] = mal.AttributeType(convertedType, canBeNull=True, attribName='convertedType')
         self._isNull = False
 
     @property
     def convertedUnit(self):
-        return self._internal_value[mal.Composite._fieldNumber + 6]
+        return self._internal_value[mal.Composite._fieldNumber + 5]
 
     @convertedUnit.setter
     def convertedUnit(self, convertedUnit):
-        self._internal_value[mal.Composite._fieldNumber + 6] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
+        self._internal_value[mal.Composite._fieldNumber + 5] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
         self._isNull = False
 
 
-class ArgumentDefinitionDetailsList(mal.ElementList):
-    shortForm = -MALShortForm.ARGUMENTDEFINITIONDETAILS
-
+class ArgumentDefinitionList(mal.ElementList):
+    shortForm = -MALShortForm.ARGUMENTDEFINITION
+    _fieldTypes = mal.MALType(ArgumentDefinition)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -170,18 +244,18 @@ class ArgumentDefinitionDetailsList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(ArgumentDefinitionDetails(v))
+                 self._internal_value.append(ArgumentDefinition(v))
 
 
 class AttributeValue(mal.Composite):
-    """The AttributeValue structure holds an Attribute value. It allows a list of different Attribute types to be created whereas List of Attribute would require the values to be all of the same type."""
+    """"""
 
     shortForm = MALShortForm.ATTRIBUTEVALUE
-    _fieldNumber = mal.Composite._fieldNumber + 1
+    _fieldNumber = mal.Composite._fieldNumber + 2
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
-        self._internal_value += [None]*1
+        self._internal_value += [None]*2
         if value is None and self._canBeNull:
             self._isNull = True
         elif type(value) == type(self):
@@ -194,6 +268,7 @@ class AttributeValue(mal.Composite):
                 self._internal_value = value.copy().internal_value
         else:
             self.value = value[mal.Composite._fieldNumber + 0]
+            self.isRawValue = value[mal.Composite._fieldNumber + 1]
 
     @property
     def value(self):
@@ -202,15 +277,24 @@ class AttributeValue(mal.Composite):
     @value.setter
     def value(self, value):
         if value is None:
-            self._internal_value[mal.Composite._fieldNumber + 0] = mal.Attribute(value, canBeNull=False, attribName='value')
+            self._internal_value[mal.Composite._fieldNumber + 0] = mal.Attribute(value, canBeNull=True, attribName='value')
         else:
-            self._internal_value[mal.Composite._fieldNumber + 0] = type(value)(value, canBeNull=False, attribName='value')
+            self._internal_value[mal.Composite._fieldNumber + 0] = type(value)(value, canBeNull=True, attribName='value')
+        self._isNull = False
+
+    @property
+    def isRawValue(self):
+        return self._internal_value[mal.Composite._fieldNumber + 1]
+
+    @isRawValue.setter
+    def isRawValue(self, isRawValue):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Boolean(isRawValue, canBeNull=False, attribName='isRawValue')
         self._isNull = False
 
 
 class AttributeValueList(mal.ElementList):
     shortForm = -MALShortForm.ATTRIBUTEVALUE
-
+    _fieldTypes = mal.MALType(AttributeValue)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -228,11 +312,300 @@ class AttributeValueList(mal.ElementList):
                  self._internal_value.append(AttributeValue(v))
 
 
-class ConditionalConversion(mal.Composite):
-    """The ConditionalConversion structure holds a condition expression to be evaluated to determine if a specific Conversion should be used. In the case that no test is required, i.e., the conversion should always be used, then the condition field should be set to NULL."""
+class ActionDefinition(mal.Object):
+    """"""
 
-    shortForm = MALShortForm.CONDITIONALCONVERSION
-    _fieldNumber = mal.Composite._fieldNumber + 2
+    shortForm = MALShortForm.ACTIONDEFINITION
+    _fieldNumber = mal.Object._fieldNumber + 4
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*4
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.description = value[mal.Object._fieldNumber + 0]
+            self.category = value[mal.Object._fieldNumber + 1]
+            self.progressStepCount = value[mal.Object._fieldNumber + 2]
+            self.arguments = value[mal.Object._fieldNumber + 3]
+
+    @property
+    def description(self):
+        return self._internal_value[mal.Object._fieldNumber + 0]
+
+    @description.setter
+    def description(self, description):
+        self._internal_value[mal.Object._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
+
+    @property
+    def category(self):
+        return self._internal_value[mal.Object._fieldNumber + 1]
+
+    @category.setter
+    def category(self, category):
+        self._internal_value[mal.Object._fieldNumber + 1] = ActionCategory(category, canBeNull=False, attribName='category')
+        self._isNull = False
+
+    @property
+    def progressStepCount(self):
+        return self._internal_value[mal.Object._fieldNumber + 2]
+
+    @progressStepCount.setter
+    def progressStepCount(self, progressStepCount):
+        self._internal_value[mal.Object._fieldNumber + 2] = mal.UShort(progressStepCount, canBeNull=False, attribName='progressStepCount')
+        self._isNull = False
+
+    @property
+    def arguments(self):
+        return self._internal_value[mal.Object._fieldNumber + 3]
+
+    @arguments.setter
+    def arguments(self, arguments):
+        self._internal_value[mal.Object._fieldNumber + 3] = ArgumentDefinitionList(arguments, canBeNull=True, attribName='arguments')
+        self._isNull = False
+
+
+class ActionDefinitionList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONDEFINITION
+    _fieldTypes = mal.MALType(ActionDefinition)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ActionDefinition(v))
+
+
+class ActionExecutionRequest(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.ACTIONEXECUTIONREQUEST
+    _fieldNumber = mal.Composite._fieldNumber + 7
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*7
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.requestId = value[mal.Composite._fieldNumber + 0]
+            self.actionRef = value[mal.Composite._fieldNumber + 1]
+            self.source = value[mal.Composite._fieldNumber + 2]
+            self.stageStartedRequired = value[mal.Composite._fieldNumber + 3]
+            self.stageProgressRequired = value[mal.Composite._fieldNumber + 4]
+            self.stageCompletedRequired = value[mal.Composite._fieldNumber + 5]
+            self.argumentValues = value[mal.Composite._fieldNumber + 6]
+
+    @property
+    def requestId(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @requestId.setter
+    def requestId(self, requestId):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(requestId, canBeNull=False, attribName='requestId')
+        self._isNull = False
+
+    @property
+    def actionRef(self):
+        return self._internal_value[mal.Composite._fieldNumber + 1]
+
+    @actionRef.setter
+    def actionRef(self, actionRef):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.ObjectRef(actionRef, canBeNull=False, attribName='actionRef')
+        self._isNull = False
+
+    @property
+    def source(self):
+        return self._internal_value[mal.Composite._fieldNumber + 2]
+
+    @source.setter
+    def source(self, source):
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.ObjectRef(source, canBeNull=True, attribName='source')
+        self._isNull = False
+
+    @property
+    def stageStartedRequired(self):
+        return self._internal_value[mal.Composite._fieldNumber + 3]
+
+    @stageStartedRequired.setter
+    def stageStartedRequired(self, stageStartedRequired):
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.Boolean(stageStartedRequired, canBeNull=False, attribName='stageStartedRequired')
+        self._isNull = False
+
+    @property
+    def stageProgressRequired(self):
+        return self._internal_value[mal.Composite._fieldNumber + 4]
+
+    @stageProgressRequired.setter
+    def stageProgressRequired(self, stageProgressRequired):
+        self._internal_value[mal.Composite._fieldNumber + 4] = mal.Boolean(stageProgressRequired, canBeNull=False, attribName='stageProgressRequired')
+        self._isNull = False
+
+    @property
+    def stageCompletedRequired(self):
+        return self._internal_value[mal.Composite._fieldNumber + 5]
+
+    @stageCompletedRequired.setter
+    def stageCompletedRequired(self, stageCompletedRequired):
+        self._internal_value[mal.Composite._fieldNumber + 5] = mal.Boolean(stageCompletedRequired, canBeNull=False, attribName='stageCompletedRequired')
+        self._isNull = False
+
+    @property
+    def argumentValues(self):
+        return self._internal_value[mal.Composite._fieldNumber + 6]
+
+    @argumentValues.setter
+    def argumentValues(self, argumentValues):
+        self._internal_value[mal.Composite._fieldNumber + 6] = AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._isNull = False
+
+
+class ActionExecutionRequestList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONEXECUTIONREQUEST
+    _fieldTypes = mal.MALType(ActionExecutionRequest)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ActionExecutionRequest(v))
+
+
+class ActionProgressBaseEvent(mal.Composite):
+    """"""
+
+    shortForm = None
+    _fieldNumber = mal.Composite._fieldNumber + 1
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*1
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.success = value[mal.Composite._fieldNumber + 0]
+
+    @property
+    def success(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @success.setter
+    def success(self, success):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(success, canBeNull=False, attribName='success')
+        self._isNull = False
+
+
+class ActionProgressBaseEventList(mal.ElementList):
+    shortForm = None
+    _fieldTypes = mal.MALType(ActionProgressBaseEvent)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ActionProgressBaseEvent(v))
+
+
+class ActionProgressStartEvent(ActionProgressBaseEvent):
+    """"""
+
+    shortForm = MALShortForm.ACTIONPROGRESSSTARTEVENT
+    _fieldNumber = ActionProgressBaseEvent._fieldNumber + 0
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*0
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            raise RuntimeError("This class is abstract and should not be directly called")
+
+
+class ActionProgressStartEventList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONPROGRESSSTARTEVENT
+    _fieldTypes = mal.MALType(ActionProgressStartEvent)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ActionProgressStartEvent(v))
+
+
+class ActionProgressExecutionEvent(ActionProgressBaseEvent):
+    """"""
+
+    shortForm = MALShortForm.ACTIONPROGRESSEXECUTIONEVENT
+    _fieldNumber = ActionProgressBaseEvent._fieldNumber + 2
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
@@ -248,31 +621,31 @@ class ConditionalConversion(mal.Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.condition = value[mal.Composite._fieldNumber + 0]
-            self.conversionId = value[mal.Composite._fieldNumber + 1]
+            self.stageCount = value[ActionProgressBaseEvent._fieldNumber + 0]
+            self.executionStage = value[ActionProgressBaseEvent._fieldNumber + 1]
 
     @property
-    def condition(self):
-        return self._internal_value[mal.Composite._fieldNumber + 0]
+    def stageCount(self):
+        return self._internal_value[ActionProgressBaseEvent._fieldNumber + 0]
 
-    @condition.setter
-    def condition(self, condition):
-        self._internal_value[mal.Composite._fieldNumber + 0] = ParameterExpression(condition, canBeNull=True, attribName='condition')
+    @stageCount.setter
+    def stageCount(self, stageCount):
+        self._internal_value[ActionProgressBaseEvent._fieldNumber + 0] = mal.UInteger(stageCount, canBeNull=False, attribName='stageCount')
         self._isNull = False
 
     @property
-    def conversionId(self):
-        return self._internal_value[mal.Composite._fieldNumber + 1]
+    def executionStage(self):
+        return self._internal_value[ActionProgressBaseEvent._fieldNumber + 1]
 
-    @conversionId.setter
-    def conversionId(self, conversionId):
-        self._internal_value[mal.Composite._fieldNumber + 1] = com.ObjectKey(conversionId, canBeNull=False, attribName='conversionId')
+    @executionStage.setter
+    def executionStage(self, executionStage):
+        self._internal_value[ActionProgressBaseEvent._fieldNumber + 1] = mal.UInteger(executionStage, canBeNull=False, attribName='executionStage')
         self._isNull = False
 
 
-class ConditionalConversionList(mal.ElementList):
-    shortForm = -MALShortForm.CONDITIONALCONVERSION
-
+class ActionProgressExecutionEventList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONPROGRESSEXECUTIONEVENT
+    _fieldTypes = mal.MALType(ActionProgressExecutionEvent)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -287,13 +660,226 @@ class ConditionalConversionList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(ConditionalConversion(v))
+                 self._internal_value.append(ActionProgressExecutionEvent(v))
 
 
-class ParameterExpression(mal.Composite):
-    """The ParameterExpression structure represents a simple expression between a parameter and a value for that parameter."""
+class ActionProgressCompletionEvent(ActionProgressBaseEvent):
+    """"""
 
-    shortForm = MALShortForm.PARAMETEREXPRESSION
+    shortForm = MALShortForm.ACTIONPROGRESSCOMPLETIONEVENT
+    _fieldNumber = ActionProgressBaseEvent._fieldNumber + 0
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*0
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            raise RuntimeError("This class is abstract and should not be directly called")
+
+
+class ActionProgressCompletionEventList(mal.ElementList):
+    shortForm = -MALShortForm.ACTIONPROGRESSCOMPLETIONEVENT
+    _fieldTypes = mal.MALType(ActionProgressCompletionEvent)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ActionProgressCompletionEvent(v))
+
+
+class ParameterDefinition(mal.Object):
+    """"""
+
+    shortForm = MALShortForm.PARAMETERDEFINITION
+    _fieldNumber = mal.Object._fieldNumber + 5
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*5
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.description = value[mal.Object._fieldNumber + 0]
+            self.rawType = value[mal.Object._fieldNumber + 1]
+            self.rawUnit = value[mal.Object._fieldNumber + 2]
+            self.convertedType = value[mal.Object._fieldNumber + 3]
+            self.convertedUnit = value[mal.Object._fieldNumber + 4]
+
+    @property
+    def description(self):
+        return self._internal_value[mal.Object._fieldNumber + 0]
+
+    @description.setter
+    def description(self, description):
+        self._internal_value[mal.Object._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
+
+    @property
+    def rawType(self):
+        return self._internal_value[mal.Object._fieldNumber + 1]
+
+    @rawType.setter
+    def rawType(self, rawType):
+        self._internal_value[mal.Object._fieldNumber + 1] = mal.AttributeType(rawType, canBeNull=False, attribName='rawType')
+        self._isNull = False
+
+    @property
+    def rawUnit(self):
+        return self._internal_value[mal.Object._fieldNumber + 2]
+
+    @rawUnit.setter
+    def rawUnit(self, rawUnit):
+        self._internal_value[mal.Object._fieldNumber + 2] = mal.String(rawUnit, canBeNull=True, attribName='rawUnit')
+        self._isNull = False
+
+    @property
+    def convertedType(self):
+        return self._internal_value[mal.Object._fieldNumber + 3]
+
+    @convertedType.setter
+    def convertedType(self, convertedType):
+        self._internal_value[mal.Object._fieldNumber + 3] = mal.AttributeType(convertedType, canBeNull=True, attribName='convertedType')
+        self._isNull = False
+
+    @property
+    def convertedUnit(self):
+        return self._internal_value[mal.Object._fieldNumber + 4]
+
+    @convertedUnit.setter
+    def convertedUnit(self, convertedUnit):
+        self._internal_value[mal.Object._fieldNumber + 4] = mal.String(convertedUnit, canBeNull=True, attribName='convertedUnit')
+        self._isNull = False
+
+
+class ParameterDefinitionList(mal.ElementList):
+    shortForm = -MALShortForm.PARAMETERDEFINITION
+    _fieldTypes = mal.MALType(ParameterDefinition)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ParameterDefinition(v))
+
+
+class ParameterValueData(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.PARAMETERVALUEDATA
+    _fieldNumber = mal.Composite._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.validityState = value[mal.Composite._fieldNumber + 0]
+            self.rawValue = value[mal.Composite._fieldNumber + 1]
+            self.convertedValue = value[mal.Composite._fieldNumber + 2]
+
+    @property
+    def validityState(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @validityState.setter
+    def validityState(self, validityState):
+        self._internal_value[mal.Composite._fieldNumber + 0] = ValidityState(validityState, canBeNull=False, attribName='validityState')
+        self._isNull = False
+
+    @property
+    def rawValue(self):
+        return self._internal_value[mal.Composite._fieldNumber + 1]
+
+    @rawValue.setter
+    def rawValue(self, rawValue):
+        if rawValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 1] = mal.Attribute(rawValue, canBeNull=True, attribName='rawValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 1] = type(rawValue)(rawValue, canBeNull=True, attribName='rawValue')
+        self._isNull = False
+
+    @property
+    def convertedValue(self):
+        return self._internal_value[mal.Composite._fieldNumber + 2]
+
+    @convertedValue.setter
+    def convertedValue(self, convertedValue):
+        if convertedValue is None:
+            self._internal_value[mal.Composite._fieldNumber + 2] = mal.Attribute(convertedValue, canBeNull=True, attribName='convertedValue')
+        else:
+            self._internal_value[mal.Composite._fieldNumber + 2] = type(convertedValue)(convertedValue, canBeNull=True, attribName='convertedValue')
+        self._isNull = False
+
+
+class ParameterValueDataList(mal.ElementList):
+    shortForm = -MALShortForm.PARAMETERVALUEDATA
+    _fieldTypes = mal.MALType(ParameterValueData)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(ParameterValueData(v))
+
+
+class ParameterValue(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.PARAMETERVALUE
     _fieldNumber = mal.Composite._fieldNumber + 4
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
@@ -310,36 +896,36 @@ class ParameterExpression(mal.Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.parameterId = value[mal.Composite._fieldNumber + 0]
-            self.operator = value[mal.Composite._fieldNumber + 1]
-            self.useConverted = value[mal.Composite._fieldNumber + 2]
+            self.paramRef = value[mal.Composite._fieldNumber + 0]
+            self.timestamp = value[mal.Composite._fieldNumber + 1]
+            self.samplingTime = value[mal.Composite._fieldNumber + 2]
             self.value = value[mal.Composite._fieldNumber + 3]
 
     @property
-    def parameterId(self):
+    def paramRef(self):
         return self._internal_value[mal.Composite._fieldNumber + 0]
 
-    @parameterId.setter
-    def parameterId(self, parameterId):
-        self._internal_value[mal.Composite._fieldNumber + 0] = com.ObjectKey(parameterId, canBeNull=False, attribName='parameterId')
+    @paramRef.setter
+    def paramRef(self, paramRef):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.ObjectRef(paramRef, canBeNull=False, attribName='paramRef')
         self._isNull = False
 
     @property
-    def operator(self):
+    def timestamp(self):
         return self._internal_value[mal.Composite._fieldNumber + 1]
 
-    @operator.setter
-    def operator(self, operator):
-        self._internal_value[mal.Composite._fieldNumber + 1] = com.ExpressionOperator(operator, canBeNull=False, attribName='operator')
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
         self._isNull = False
 
     @property
-    def useConverted(self):
+    def samplingTime(self):
         return self._internal_value[mal.Composite._fieldNumber + 2]
 
-    @useConverted.setter
-    def useConverted(self, useConverted):
-        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Boolean(useConverted, canBeNull=False, attribName='useConverted')
+    @samplingTime.setter
+    def samplingTime(self, samplingTime):
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.Time(samplingTime, canBeNull=True, attribName='samplingTime')
         self._isNull = False
 
     @property
@@ -348,16 +934,13 @@ class ParameterExpression(mal.Composite):
 
     @value.setter
     def value(self, value):
-        if value is None:
-            self._internal_value[mal.Composite._fieldNumber + 3] = mal.Attribute(value, canBeNull=True, attribName='value')
-        else:
-            self._internal_value[mal.Composite._fieldNumber + 3] = type(value)(value, canBeNull=True, attribName='value')
+        self._internal_value[mal.Composite._fieldNumber + 3] = ParameterValueData(value, canBeNull=False, attribName='value')
         self._isNull = False
 
 
-class ParameterExpressionList(mal.ElementList):
-    shortForm = -MALShortForm.PARAMETEREXPRESSION
-
+class ParameterValueList(mal.ElementList):
+    shortForm = -MALShortForm.PARAMETERVALUE
+    _fieldTypes = mal.MALType(ParameterValue)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -372,13 +955,13 @@ class ParameterExpressionList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(ParameterExpression(v))
+                 self._internal_value.append(ParameterValue(v))
 
 
-class ObjectInstancePair(mal.Composite):
-    """The ObjectInstancePair structure is used to hold the object instance identifier of an Identity object with its associated Definition object."""
+class ReportConfiguration(mal.Composite):
+    """"""
 
-    shortForm = MALShortForm.OBJECTINSTANCEPAIR
+    shortForm = MALShortForm.REPORTCONFIGURATION
     _fieldNumber = mal.Composite._fieldNumber + 2
 
     def __init__(self, value=None, canBeNull=True, attribName=None):
@@ -395,31 +978,31 @@ class ObjectInstancePair(mal.Composite):
             else:
                 self._internal_value = value.copy().internal_value
         else:
-            self.objIdentityInstanceId = value[mal.Composite._fieldNumber + 0]
-            self.objDefInstanceId = value[mal.Composite._fieldNumber + 1]
+            self.generationEnabled = value[mal.Composite._fieldNumber + 0]
+            self.reportInterval = value[mal.Composite._fieldNumber + 1]
 
     @property
-    def objIdentityInstanceId(self):
+    def generationEnabled(self):
         return self._internal_value[mal.Composite._fieldNumber + 0]
 
-    @objIdentityInstanceId.setter
-    def objIdentityInstanceId(self, objIdentityInstanceId):
-        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Long(objIdentityInstanceId, canBeNull=False, attribName='objIdentityInstanceId')
+    @generationEnabled.setter
+    def generationEnabled(self, generationEnabled):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
         self._isNull = False
 
     @property
-    def objDefInstanceId(self):
+    def reportInterval(self):
         return self._internal_value[mal.Composite._fieldNumber + 1]
 
-    @objDefInstanceId.setter
-    def objDefInstanceId(self, objDefInstanceId):
-        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Long(objDefInstanceId, canBeNull=False, attribName='objDefInstanceId')
+    @reportInterval.setter
+    def reportInterval(self, reportInterval):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Duration(reportInterval, canBeNull=False, attribName='reportInterval')
         self._isNull = False
 
 
-class ObjectInstancePairList(mal.ElementList):
-    shortForm = -MALShortForm.OBJECTINSTANCEPAIR
-
+class ReportConfigurationList(mal.ElementList):
+    shortForm = -MALShortForm.REPORTCONFIGURATION
+    _fieldTypes = mal.MALType(ReportConfiguration)
     def __init__(self, value=None, canBeNull=True, attribName=None):
         super().__init__(value, canBeNull, attribName)
         self._internal_value = []
@@ -434,11 +1017,521 @@ class ObjectInstancePairList(mal.ElementList):
         else:
             listvalue = value if type(value) == list else [value]
             for v in listvalue:
-                 self._internal_value.append(ObjectInstancePair(v))
+                 self._internal_value.append(ReportConfiguration(v))
 
 
+class AlertDefinition(mal.Object):
+    """"""
+
+    shortForm = MALShortForm.ALERTDEFINITION
+    _fieldNumber = mal.Object._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.description = value[mal.Object._fieldNumber + 0]
+            self.severity = value[mal.Object._fieldNumber + 1]
+            self.arguments = value[mal.Object._fieldNumber + 2]
+
+    @property
+    def description(self):
+        return self._internal_value[mal.Object._fieldNumber + 0]
+
+    @description.setter
+    def description(self, description):
+        self._internal_value[mal.Object._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
+
+    @property
+    def severity(self):
+        return self._internal_value[mal.Object._fieldNumber + 1]
+
+    @severity.setter
+    def severity(self, severity):
+        self._internal_value[mal.Object._fieldNumber + 1] = Severity(severity, canBeNull=False, attribName='severity')
+        self._isNull = False
+
+    @property
+    def arguments(self):
+        return self._internal_value[mal.Object._fieldNumber + 2]
+
+    @arguments.setter
+    def arguments(self, arguments):
+        self._internal_value[mal.Object._fieldNumber + 2] = ArgumentDefinitionList(arguments, canBeNull=True, attribName='arguments')
+        self._isNull = False
+
+
+class AlertDefinitionList(mal.ElementList):
+    shortForm = -MALShortForm.ALERTDEFINITION
+    _fieldTypes = mal.MALType(AlertDefinition)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(AlertDefinition(v))
+
+
+class AlertEvent(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.ALERTEVENT
+    _fieldNumber = mal.Composite._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.alertRef = value[mal.Composite._fieldNumber + 0]
+            self.timestamp = value[mal.Composite._fieldNumber + 1]
+            self.argumentValues = value[mal.Composite._fieldNumber + 2]
+
+    @property
+    def alertRef(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @alertRef.setter
+    def alertRef(self, alertRef):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.ObjectRef(alertRef, canBeNull=False, attribName='alertRef')
+        self._isNull = False
+
+    @property
+    def timestamp(self):
+        return self._internal_value[mal.Composite._fieldNumber + 1]
+
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._isNull = False
+
+    @property
+    def argumentValues(self):
+        return self._internal_value[mal.Composite._fieldNumber + 2]
+
+    @argumentValues.setter
+    def argumentValues(self, argumentValues):
+        self._internal_value[mal.Composite._fieldNumber + 2] = AttributeValueList(argumentValues, canBeNull=True, attribName='argumentValues')
+        self._isNull = False
+
+
+class AlertEventList(mal.ElementList):
+    shortForm = -MALShortForm.ALERTEVENT
+    _fieldTypes = mal.MALType(AlertEvent)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(AlertEvent(v))
+
+
+class AlertConfiguration(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.ALERTCONFIGURATION
+    _fieldNumber = mal.Composite._fieldNumber + 1
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*1
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.generationEnabled = value[mal.Composite._fieldNumber + 0]
+
+    @property
+    def generationEnabled(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @generationEnabled.setter
+    def generationEnabled(self, generationEnabled):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Boolean(generationEnabled, canBeNull=False, attribName='generationEnabled')
+        self._isNull = False
+
+
+class AlertConfigurationList(mal.ElementList):
+    shortForm = -MALShortForm.ALERTCONFIGURATION
+    _fieldTypes = mal.MALType(AlertConfiguration)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(AlertConfiguration(v))
+
+
+class AggregationDefinition(mal.Object):
+    """"""
+
+    shortForm = MALShortForm.AGGREGATIONDEFINITION
+    _fieldNumber = mal.Object._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.description = value[mal.Object._fieldNumber + 0]
+            self.category = value[mal.Object._fieldNumber + 1]
+            self.parameters = value[mal.Object._fieldNumber + 2]
+
+    @property
+    def description(self):
+        return self._internal_value[mal.Object._fieldNumber + 0]
+
+    @description.setter
+    def description(self, description):
+        self._internal_value[mal.Object._fieldNumber + 0] = mal.String(description, canBeNull=False, attribName='description')
+        self._isNull = False
+
+    @property
+    def category(self):
+        return self._internal_value[mal.Object._fieldNumber + 1]
+
+    @category.setter
+    def category(self, category):
+        self._internal_value[mal.Object._fieldNumber + 1] = mal.Identifier(category, canBeNull=False, attribName='category')
+        self._isNull = False
+
+    @property
+    def parameters(self):
+        return self._internal_value[mal.Object._fieldNumber + 2]
+
+    @parameters.setter
+    def parameters(self, parameters):
+        self._internal_value[mal.Object._fieldNumber + 2] = mal.ObjectRefList(parameters, canBeNull=False, attribName='parameters')
+        self._isNull = False
+
+
+class AggregationDefinitionList(mal.ElementList):
+    shortForm = -MALShortForm.AGGREGATIONDEFINITION
+    _fieldTypes = mal.MALType(AggregationDefinition)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(AggregationDefinition(v))
+
+
+class AggregationValue(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.AGGREGATIONVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 3
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*3
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.aggregationRef = value[mal.Composite._fieldNumber + 0]
+            self.timestamp = value[mal.Composite._fieldNumber + 1]
+            self.parameterValues = value[mal.Composite._fieldNumber + 2]
+
+    @property
+    def aggregationRef(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @aggregationRef.setter
+    def aggregationRef(self, aggregationRef):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.ObjectRef(aggregationRef, canBeNull=False, attribName='aggregationRef')
+        self._isNull = False
+
+    @property
+    def timestamp(self):
+        return self._internal_value[mal.Composite._fieldNumber + 1]
+
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._isNull = False
+
+    @property
+    def parameterValues(self):
+        return self._internal_value[mal.Composite._fieldNumber + 2]
+
+    @parameterValues.setter
+    def parameterValues(self, parameterValues):
+        self._internal_value[mal.Composite._fieldNumber + 2] = ParameterValueDataList(parameterValues, canBeNull=False, attribName='parameterValues')
+        self._isNull = False
+
+
+class AggregationValueList(mal.ElementList):
+    shortForm = -MALShortForm.AGGREGATIONVALUE
+    _fieldTypes = mal.MALType(AggregationValue)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(AggregationValue(v))
+
+
+class PacketValue(mal.Composite):
+    """"""
+
+    shortForm = MALShortForm.PACKETVALUE
+    _fieldNumber = mal.Composite._fieldNumber + 4
+
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value += [None]*4
+        if value is None and self._canBeNull:
+            self._isNull = True
+        elif type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            self.payload = value[mal.Composite._fieldNumber + 0]
+            self.timestamp = value[mal.Composite._fieldNumber + 1]
+            self.apid = value[mal.Composite._fieldNumber + 2]
+            self.keyValues = value[mal.Composite._fieldNumber + 3]
+
+    @property
+    def payload(self):
+        return self._internal_value[mal.Composite._fieldNumber + 0]
+
+    @payload.setter
+    def payload(self, payload):
+        self._internal_value[mal.Composite._fieldNumber + 0] = mal.Blob(payload, canBeNull=False, attribName='payload')
+        self._isNull = False
+
+    @property
+    def timestamp(self):
+        return self._internal_value[mal.Composite._fieldNumber + 1]
+
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        self._internal_value[mal.Composite._fieldNumber + 1] = mal.Time(timestamp, canBeNull=False, attribName='timestamp')
+        self._isNull = False
+
+    @property
+    def apid(self):
+        return self._internal_value[mal.Composite._fieldNumber + 2]
+
+    @apid.setter
+    def apid(self, apid):
+        self._internal_value[mal.Composite._fieldNumber + 2] = mal.UShort(apid, canBeNull=False, attribName='apid')
+        self._isNull = False
+
+    @property
+    def keyValues(self):
+        return self._internal_value[mal.Composite._fieldNumber + 3]
+
+    @keyValues.setter
+    def keyValues(self, keyValues):
+        self._internal_value[mal.Composite._fieldNumber + 3] = mal.NullableAttributeList(keyValues, canBeNull=True, attribName='keyValues')
+        self._isNull = False
+
+
+class PacketValueList(mal.ElementList):
+    shortForm = -MALShortForm.PACKETVALUE
+    _fieldTypes = mal.MALType(PacketValue)
+    def __init__(self, value=None, canBeNull=True, attribName=None):
+        super().__init__(value, canBeNull, attribName)
+        self._internal_value = []
+        if type(value) == type(self):
+            if value.internal_value is None:
+                if self._canBeNull:
+                    self._isNull = True
+                else:
+                    raise ValueError("This {} cannot be Null".format(type(self)))
+            else:
+                self._internal_value = value.copy().internal_value
+        else:
+            listvalue = value if type(value) == list else [value]
+            for v in listvalue:
+                 self._internal_value.append(PacketValue(v))
+
+
+ArgumentDefinition._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Identifier, nullable=False),
+    mal.MALType(mal.String, nullable=True),
+    mal.MALType(mal.AttributeType, nullable=False),
+    mal.MALType(mal.String, nullable=True),
+    mal.MALType(mal.AttributeType, nullable=True),
+    mal.MALType(mal.String, nullable=True)
+]
+AttributeValue._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Attribute, nullable=True),
+    mal.MALType(mal.Boolean, nullable=False)
+]
+ActionDefinition._fieldTypes = mal.Object._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(ActionCategory, nullable=False),
+    mal.MALType(mal.UShort, nullable=False),
+    mal.MALType(ArgumentDefinitionList, nullable=True)
+]
+ActionExecutionRequest._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Long, nullable=False),
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.ObjectRef, nullable=True),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(AttributeValueList, nullable=True)
+]
+ActionProgressBaseEvent._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False)
+]
+ActionProgressStartEvent._fieldTypes = []
+ActionProgressExecutionEvent._fieldTypes = ActionProgressBaseEvent._fieldTypes + [
+    mal.MALType(mal.UInteger, nullable=False),
+    mal.MALType(mal.UInteger, nullable=False)
+]
+ActionProgressCompletionEvent._fieldTypes = []
+ParameterDefinition._fieldTypes = mal.Object._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(mal.AttributeType, nullable=False),
+    mal.MALType(mal.String, nullable=True),
+    mal.MALType(mal.AttributeType, nullable=True),
+    mal.MALType(mal.String, nullable=True)
+]
+ParameterValueData._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(ValidityState, nullable=False),
+    mal.MALType(mal.Attribute, nullable=True),
+    mal.MALType(mal.Attribute, nullable=True)
+]
+ParameterValue._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(mal.Time, nullable=True),
+    mal.MALType(ParameterValueData, nullable=False)
+]
+ReportConfiguration._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False),
+    mal.MALType(mal.Duration, nullable=False)
+]
+AlertDefinition._fieldTypes = mal.Object._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(Severity, nullable=False),
+    mal.MALType(ArgumentDefinitionList, nullable=True)
+]
+AlertEvent._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(AttributeValueList, nullable=True)
+]
+AlertConfiguration._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Boolean, nullable=False)
+]
+AggregationDefinition._fieldTypes = mal.Object._fieldTypes + [
+    mal.MALType(mal.String, nullable=False),
+    mal.MALType(mal.Identifier, nullable=False),
+    mal.MALType(mal.ObjectRefList, nullable=False)
+]
+AggregationValue._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.ObjectRef, nullable=False),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(ParameterValueDataList, nullable=False)
+]
+PacketValue._fieldTypes = mal.Composite._fieldTypes + [
+    mal.MALType(mal.Blob, nullable=False),
+    mal.MALType(mal.Time, nullable=False),
+    mal.MALType(mal.UShort, nullable=False),
+    mal.MALType(mal.NullableAttributeList, nullable=True)
+]
 class Errors(IntEnum):
     """All MAL errors."""
 
-    READONLY = 70020  # Operation specific
-    REFERENCED = 70021  # Operation specific
+    READONLY = 1  # Operation specific
+    DUPLICATE = 2  # Operation specific
+    INVALID = 3  # Operation specific
