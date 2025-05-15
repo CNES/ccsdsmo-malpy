@@ -1,5 +1,10 @@
 #! /bin/python3
 
+# SPDX-FileCopyrightText: 2025 Olivier Churlaud <olivier@churlaud.com>
+# SPDX-FileCopyrightText: 2025 CNES
+#
+# SPDX-License-Identifier: MIT
+
 import os
 import xml.etree.ElementTree as ET
 import yaml
