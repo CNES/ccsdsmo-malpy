@@ -40,6 +40,11 @@ DO_NOT_EDIT = \
 "# This file is generated. Do NOT edit it by hand.   #\n" + \
 "#####################################################\n\n"
 
+LICENSE = \
+"# SPDX-FileCopyrightText: 2025 CNES\n" + \
+"#\n" + \
+"# SPDX-License-Identifier: MIT\n\n"
+
 
 def maltag(name):
     return "{}{}".format('{' + MAL_NS + '}', name)
@@ -432,7 +437,7 @@ class MALBuffer(object):
     def __init__(self, generator, servicename=None):
         self.generator = generator
         self.service = servicename
-        self.content = DO_NOT_EDIT
+        self.content = LICENSE + DO_NOT_EDIT
 
     def write(self, content):
         self.content += content
@@ -977,6 +982,7 @@ class MALTypeModuleGenerator(object):
         initpath = os.path.join(dirpath, '__init__.py')
         service_string_list = ', '.join(["'{}'".format(s) for s in self.service_buffers.keys()])
         with open(initpath, 'w') as f:
+            f.write(LICENSE)
             f.write(
     "__all__ = [{}]\n".format(service_string_list)
             )
@@ -993,6 +999,8 @@ class MALTypeModuleGenerator(object):
         if not os.path.isdir(self.outpath):
             os.makedirs(self.outpath)
         with open(initpath, 'w') as f:
+            f.write(LICENSE)
+
             if self.module == 'mal':
                 f.write(
     "__all__ = ['maltypes']\n" +
